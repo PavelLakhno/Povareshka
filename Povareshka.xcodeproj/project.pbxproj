@@ -10,9 +10,11 @@
 		CE9BAB2A2C7C7EF000CD6C24 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB292C7C7EF000CD6C24 /* AppDelegate.swift */; };
 		CE9BAB2C2C7C7EF000CD6C24 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB2B2C7C7EF000CD6C24 /* SceneDelegate.swift */; };
 		CE9BAB2E2C7C7EF000CD6C24 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB2D2C7C7EF000CD6C24 /* ViewController.swift */; };
-		CE9BAB312C7C7EF000CD6C24 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE9BAB2F2C7C7EF000CD6C24 /* Main.storyboard */; };
 		CE9BAB332C7C7EF300CD6C24 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE9BAB322C7C7EF300CD6C24 /* Assets.xcassets */; };
 		CE9BAB362C7C7EF300CD6C24 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE9BAB342C7C7EF300CD6C24 /* LaunchScreen.storyboard */; };
+		CE9BAB412C7C99AC00CD6C24 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB402C7C99AC00CD6C24 /* TabBarController.swift */; };
+		CE9BAB452C7C9C4700CD6C24 /* UIColor + ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB442C7C9C4700CD6C24 /* UIColor + ext.swift */; };
+		CE9BAB472C7C9D8E00CD6C24 /* Resources.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB462C7C9D8E00CD6C24 /* Resources.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,10 +22,12 @@
 		CE9BAB292C7C7EF000CD6C24 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CE9BAB2B2C7C7EF000CD6C24 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		CE9BAB2D2C7C7EF000CD6C24 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		CE9BAB302C7C7EF000CD6C24 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		CE9BAB322C7C7EF300CD6C24 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CE9BAB352C7C7EF300CD6C24 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CE9BAB372C7C7EF300CD6C24 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CE9BAB402C7C99AC00CD6C24 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
+		CE9BAB442C7C9C4700CD6C24 /* UIColor + ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor + ext.swift"; sourceTree = "<group>"; };
+		CE9BAB462C7C9D8E00CD6C24 /* Resources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resources.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,15 +60,57 @@
 		CE9BAB282C7C7EF000CD6C24 /* Povareshka */ = {
 			isa = PBXGroup;
 			children = (
+				CE9BAB422C7C9C2100CD6C24 /* Helpers */,
+				CE9BAB3D2C7C80AC00CD6C24 /* Application */,
+				CE9BAB3F2C7C80DE00CD6C24 /* ViewControllers */,
+				CE9BAB3E2C7C80C900CD6C24 /* SupportingFiles */,
+			);
+			path = Povareshka;
+			sourceTree = "<group>";
+		};
+		CE9BAB3D2C7C80AC00CD6C24 /* Application */ = {
+			isa = PBXGroup;
+			children = (
 				CE9BAB292C7C7EF000CD6C24 /* AppDelegate.swift */,
 				CE9BAB2B2C7C7EF000CD6C24 /* SceneDelegate.swift */,
-				CE9BAB2D2C7C7EF000CD6C24 /* ViewController.swift */,
-				CE9BAB2F2C7C7EF000CD6C24 /* Main.storyboard */,
+			);
+			path = Application;
+			sourceTree = "<group>";
+		};
+		CE9BAB3E2C7C80C900CD6C24 /* SupportingFiles */ = {
+			isa = PBXGroup;
+			children = (
 				CE9BAB322C7C7EF300CD6C24 /* Assets.xcassets */,
 				CE9BAB342C7C7EF300CD6C24 /* LaunchScreen.storyboard */,
 				CE9BAB372C7C7EF300CD6C24 /* Info.plist */,
 			);
-			path = Povareshka;
+			path = SupportingFiles;
+			sourceTree = "<group>";
+		};
+		CE9BAB3F2C7C80DE00CD6C24 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				CE9BAB2D2C7C7EF000CD6C24 /* ViewController.swift */,
+				CE9BAB402C7C99AC00CD6C24 /* TabBarController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		CE9BAB422C7C9C2100CD6C24 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				CE9BAB462C7C9D8E00CD6C24 /* Resources.swift */,
+				CE9BAB432C7C9C2B00CD6C24 /* Extensions */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		CE9BAB432C7C9C2B00CD6C24 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				CE9BAB442C7C9C4700CD6C24 /* UIColor + ext.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -127,7 +173,6 @@
 			files = (
 				CE9BAB362C7C7EF300CD6C24 /* LaunchScreen.storyboard in Resources */,
 				CE9BAB332C7C7EF300CD6C24 /* Assets.xcassets in Resources */,
-				CE9BAB312C7C7EF000CD6C24 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,7 +184,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE9BAB2E2C7C7EF000CD6C24 /* ViewController.swift in Sources */,
+				CE9BAB412C7C99AC00CD6C24 /* TabBarController.swift in Sources */,
 				CE9BAB2A2C7C7EF000CD6C24 /* AppDelegate.swift in Sources */,
+				CE9BAB472C7C9D8E00CD6C24 /* Resources.swift in Sources */,
+				CE9BAB452C7C9C4700CD6C24 /* UIColor + ext.swift in Sources */,
 				CE9BAB2C2C7C7EF000CD6C24 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -147,14 +195,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		CE9BAB2F2C7C7EF000CD6C24 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				CE9BAB302C7C7EF000CD6C24 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		CE9BAB342C7C7EF300CD6C24 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -289,12 +329,12 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = EZEA8LL4D8;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Povareshka/Info.plist;
+				INFOPLIST_FILE = Povareshka/SupportingFiles/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -302,9 +342,12 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = pavellahno.Povareshka;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -317,12 +360,12 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = EZEA8LL4D8;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Povareshka/Info.plist;
+				INFOPLIST_FILE = Povareshka/SupportingFiles/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -330,9 +373,12 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = pavellahno.Povareshka;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
