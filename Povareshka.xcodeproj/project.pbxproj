@@ -7,27 +7,40 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE3534FE2C7F0BBF006B6A26 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CE3534FD2C7F0BBF006B6A26 /* RealmSwift */; };
 		CE9BAB2A2C7C7EF000CD6C24 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB292C7C7EF000CD6C24 /* AppDelegate.swift */; };
 		CE9BAB2C2C7C7EF000CD6C24 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB2B2C7C7EF000CD6C24 /* SceneDelegate.swift */; };
-		CE9BAB2E2C7C7EF000CD6C24 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB2D2C7C7EF000CD6C24 /* ViewController.swift */; };
+		CE9BAB2E2C7C7EF000CD6C24 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB2D2C7C7EF000CD6C24 /* MainViewController.swift */; };
 		CE9BAB332C7C7EF300CD6C24 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE9BAB322C7C7EF300CD6C24 /* Assets.xcassets */; };
 		CE9BAB362C7C7EF300CD6C24 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE9BAB342C7C7EF300CD6C24 /* LaunchScreen.storyboard */; };
 		CE9BAB412C7C99AC00CD6C24 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB402C7C99AC00CD6C24 /* TabBarController.swift */; };
 		CE9BAB452C7C9C4700CD6C24 /* UIColor + ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB442C7C9C4700CD6C24 /* UIColor + ext.swift */; };
 		CE9BAB472C7C9D8E00CD6C24 /* Resources.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB462C7C9D8E00CD6C24 /* Resources.swift */; };
+		CEA109E42C7DF3CB0095E989 /* NavBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA109E32C7DF3CB0095E989 /* NavBarController.swift */; };
+		CEA109E62C7DF4BF0095E989 /* UIView + ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA109E52C7DF4BF0095E989 /* UIView + ext.swift */; };
+		CEA109E92C7DFA920095E989 /* BaseController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA109E82C7DFA920095E989 /* BaseController.swift */; };
+		CEA109ED2C7E00940095E989 /* FavoriteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA109EC2C7E00940095E989 /* FavoriteViewController.swift */; };
+		CEA109F02C7E011D0095E989 /* ShopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA109EF2C7E011D0095E989 /* ShopViewController.swift */; };
+		CEA109F32C7E01490095E989 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA109F22C7E01490095E989 /* ProfileViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		CE9BAB262C7C7EF000CD6C24 /* Povareshka.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Povareshka.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9BAB292C7C7EF000CD6C24 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CE9BAB2B2C7C7EF000CD6C24 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		CE9BAB2D2C7C7EF000CD6C24 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		CE9BAB2D2C7C7EF000CD6C24 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		CE9BAB322C7C7EF300CD6C24 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CE9BAB352C7C7EF300CD6C24 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CE9BAB372C7C7EF300CD6C24 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CE9BAB402C7C99AC00CD6C24 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		CE9BAB442C7C9C4700CD6C24 /* UIColor + ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor + ext.swift"; sourceTree = "<group>"; };
 		CE9BAB462C7C9D8E00CD6C24 /* Resources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resources.swift; sourceTree = "<group>"; };
+		CEA109E32C7DF3CB0095E989 /* NavBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavBarController.swift; sourceTree = "<group>"; };
+		CEA109E52C7DF4BF0095E989 /* UIView + ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView + ext.swift"; sourceTree = "<group>"; };
+		CEA109E82C7DFA920095E989 /* BaseController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseController.swift; sourceTree = "<group>"; };
+		CEA109EC2C7E00940095E989 /* FavoriteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteViewController.swift; sourceTree = "<group>"; };
+		CEA109EF2C7E011D0095E989 /* ShopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopViewController.swift; sourceTree = "<group>"; };
+		CEA109F22C7E01490095E989 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +48,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE3534FE2C7F0BBF006B6A26 /* RealmSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,8 +104,11 @@
 		CE9BAB3F2C7C80DE00CD6C24 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				CE9BAB2D2C7C7EF000CD6C24 /* ViewController.swift */,
-				CE9BAB402C7C99AC00CD6C24 /* TabBarController.swift */,
+				CEA109EA2C7E00700095E989 /* Main */,
+				CEA109EB2C7E007C0095E989 /* Favorite */,
+				CEA109EE2C7E00C80095E989 /* ShopList */,
+				CEA109F12C7E01330095E989 /* Profile */,
+				CEA109E72C7DFA730095E989 /* Base */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -109,8 +126,51 @@
 			isa = PBXGroup;
 			children = (
 				CE9BAB442C7C9C4700CD6C24 /* UIColor + ext.swift */,
+				CEA109E52C7DF4BF0095E989 /* UIView + ext.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		CEA109E72C7DFA730095E989 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				CE9BAB402C7C99AC00CD6C24 /* TabBarController.swift */,
+				CEA109E32C7DF3CB0095E989 /* NavBarController.swift */,
+				CEA109E82C7DFA920095E989 /* BaseController.swift */,
+			);
+			path = Base;
+			sourceTree = "<group>";
+		};
+		CEA109EA2C7E00700095E989 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				CE9BAB2D2C7C7EF000CD6C24 /* MainViewController.swift */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		CEA109EB2C7E007C0095E989 /* Favorite */ = {
+			isa = PBXGroup;
+			children = (
+				CEA109EC2C7E00940095E989 /* FavoriteViewController.swift */,
+			);
+			path = Favorite;
+			sourceTree = "<group>";
+		};
+		CEA109EE2C7E00C80095E989 /* ShopList */ = {
+			isa = PBXGroup;
+			children = (
+				CEA109EF2C7E011D0095E989 /* ShopViewController.swift */,
+			);
+			path = ShopList;
+			sourceTree = "<group>";
+		};
+		CEA109F12C7E01330095E989 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				CEA109F22C7E01490095E989 /* ProfileViewController.swift */,
+			);
+			path = Profile;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -129,6 +189,9 @@
 			dependencies = (
 			);
 			name = Povareshka;
+			packageProductDependencies = (
+				CE3534FD2C7F0BBF006B6A26 /* RealmSwift */,
+			);
 			productName = Povareshka;
 			productReference = CE9BAB262C7C7EF000CD6C24 /* Povareshka.app */;
 			productType = "com.apple.product-type.application";
@@ -157,6 +220,9 @@
 				Base,
 			);
 			mainGroup = CE9BAB1D2C7C7EF000CD6C24;
+			packageReferences = (
+				CE3534FC2C7F0BBF006B6A26 /* XCRemoteSwiftPackageReference "realm-swift" */,
+			);
 			productRefGroup = CE9BAB272C7C7EF000CD6C24 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -183,9 +249,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE9BAB2E2C7C7EF000CD6C24 /* ViewController.swift in Sources */,
+				CE9BAB2E2C7C7EF000CD6C24 /* MainViewController.swift in Sources */,
+				CEA109E92C7DFA920095E989 /* BaseController.swift in Sources */,
+				CEA109F02C7E011D0095E989 /* ShopViewController.swift in Sources */,
 				CE9BAB412C7C99AC00CD6C24 /* TabBarController.swift in Sources */,
+				CEA109E62C7DF4BF0095E989 /* UIView + ext.swift in Sources */,
+				CEA109ED2C7E00940095E989 /* FavoriteViewController.swift in Sources */,
+				CEA109F32C7E01490095E989 /* ProfileViewController.swift in Sources */,
 				CE9BAB2A2C7C7EF000CD6C24 /* AppDelegate.swift in Sources */,
+				CEA109E42C7DF3CB0095E989 /* NavBarController.swift in Sources */,
 				CE9BAB472C7C9D8E00CD6C24 /* Resources.swift in Sources */,
 				CE9BAB452C7C9C4700CD6C24 /* UIColor + ext.swift in Sources */,
 				CE9BAB2C2C7C7EF000CD6C24 /* SceneDelegate.swift in Sources */,
@@ -404,6 +476,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CE3534FC2C7F0BBF006B6A26 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 10.39.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CE3534FD2C7F0BBF006B6A26 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE3534FC2C7F0BBF006B6A26 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CE9BAB1E2C7C7EF000CD6C24 /* Project object */;
 }
