@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		CE3534FE2C7F0BBF006B6A26 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CE3534FD2C7F0BBF006B6A26 /* RealmSwift */; };
+		CE3535012C7F1DFD006B6A26 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = CE3535002C7F1DFD006B6A26 /* Kingfisher */; };
+		CE3535032C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3535022C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift */; };
 		CE9BAB2A2C7C7EF000CD6C24 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB292C7C7EF000CD6C24 /* AppDelegate.swift */; };
 		CE9BAB2C2C7C7EF000CD6C24 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB2B2C7C7EF000CD6C24 /* SceneDelegate.swift */; };
 		CE9BAB2E2C7C7EF000CD6C24 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB2D2C7C7EF000CD6C24 /* MainViewController.swift */; };
@@ -22,9 +24,11 @@
 		CEA109ED2C7E00940095E989 /* FavoriteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA109EC2C7E00940095E989 /* FavoriteViewController.swift */; };
 		CEA109F02C7E011D0095E989 /* ShopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA109EF2C7E011D0095E989 /* ShopViewController.swift */; };
 		CEA109F32C7E01490095E989 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA109F22C7E01490095E989 /* ProfileViewController.swift */; };
+		CEACB9D52C80700F00FC1C63 /* UIFont + ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEACB9D42C80700F00FC1C63 /* UIFont + ext.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		CE3535022C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingNowCollectionViewCell.swift; sourceTree = "<group>"; };
 		CE9BAB262C7C7EF000CD6C24 /* Povareshka.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Povareshka.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9BAB292C7C7EF000CD6C24 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CE9BAB2B2C7C7EF000CD6C24 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -41,6 +45,7 @@
 		CEA109EC2C7E00940095E989 /* FavoriteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteViewController.swift; sourceTree = "<group>"; };
 		CEA109EF2C7E011D0095E989 /* ShopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopViewController.swift; sourceTree = "<group>"; };
 		CEA109F22C7E01490095E989 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		CEACB9D42C80700F00FC1C63 /* UIFont + ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont + ext.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,6 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE3535012C7F1DFD006B6A26 /* Kingfisher in Frameworks */,
 				CE3534FE2C7F0BBF006B6A26 /* RealmSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -76,7 +82,11 @@
 			children = (
 				CE9BAB422C7C9C2100CD6C24 /* Helpers */,
 				CE9BAB3D2C7C80AC00CD6C24 /* Application */,
-				CE9BAB3F2C7C80DE00CD6C24 /* ViewControllers */,
+				CEA109EA2C7E00700095E989 /* Main */,
+				CEA109EB2C7E007C0095E989 /* Favorite */,
+				CEA109EE2C7E00C80095E989 /* ShopList */,
+				CEA109F12C7E01330095E989 /* Profile */,
+				CEA109E72C7DFA730095E989 /* Base */,
 				CE9BAB3E2C7C80C900CD6C24 /* SupportingFiles */,
 			);
 			path = Povareshka;
@@ -101,18 +111,6 @@
 			path = SupportingFiles;
 			sourceTree = "<group>";
 		};
-		CE9BAB3F2C7C80DE00CD6C24 /* ViewControllers */ = {
-			isa = PBXGroup;
-			children = (
-				CEA109EA2C7E00700095E989 /* Main */,
-				CEA109EB2C7E007C0095E989 /* Favorite */,
-				CEA109EE2C7E00C80095E989 /* ShopList */,
-				CEA109F12C7E01330095E989 /* Profile */,
-				CEA109E72C7DFA730095E989 /* Base */,
-			);
-			path = ViewControllers;
-			sourceTree = "<group>";
-		};
 		CE9BAB422C7C9C2100CD6C24 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
@@ -127,6 +125,7 @@
 			children = (
 				CE9BAB442C7C9C4700CD6C24 /* UIColor + ext.swift */,
 				CEA109E52C7DF4BF0095E989 /* UIView + ext.swift */,
+				CEACB9D42C80700F00FC1C63 /* UIFont + ext.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -144,7 +143,8 @@
 		CEA109EA2C7E00700095E989 /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				CE9BAB2D2C7C7EF000CD6C24 /* MainViewController.swift */,
+				CEACB9D62C809A5000FC1C63 /* Controllers */,
+				CEACB9D72C809A5A00FC1C63 /* Views */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -173,6 +173,22 @@
 			path = Profile;
 			sourceTree = "<group>";
 		};
+		CEACB9D62C809A5000FC1C63 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				CE9BAB2D2C7C7EF000CD6C24 /* MainViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		CEACB9D72C809A5A00FC1C63 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				CE3535022C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -191,6 +207,7 @@
 			name = Povareshka;
 			packageProductDependencies = (
 				CE3534FD2C7F0BBF006B6A26 /* RealmSwift */,
+				CE3535002C7F1DFD006B6A26 /* Kingfisher */,
 			);
 			productName = Povareshka;
 			productReference = CE9BAB262C7C7EF000CD6C24 /* Povareshka.app */;
@@ -222,6 +239,7 @@
 			mainGroup = CE9BAB1D2C7C7EF000CD6C24;
 			packageReferences = (
 				CE3534FC2C7F0BBF006B6A26 /* XCRemoteSwiftPackageReference "realm-swift" */,
+				CE3534FF2C7F1DFD006B6A26 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			productRefGroup = CE9BAB272C7C7EF000CD6C24 /* Products */;
 			projectDirPath = "";
@@ -255,11 +273,13 @@
 				CE9BAB412C7C99AC00CD6C24 /* TabBarController.swift in Sources */,
 				CEA109E62C7DF4BF0095E989 /* UIView + ext.swift in Sources */,
 				CEA109ED2C7E00940095E989 /* FavoriteViewController.swift in Sources */,
+				CE3535032C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift in Sources */,
 				CEA109F32C7E01490095E989 /* ProfileViewController.swift in Sources */,
 				CE9BAB2A2C7C7EF000CD6C24 /* AppDelegate.swift in Sources */,
 				CEA109E42C7DF3CB0095E989 /* NavBarController.swift in Sources */,
 				CE9BAB472C7C9D8E00CD6C24 /* Resources.swift in Sources */,
 				CE9BAB452C7C9C4700CD6C24 /* UIColor + ext.swift in Sources */,
+				CEACB9D52C80700F00FC1C63 /* UIFont + ext.swift in Sources */,
 				CE9BAB2C2C7C7EF000CD6C24 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -486,6 +506,14 @@
 				version = 10.39.1;
 			};
 		};
+		CE3534FF2C7F1DFD006B6A26 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = exactVersion;
+				version = 7.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -493,6 +521,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CE3534FC2C7F0BBF006B6A26 /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
+		};
+		CE3535002C7F1DFD006B6A26 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE3534FF2C7F1DFD006B6A26 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

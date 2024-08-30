@@ -11,12 +11,15 @@ enum Resources {
     enum Colors {
         static let active = UIColor(hexString: "#FF8C2B")
         static let inactive = UIColor(hexString: "#AEAEAE")
+        static let orange = UIColor(hexString: "#F8A362")
         
         static let background = UIColor(hexString: "#F8F9F9")
         static let separator = UIColor(hexString: "#E8ECEF")
-//        static let secondary = UIColor(hexString: "#F0F3FF")
+        static let secondary = UIColor(hexString: "#8A8A8A")
 //
         static let titleGray = UIColor(hexString: "#333333")
+        static let titleBackground = UIColor(hexString: "#000000", alpha: 0.4)
+        static let titleBackgroundRes = UIColor(hexString: "#AEAEAE")
     }
     
     enum Strings {
