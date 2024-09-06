@@ -39,6 +39,32 @@ extension UIView {
             addSubview(view)
         }
     }
+    
+    func setupView(_ view: UIView) {
+        addSubview(view)
+        view.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    func roundCorners(_ corners: UIRectCorner, radius: CGFloat) {
+        let path = UIBezierPath(roundedRect: bounds,
+                                byRoundingCorners: corners,
+                                cornerRadii: CGSize(width: radius, height: radius))
+        
+        let maskLayer = CAShapeLayer()
+        maskLayer.frame = bounds
+        maskLayer.path = path.cgPath
+        
+        let borderLayer = CAShapeLayer()
+        borderLayer.frame = bounds
+        borderLayer.path = path.cgPath
+        borderLayer.strokeColor = Resources.Colors.separator.cgColor
+        borderLayer.fillColor = UIColor.clear.cgColor
+        borderLayer.lineWidth = 1
+        
+        layer.mask = maskLayer
+        layer.addSublayer(borderLayer)
+        
+    }
 }
 
 extension UIImageView {
@@ -49,6 +75,14 @@ extension UIImageView {
         self.layer.masksToBounds = true
         self.layer.cornerRadius = cornerRadius
         self.translatesAutoresizingMaskIntoConstraints = false
+    }
+}
+
+extension UIImage {
+    func imageResized(to size: CGSize) -> UIImage {
+        return UIGraphicsImageRenderer(size: size).image { _ in
+            draw(in: CGRect(origin: .zero, size: size))
+        }
     }
 }
 
@@ -66,7 +100,20 @@ extension UILabel {
     }
 }
 
+extension UITextField {
 
+    func setLeftPaddingPoints(_ amount:CGFloat){
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.size.height))
+        self.leftView = paddingView
+        self.leftViewMode = .always
+    }
+    
+    func setRightPaddingPoints(_ amount:CGFloat) {
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.size.height))
+        self.rightView = paddingView
+        self.rightViewMode = .always
+    }
+}
 
 extension UIStackView {
     convenience init(axis: NSLayoutConstraint.Axis, aligment: UIStackView.Alignment, spacing: CGFloat) {

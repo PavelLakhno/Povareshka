@@ -1,14 +1,14 @@
 //
-//  ViewController.swift
+//  NewRecipeController.swift
 //  Povareshka
 //
-//  Created by Pavel Lakhno on 26.08.2024.
+//  Created by Pavel Lakhno on 02.09.2024.
 //
 
 import UIKit
 
-final class MainViewController: BaseController {
-
+class NewRecipeController: BaseController  {
+    
     lazy var homeScrollView: UIScrollView = {
         let sv = UIScrollView()
         sv.translatesAutoresizingMaskIntoConstraints = false
@@ -21,22 +21,26 @@ final class MainViewController: BaseController {
                                         numberOfLines: 1)
     
     lazy var trendingCollectionView: UICollectionView = {
-        let collectionView = UICollectionView(itemWidth: 320, itemHeight: 220, delegate: self, dataSource: self)
-        collectionView.register(TrendingNowCollectionViewCell.self, forCellWithReuseIdentifier: TrendingNowCollectionViewCell.identifier)
+        let collectionView = UICollectionView(itemWidth: 350, itemHeight: 220, delegate: self, dataSource: self)
+        collectionView.register(CustomViewCell.self, forCellWithReuseIdentifier: CustomViewCell.id)
         return collectionView
     }()
     
-    @objc func plusButtonTapped() {
-        let createRecipeViewController = RecipeAddController()//NewRecipeController()
-        createRecipeViewController.modalPresentationStyle = .automatic
-        present(createRecipeViewController, animated: true, completion: nil)
+    @objc func backButtonTapped() {
+        self.dismiss(animated: true)
+//        let createRecipeViewController = NewRecipeController()
+//        createRecipeViewController.modalPresentationStyle = .automatic
+//        present(createRecipeViewController, animated: true, completion: nil)
     }
     //------------
     override func viewDidLoad() {
         super.viewDidLoad()
+
         navigationItem.title = "Основное"
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: Resources.Images.Icons.plus, style: .plain, target: self, action: #selector(plusButtonTapped))
-        navigationItem.rightBarButtonItem?.tintColor = Resources.Colors.orange
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Отменить", style: .plain, target: self, action: #selector(backButtonTapped))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Готово", style: .plain, target: self, action: #selector(backButtonTapped))
+        navigationItem.leftBarButtonItem?.tintColor = Resources.Colors.orange
+        navigationItem.rightBarButtonItem?.tintColor = Resources.Colors.inactive
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -49,20 +53,20 @@ final class MainViewController: BaseController {
 
 // MARK: - UICollectionViewDataSource, UICollectionViewDelegate
 
-extension MainViewController: UICollectionViewDataSource, UICollectionViewDelegate {
+extension NewRecipeController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        5
+        1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrendingNowCollectionViewCell.identifier, for: indexPath) as! TrendingNowCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CustomViewCell.id, for: indexPath) as! CustomViewCell
         return cell
     }
 }
 
 // MARK: Constraints
 
-extension MainViewController {
+extension NewRecipeController {
     func setupAllUI() {
         deactivateAllConstraints(for: view)
         view.addSubview(homeScrollView)
@@ -83,7 +87,8 @@ extension MainViewController {
             trendingCollectionView.leadingAnchor.constraint(equalTo: homeScrollView.leadingAnchor),
             trendingCollectionView.trailingAnchor.constraint(equalTo: homeScrollView.trailingAnchor),
             trendingCollectionView.widthAnchor.constraint(equalTo: homeScrollView.widthAnchor),
-            trendingCollectionView.heightAnchor.constraint(equalToConstant: 260),
+//            trendingCollectionView.heightAnchor.constraint(equalToConstant: 300),
+            trendingCollectionView.bottomAnchor.constraint(equalTo: homeScrollView.bottomAnchor)
             
         ])
     }

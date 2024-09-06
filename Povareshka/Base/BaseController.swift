@@ -43,6 +43,8 @@ class BaseController: UIViewController {
     func navBarRightButtonHandler() {
         print("NavBar right button tapped")
     }
+    
+    
 }
 
 extension BaseController {
@@ -72,5 +74,15 @@ extension BaseController {
         }
         
         view.layoutIfNeeded()
+    }
+    
+    func hideKeyboardWhenTappedAround() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(BaseController.dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
 }

@@ -1,0 +1,106 @@
+import UIKit
+
+
+class CreateIngredientsTableViewCell: UITableViewCell {
+    
+    private var isEddit : Bool = false
+    
+    var itemName : String = ""
+    var itemQuantity : String = ""
+    
+    private lazy var contentStackView : UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.distribution = .fill
+        stack.spacing = 12
+        stack.alignment = .center
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
+    }()
+    
+   let ingredientName : UITextField = {
+        let field = UITextField()
+        field.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        field.widthAnchor.constraint(equalToConstant: 164).isActive = true
+        field.placeholder = "Item name"
+        field.font = .helveticalBold(withSize: 20)
+        field.textColor = .gray
+        field.layer.borderColor = UIColor.gray.cgColor
+        field.layer.borderWidth = 1
+        field.layer.cornerRadius = 12
+        field.returnKeyType = .done
+        field.translatesAutoresizingMaskIntoConstraints = false
+        return field
+    }()
+    
+   let weightName : UITextField = {
+        let field = UITextField()
+        field.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        field.widthAnchor.constraint(equalToConstant: 115).isActive = true
+        field.placeholder = "Quantity"
+        field.font = .helveticalBold(withSize: 20)
+        field.textColor = .gray
+        field.layer.borderColor = UIColor.gray.cgColor
+        field.layer.borderWidth = 1
+        field.layer.cornerRadius = 12
+        field.returnKeyType = .done
+        field.translatesAutoresizingMaskIntoConstraints = false
+        return field
+    }()
+    
+    private lazy var actionButton : UIButton = {
+        let btn = UIButton()
+        btn.setImage(Resources.Images.Icons.plusBorder, for: .normal)
+        btn.addTarget(self, action: #selector(taped(_:)), for: .touchUpInside)
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        return btn
+    }()
+
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setupCell()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupCell() {
+        selectionStyle = .none
+        contentView.addSubview(contentStackView)
+        contentStackView.addArrangedSubview(ingredientName)
+        contentStackView.addArrangedSubview(weightName)
+        contentStackView.addArrangedSubview(actionButton)
+        ingredientName.setLeftPaddingPoints(15)
+        weightName.setLeftPaddingPoints(15)
+        
+        NSLayoutConstraint.activate([
+            contentStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
+            contentStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            contentStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            contentStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5),
+        ])
+    }
+    
+    @objc private func taped(_ sender: UIButton) {
+        isEddit = !isEddit
+        
+        isEddit == true ? sender.setImage(Resources.Images.Icons.minusBorder, for: .normal) : sender.setImage(Resources.Images.Icons.plusBorder, for: .normal)
+        
+        if isEddit {
+            self.itemName = ingredientName.text!
+            self.itemQuantity = weightName.text!
+        } else {
+            self.itemName = ""
+            self.itemQuantity = ""
+            ingredientName.text = ""
+            weightName.text = ""
+            ingredientName.placeholder = "Item name"
+            weightName.placeholder = "Quantity"
+        }
+        
+        
+    }
+
+}
