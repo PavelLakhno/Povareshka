@@ -22,41 +22,15 @@ struct CustomIngredients : Codable {
 
 class RecipeAddController: UIViewController {
     
-    var documentsUrl: URL {
-        return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-    }
+//    var documentsUrl: URL {
+//        return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+//    }
     
     var recipeImageLocalPath : String = ""
-//    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("\(UserDefaults.standard.string(forKey: "userName")!).plist")
+
     var customRecipes : [CustomRecipes] = []
     var cookMinutes = 0
     
-//    private func createUserRecipes() {
-//        let encoder = PropertyListEncoder()
-//        do {
-//            let data = try encoder.encode(customRecipes)
-//            try data.write(to: dataFilePath!)
-//        }
-//        catch {
-//            print(error.localizedDescription)
-//        }
-//    }
-    
-//    let curentUserName = UserDefaults.standard.string(forKey: "userName")!
-//    let currentUserAvatarPath = UserDefaults.standard.string(forKey: "avatarLocalPath")!
-    
-//    private func loadUserRecipes() {
-//        if  let data = try? Data(contentsOf: dataFilePath!) {
-//            let decoder = PropertyListDecoder()
-//            do {
-//                self.customRecipes = try decoder.decode([CustomRecipes].self, from: data)
-//            }
-//            catch {
-//                print(error.localizedDescription)
-//            }
-//        }
-//    }
-//
     // MARK: - Data
     private var countOfSettingsCells : Int = 2
     
@@ -71,7 +45,7 @@ class RecipeAddController: UIViewController {
     
     // Collections Data
     var ingredientsArray : [(name: String, quantity: String)] = [
-        (name: "Item name", quantity: "Quantity" )
+        (name: "Название", quantity: "кол-во" )
     ]
     
     // MARK: - UI Elements
@@ -84,10 +58,10 @@ class RecipeAddController: UIViewController {
     var selectedIndexPath: IndexPath?
     
     private lazy var scrollView : UIScrollView = {
-        let s = UIScrollView()
-        s.contentSize = contentSize
-        s.frame = view.bounds
-        return s
+        let scroll = UIScrollView()
+        scroll.contentSize = contentSize
+        scroll.frame = view.bounds
+        return scroll
     }()
     
     private lazy var contentView : UIView = {
@@ -107,13 +81,13 @@ class RecipeAddController: UIViewController {
     }()
     
     private lazy var titleLabel: UILabel = {
-        let lb = UILabel()
-        lb.font = .helveticalBold(withSize: 24)
-        lb.textColor = .gray
-        lb.textAlignment = .left
-        lb.text = "Create recipe"
-        lb.translatesAutoresizingMaskIntoConstraints = false
-        return lb
+        let label = UILabel()
+        label.font = .helveticalBold(withSize: 24)
+        label.textColor = .gray
+        label.textAlignment = .left
+        label.text = "Новый рецепт"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
     
     private let imageBubleView : UIView = {
@@ -126,9 +100,11 @@ class RecipeAddController: UIViewController {
     private lazy var recipeImage : UIImageView = {
         let img = UIImageView()
         img.clipsToBounds = true
-        img.contentMode = .scaleToFill
-        img.image = UIImage(named: "recipeImage")
+        img.contentMode = .center
+        img.image = UIImage(named: "camera")
         img.layer.cornerRadius = 12
+        img.layer.borderColor = UIColor.orange.cgColor
+        img.layer.borderWidth = 1
         img.translatesAutoresizingMaskIntoConstraints = false
         return img
     }()
@@ -138,7 +114,7 @@ class RecipeAddController: UIViewController {
         btn.backgroundColor = .white
         btn.layer.cornerRadius = 16
         btn.setImage(Resources.Images.Icons.edit, for: .normal)
-        btn.addTarget(self, action: #selector(editTaped(_ :)), for: .touchUpInside)
+         btn.addTarget(self, action: #selector(editTaped(_ :)), for: .touchUpInside)
         btn.translatesAutoresizingMaskIntoConstraints = false
         return btn
     }()
@@ -155,37 +131,57 @@ class RecipeAddController: UIViewController {
         field.layer.borderColor = UIColor.orange.cgColor
         field.layer.borderWidth = 1
         field.textAlignment = .left
-        field.font = .helveticalRegular(withSize: 20)
-        field.textColor = .gray
-        field.placeholder = "Enter Recipe Name"
         field.returnKeyType = .done
         field.setLeftPaddingPoints(15)
         field.clearButtonMode = .whileEditing
+        field.translatesAutoresizingMaskIntoConstraints = false
+        
+        let attributes = [NSAttributedString.Key.foregroundColor: UIColor.lightGray,
+                          NSAttributedString.Key.font: UIFont.helveticalRegular(withSize: 16)]
+
+        field.attributedPlaceholder = NSAttributedString(
+            string: "Введите название",
+            attributes: attributes as [NSAttributedString.Key : Any])
+        
+        return field
+    }()
+    
+    private let recipeDescribeTextView : UITextView = {
+        let field = ClearableTextView()
+        field.layer.cornerRadius = 8
+        field.layer.borderColor = UIColor.orange.cgColor
+        field.layer.borderWidth = 1
+        field.textAlignment = .left
+        field.textColor = .lightGray
+        field.text = "Введите описание"
+        field.returnKeyType = .done
+        field.leftSpace(10)
+        field.font = .helveticalRegular(withSize: 16)
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
     
     private let settingTableView : UITableView = {
-        let tb = UITableView()
-        tb.separatorStyle = .none
-        tb.translatesAutoresizingMaskIntoConstraints = false
-        return tb
+        let tableView = UITableView()
+        tableView.separatorStyle = .none
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        return tableView
     }()
     
     private let ingredientsTitleLabel : UILabel = {
-        let lb = UILabel()
-        lb.font = .helveticalBold(withSize: 24)
-        lb.textColor = .gray
-        lb.textAlignment = .left
-        lb.text = "Ингридиенты"
-        return lb
+        let label = UILabel()
+        label.font = .helveticalBold(withSize: 24)
+        label.textColor = .gray
+        label.textAlignment = .left
+        label.text = "Ингридиенты"
+        return label
     }()
     
     private let ingredientsTableView : UITableView = {
-        let tb = UITableView()
-        tb.separatorStyle = .none
-        tb.translatesAutoresizingMaskIntoConstraints = false
-        return tb
+        let tableView = UITableView()
+        tableView.separatorStyle = .none
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        return tableView
     }()
     
     private lazy var addNewIngrButton : UIButton = {
@@ -210,11 +206,13 @@ class RecipeAddController: UIViewController {
         setupConstraints()
         setupPhotoPicker()
         setupTextFields()
+        setupTextViews()
         setupTableViews()
         setupButton()
         registerForKeyBoardNotifications()
         fillServesArray()
         fillCookTimeArray()
+
     }
     
     deinit {
@@ -229,7 +227,7 @@ class RecipeAddController: UIViewController {
     // MARK: - Buttons Methods
     @objc private func editTaped(_ sender: UIButton) {
         sender.alpha = 0.5
-        
+  
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             sender.alpha = 1
             self.present(self.photoPickerView, animated: true)
@@ -240,8 +238,8 @@ class RecipeAddController: UIViewController {
         sender.alpha = 0.5
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             sender.alpha = 1
-            self.ingredientsArray.append((name: "Item name", quantity: "Quantity" ))
             let indexPath = NSIndexPath(row: self.ingredientsArray.count - 1, section: 0)
+            self.ingredientsArray.append((name: "Название", quantity: "кол-во" ))
             self.ingredientsTableView.reloadData()
             self.ingredientsTableView.scrollToRow(at: indexPath as IndexPath, at: .middle, animated: true)
         }
@@ -289,6 +287,7 @@ class RecipeAddController: UIViewController {
         imageBubleView.addSubview(recipeImage)
         imageBubleView.addSubview(editButton)
         contentStackView.addArrangedSubview(recipeNameTextField)
+        contentStackView.addArrangedSubview(recipeDescribeTextView) // new add
         contentStackView.addArrangedSubview(settingTableView)
         contentStackView.addArrangedSubview(ingredientsTitleLabel)
         contentStackView.addArrangedSubview(ingredientsTableView)
@@ -325,6 +324,10 @@ class RecipeAddController: UIViewController {
             recipeNameTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             recipeNameTextField.heightAnchor.constraint(equalToConstant: 44),
             
+            recipeDescribeTextView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            recipeDescribeTextView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            recipeDescribeTextView.heightAnchor.constraint(equalToConstant: 44 * 2), // new add
+            
             settingTableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             settingTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             settingTableView.heightAnchor.constraint(equalToConstant: heightForSettingTV),
@@ -354,6 +357,10 @@ class RecipeAddController: UIViewController {
     private func setupTextFields() {
         recipeNameTextField.delegate = self
     }
+
+    private func setupTextViews() {
+        recipeDescribeTextView.delegate = self
+    }
     
     private func setupTableViews() {
         settingTableView.delegate = self
@@ -380,7 +387,7 @@ class RecipeAddController: UIViewController {
     }
     
     @objc private func kbWillShow(_ notification: Notification) {
-        if recipeNameTextField.isEditing {
+        if recipeNameTextField.isEditing || recipeDescribeTextView.isEditable{
         } else {
             let userInfo = notification.userInfo
             let keyBoardFrameSize = ( userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
@@ -389,7 +396,7 @@ class RecipeAddController: UIViewController {
     }
     
     @objc private func kbWillHide() {
-        if recipeNameTextField.isEditing {
+        if recipeNameTextField.isEditing || recipeDescribeTextView.isEditable {
         } else {
             scrollView.contentOffset = CGPoint.zero
         }
@@ -418,8 +425,10 @@ extension RecipeAddController : UIImagePickerControllerDelegate & UINavigationCo
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
         let choosenImage = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
-        self.recipeImageLocalPath = save(image: choosenImage)!
+//        self.recipeImageLocalPath = save(image: choosenImage)!
         self.recipeImage.image = choosenImage
+        recipeImage.contentMode = .scaleToFill // remake
+        recipeImage.layer.borderColor = UIColor.clear.cgColor
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -436,6 +445,27 @@ extension RecipeAddController : UITextFieldDelegate {
         textField.resignFirstResponder()
         return true
     }
+}
+
+// MARK: - UITextViewDelegate
+extension RecipeAddController : UITextViewDelegate {
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView.textColor == UIColor.lightGray {
+            textView.text = nil
+            textView.textColor = UIColor.black
+            recipeDescribeTextView.isButtonHidden = false
+
+        }
+    }
+    
+    func textFieldShouldReturn(_ textView: UITextView) -> Bool {
+        textView.endEditing(true)
+        textView.resignFirstResponder()
+        return true
+    }
+    
+    
+
 }
 
 // MARK: - UITableViewDataSource, UITableViewDelegate
@@ -521,19 +551,19 @@ extension RecipeAddController {
     }
 }
 
-extension RecipeAddController {
-    
-    private func save(image: UIImage) -> String? {
-        let fileName = "FileName"
-        let fileURL = documentsUrl.appendingPathComponent(fileName)
-        if let imageData = image.jpegData(compressionQuality: 1.0) {
-            try? imageData.write(to: fileURL, options: .atomic)
-            return fileName // ----> Save fileName
-        }
-        print("Error saving image")
-        return nil
-    }
-}
+//extension RecipeAddController {
+//
+//    private func save(image: UIImage) -> String? {
+//        let fileName = "FileName"
+//        let fileURL = documentsUrl.appendingPathComponent(fileName)
+//        if let imageData = image.jpegData(compressionQuality: 1.0) {
+//            try? imageData.write(to: fileURL, options: .atomic)
+//            return fileName // ----> Save fileName
+//        }
+//        print("Error saving image")
+//        return nil
+//    }
+//}
 
 extension RecipeAddController: UIPickerViewDataSource, UIPickerViewDelegate {
     
@@ -579,3 +609,6 @@ extension RecipeAddController: UIPickerViewDataSource, UIPickerViewDelegate {
         view.addSubview(pickerViewContainer)
     }
 }
+
+
+

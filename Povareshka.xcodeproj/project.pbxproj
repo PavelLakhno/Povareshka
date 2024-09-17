@@ -11,6 +11,7 @@
 		CE3535012C7F1DFD006B6A26 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = CE3535002C7F1DFD006B6A26 /* Kingfisher */; };
 		CE3535032C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3535022C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift */; };
 		CE402B672C8997AE00525D84 /* CustomViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE402B662C8997AE00525D84 /* CustomViewCell.swift */; };
+		CE933AEA2C99BEF30095B841 /* ClearButton + TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE933AE92C99BEF30095B841 /* ClearButton + TextView.swift */; };
 		CE9BAB2A2C7C7EF000CD6C24 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB292C7C7EF000CD6C24 /* AppDelegate.swift */; };
 		CE9BAB2C2C7C7EF000CD6C24 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB2B2C7C7EF000CD6C24 /* SceneDelegate.swift */; };
 		CE9BAB2E2C7C7EF000CD6C24 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB2D2C7C7EF000CD6C24 /* MainViewController.swift */; };
@@ -39,6 +40,7 @@
 /* Begin PBXFileReference section */
 		CE3535022C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingNowCollectionViewCell.swift; sourceTree = "<group>"; };
 		CE402B662C8997AE00525D84 /* CustomViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomViewCell.swift; sourceTree = "<group>"; };
+		CE933AE92C99BEF30095B841 /* ClearButton + TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ClearButton + TextView.swift"; sourceTree = "<group>"; };
 		CE9BAB262C7C7EF000CD6C24 /* Povareshka.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Povareshka.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9BAB292C7C7EF000CD6C24 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CE9BAB2B2C7C7EF000CD6C24 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -146,6 +148,7 @@
 				CE9BAB442C7C9C4700CD6C24 /* UIColor + ext.swift */,
 				CEA109E52C7DF4BF0095E989 /* UIView + ext.swift */,
 				CEACB9D42C80700F00FC1C63 /* UIFont + ext.swift */,
+				CE933AE92C99BEF30095B841 /* ClearButton + TextView.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -331,6 +334,7 @@
 				CEACB9D52C80700F00FC1C63 /* UIFont + ext.swift in Sources */,
 				CEA12E502C8B2E7A0000094C /* CreateIngredientsTableViewCell.swift in Sources */,
 				CE9FA7DB2C85CA2200B3CBC8 /* NewRecipeController.swift in Sources */,
+				CE933AEA2C99BEF30095B841 /* ClearButton + TextView.swift in Sources */,
 				CE9FA7E32C85E77600B3CBC8 /* BaseView.swift in Sources */,
 				CE9BAB2C2C7C7EF000CD6C24 /* SceneDelegate.swift in Sources */,
 			);

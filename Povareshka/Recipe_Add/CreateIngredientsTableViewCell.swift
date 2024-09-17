@@ -22,10 +22,10 @@ class CreateIngredientsTableViewCell: UITableViewCell {
         let field = UITextField()
         field.heightAnchor.constraint(equalToConstant: 44).isActive = true
         field.widthAnchor.constraint(equalToConstant: 164).isActive = true
-        field.placeholder = "Item name"
+        field.placeholder = "Название"
         field.font = .helveticalBold(withSize: 20)
         field.textColor = .gray
-        field.layer.borderColor = UIColor.gray.cgColor
+        field.layer.borderColor = UIColor.orange.cgColor
         field.layer.borderWidth = 1
         field.layer.cornerRadius = 12
         field.returnKeyType = .done
@@ -37,10 +37,10 @@ class CreateIngredientsTableViewCell: UITableViewCell {
         let field = UITextField()
         field.heightAnchor.constraint(equalToConstant: 44).isActive = true
         field.widthAnchor.constraint(equalToConstant: 115).isActive = true
-        field.placeholder = "Quantity"
+        field.placeholder = "кол-во"
         field.font = .helveticalBold(withSize: 20)
         field.textColor = .gray
-        field.layer.borderColor = UIColor.gray.cgColor
+        field.layer.borderColor = UIColor.orange.cgColor
         field.layer.borderWidth = 1
         field.layer.cornerRadius = 12
         field.returnKeyType = .done
@@ -51,6 +51,7 @@ class CreateIngredientsTableViewCell: UITableViewCell {
     private lazy var actionButton : UIButton = {
         let btn = UIButton()
         btn.setImage(Resources.Images.Icons.plusBorder, for: .normal)
+        btn.tintColor = .orange
         btn.addTarget(self, action: #selector(taped(_:)), for: .touchUpInside)
         btn.translatesAutoresizingMaskIntoConstraints = false
         return btn
@@ -96,8 +97,8 @@ class CreateIngredientsTableViewCell: UITableViewCell {
             self.itemQuantity = ""
             ingredientName.text = ""
             weightName.text = ""
-            ingredientName.placeholder = "Item name"
-            weightName.placeholder = "Quantity"
+            ingredientName.placeholder = "Название"
+            weightName.placeholder = "кол-во"
         }
         
         

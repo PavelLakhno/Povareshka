@@ -115,6 +115,16 @@ extension UITextField {
     }
 }
 
+extension UITextView {
+    func leftSpace(_ amount:CGFloat) {
+        self.textContainerInset = UIEdgeInsets(top: 4, left: amount, bottom: 4, right: 4)
+    }
+    
+    
+}
+
+
+
 extension UIStackView {
     convenience init(axis: NSLayoutConstraint.Axis, aligment: UIStackView.Alignment, spacing: CGFloat) {
         self.init()

@@ -25,7 +25,7 @@ extension UIFont {
     }
     
     static func helveticalRegular(withSize size: CGFloat) -> UIFont? {
-        UIFont.init(name: "Helvetica-Regular", size: size)
+        UIFont.init(name: "Helvetica", size: size)
     }
     
     //Bold

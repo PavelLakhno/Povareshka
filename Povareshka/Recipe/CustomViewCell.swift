@@ -51,7 +51,7 @@ class CustomViewCell: UICollectionViewCell {
         return field
     }()
     
-//    private var creatorStackView = UIStackView(axis: .vertical, aligment: .center, spacing: 8)
+    private var creatorStackView = UIStackView(axis: .vertical, aligment: .center, spacing: 8)
 //    private var creatorImageView = UIImageView(image: "Martha Stewart", cornerRadius: 16)
     private var creatorLabel = UILabel(text: "Ольга Митрофановна",
                                        font: .helveticalRegular(withSize: 12),
@@ -63,7 +63,8 @@ class CustomViewCell: UICollectionViewCell {
     }
 
     private func setupUI() {
-        addSubviews(photoDish, titleTextField, descriptionTextField)
+        contentView.addSubview(creatorStackView)
+//        creatorStackView.addSubviews(photoDish, titleTextField, descriptionTextField)
 
 //        creatorStackView.addArrangedSubview(titleDishLabel)
 //        creatorStackView.addArrangedSubview(creatorLabel)
