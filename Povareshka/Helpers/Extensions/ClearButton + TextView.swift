@@ -48,11 +48,11 @@ final class ClearableTextView: UITextView {
     }
     
     private func setup() {
-        clearButton.addTarget(self, action: #selector(onClearClick), for: .touchUpInside)
+        clearButton.addTarget(self, action: #selector(onClearClick1), for: .touchUpInside)
         textContainerInset.right = clearButtonSize + clearButtonRightInset
     }
     
-    @objc private func onClearClick() {
+    @objc private func onClearClick1() {
         text = nil
         delegate?.textViewDidChange?(self)
     }

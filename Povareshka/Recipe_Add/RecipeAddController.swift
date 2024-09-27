@@ -147,16 +147,16 @@ class RecipeAddController: UIViewController {
     }()
     
     private let recipeDescribeTextView : UITextView = {
-        let field = ClearableTextView()
+        let field = UITextView()
         field.layer.cornerRadius = 8
         field.layer.borderColor = UIColor.orange.cgColor
         field.layer.borderWidth = 1
         field.textAlignment = .left
         field.textColor = .lightGray
-        field.text = "Введите описание"
         field.returnKeyType = .done
         field.leftSpace(10)
         field.font = .helveticalRegular(withSize: 16)
+        field.placeholder = "Введите описание"
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
@@ -451,10 +451,8 @@ extension RecipeAddController : UITextFieldDelegate {
 extension RecipeAddController : UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.textColor == UIColor.lightGray {
-            textView.text = nil
+//            textView.placeholder = nil
             textView.textColor = UIColor.black
-            recipeDescribeTextView.isButtonHidden = false
-
         }
     }
     
@@ -464,7 +462,15 @@ extension RecipeAddController : UITextViewDelegate {
         return true
     }
     
-    
+    func textViewDidChange(_ textView: UITextView) {
+        if textView.hasText {
+//            textView.placeholder = nil
+//            textView.addClearButton(hiddenStatus: false)
+        } else {
+//            textView.placeholder = "Введите описание"
+//            textView.addClearButton(hiddenStatus: true)
+        }
+    }
 
 }
 

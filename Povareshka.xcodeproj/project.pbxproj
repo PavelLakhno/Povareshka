@@ -35,6 +35,7 @@
 		CEA12E502C8B2E7A0000094C /* CreateIngredientsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA12E4E2C8B2E7A0000094C /* CreateIngredientsTableViewCell.swift */; };
 		CEA12E522C8B2EB70000094C /* CreateRecipeSettingDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA12E512C8B2EB70000094C /* CreateRecipeSettingDataModel.swift */; };
 		CEACB9D52C80700F00FC1C63 /* UIFont + ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEACB9D42C80700F00FC1C63 /* UIFont + ext.swift */; };
+		CEB45B512C9AF71C000D9FE4 /* UITextView + ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB45B502C9AF71C000D9FE4 /* UITextView + ext.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -66,6 +67,7 @@
 		CEA12E4E2C8B2E7A0000094C /* CreateIngredientsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateIngredientsTableViewCell.swift; sourceTree = "<group>"; };
 		CEA12E512C8B2EB70000094C /* CreateRecipeSettingDataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateRecipeSettingDataModel.swift; sourceTree = "<group>"; };
 		CEACB9D42C80700F00FC1C63 /* UIFont + ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont + ext.swift"; sourceTree = "<group>"; };
+		CEB45B502C9AF71C000D9FE4 /* UITextView + ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView + ext.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +150,7 @@
 				CE9BAB442C7C9C4700CD6C24 /* UIColor + ext.swift */,
 				CEA109E52C7DF4BF0095E989 /* UIView + ext.swift */,
 				CEACB9D42C80700F00FC1C63 /* UIFont + ext.swift */,
+				CEB45B502C9AF71C000D9FE4 /* UITextView + ext.swift */,
 				CE933AE92C99BEF30095B841 /* ClearButton + TextView.swift */,
 			);
 			path = Extensions;
@@ -315,6 +318,7 @@
 			files = (
 				CE9BAB2E2C7C7EF000CD6C24 /* MainViewController.swift in Sources */,
 				CEA109E92C7DFA920095E989 /* BaseController.swift in Sources */,
+				CEB45B512C9AF71C000D9FE4 /* UITextView + ext.swift in Sources */,
 				CEA12E522C8B2EB70000094C /* CreateRecipeSettingDataModel.swift in Sources */,
 				CEA109F02C7E011D0095E989 /* ShopViewController.swift in Sources */,
 				CEA12E4A2C8B196B0000094C /* RecipeAddController.swift in Sources */,
