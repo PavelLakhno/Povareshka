@@ -24,6 +24,20 @@ extension UIView {
 }
 
 extension UIView {
+    func findFirstResponder() -> UIView? {
+        if self.isFirstResponder {
+            return self
+        }
+        for subview in self.subviews {
+            if let firstResponder = subview.findFirstResponder() {
+                return firstResponder
+            }
+        }
+        return nil
+    }
+}
+
+extension UIView {
     convenience init(withBackgroundColor backgroundColor: UIColor, cornerRadius: CGFloat) {
         self.init()
         self.backgroundColor = backgroundColor
@@ -140,3 +154,10 @@ extension UICollectionView {
     }
 }
 
+extension UITableView {
+    func dynamicHeightForTableView() {
+        self.invalidateIntrinsicContentSize()
+        self.layoutIfNeeded()
+        self.constraints.filter { $0.firstAttribute == .height }.forEach { $0.constant = self.contentSize.height }
+    }
+}

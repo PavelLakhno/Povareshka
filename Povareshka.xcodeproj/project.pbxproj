@@ -10,8 +10,6 @@
 		CE3534FE2C7F0BBF006B6A26 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CE3534FD2C7F0BBF006B6A26 /* RealmSwift */; };
 		CE3535012C7F1DFD006B6A26 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = CE3535002C7F1DFD006B6A26 /* Kingfisher */; };
 		CE3535032C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3535022C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift */; };
-		CE402B672C8997AE00525D84 /* CustomViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE402B662C8997AE00525D84 /* CustomViewCell.swift */; };
-		CE933AEA2C99BEF30095B841 /* ClearButton + TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE933AE92C99BEF30095B841 /* ClearButton + TextView.swift */; };
 		CE9BAB2A2C7C7EF000CD6C24 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB292C7C7EF000CD6C24 /* AppDelegate.swift */; };
 		CE9BAB2C2C7C7EF000CD6C24 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB2B2C7C7EF000CD6C24 /* SceneDelegate.swift */; };
 		CE9BAB2E2C7C7EF000CD6C24 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB2D2C7C7EF000CD6C24 /* MainViewController.swift */; };
@@ -20,8 +18,6 @@
 		CE9BAB412C7C99AC00CD6C24 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB402C7C99AC00CD6C24 /* TabBarController.swift */; };
 		CE9BAB452C7C9C4700CD6C24 /* UIColor + ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB442C7C9C4700CD6C24 /* UIColor + ext.swift */; };
 		CE9BAB472C7C9D8E00CD6C24 /* Resources.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB462C7C9D8E00CD6C24 /* Resources.swift */; };
-		CE9FA7DB2C85CA2200B3CBC8 /* NewRecipeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9FA7DA2C85CA2200B3CBC8 /* NewRecipeController.swift */; };
-		CE9FA7E02C85CF3500B3CBC8 /* SectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9FA7DE2C85CF3500B3CBC8 /* SectionHeaderView.swift */; };
 		CE9FA7E32C85E77600B3CBC8 /* BaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9FA7E22C85E77600B3CBC8 /* BaseView.swift */; };
 		CEA109E42C7DF3CB0095E989 /* NavBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA109E32C7DF3CB0095E989 /* NavBarController.swift */; };
 		CEA109E62C7DF4BF0095E989 /* UIView + ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA109E52C7DF4BF0095E989 /* UIView + ext.swift */; };
@@ -29,19 +25,19 @@
 		CEA109ED2C7E00940095E989 /* FavoriteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA109EC2C7E00940095E989 /* FavoriteViewController.swift */; };
 		CEA109F02C7E011D0095E989 /* ShopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA109EF2C7E011D0095E989 /* ShopViewController.swift */; };
 		CEA109F32C7E01490095E989 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA109F22C7E01490095E989 /* ProfileViewController.swift */; };
-		CEA12E4A2C8B196B0000094C /* RecipeAddController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA12E492C8B196B0000094C /* RecipeAddController.swift */; };
-		CEA12E4C2C8B2D610000094C /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA12E4B2C8B2D610000094C /* CustomButton.swift */; };
-		CEA12E4F2C8B2E7A0000094C /* SettingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA12E4D2C8B2E790000094C /* SettingTableViewCell.swift */; };
-		CEA12E502C8B2E7A0000094C /* CreateIngredientsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA12E4E2C8B2E7A0000094C /* CreateIngredientsTableViewCell.swift */; };
-		CEA12E522C8B2EB70000094C /* CreateRecipeSettingDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA12E512C8B2EB70000094C /* CreateRecipeSettingDataModel.swift */; };
+		CEA3300E2CE4D82D00E42F4A /* NewRecipeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA3300D2CE4D82D00E42F4A /* NewRecipeController.swift */; };
+		CEA330122CE4D90000E42F4A /* SettingsTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA330102CE4D90000E42F4A /* SettingsTVC.swift */; };
+		CEA330132CE4D90000E42F4A /* CreateRecipeSettingsDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA330112CE4D90000E42F4A /* CreateRecipeSettingsDataModel.swift */; };
+		CEA330152CE4D91200E42F4A /* CreateIngredientsTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA330142CE4D91200E42F4A /* CreateIngredientsTVCell.swift */; };
+		CEA330192CE4D91F00E42F4A /* StepAddPhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA330162CE4D91E00E42F4A /* StepAddPhotoCell.swift */; };
+		CEA3301A2CE4D91F00E42F4A /* StepDescriptionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA330172CE4D91E00E42F4A /* StepDescriptionCell.swift */; };
+		CEA3301B2CE4D91F00E42F4A /* StepPhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA330182CE4D91E00E42F4A /* StepPhotoCell.swift */; };
 		CEACB9D52C80700F00FC1C63 /* UIFont + ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEACB9D42C80700F00FC1C63 /* UIFont + ext.swift */; };
 		CEB45B512C9AF71C000D9FE4 /* UITextView + ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB45B502C9AF71C000D9FE4 /* UITextView + ext.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		CE3535022C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingNowCollectionViewCell.swift; sourceTree = "<group>"; };
-		CE402B662C8997AE00525D84 /* CustomViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomViewCell.swift; sourceTree = "<group>"; };
-		CE933AE92C99BEF30095B841 /* ClearButton + TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ClearButton + TextView.swift"; sourceTree = "<group>"; };
 		CE9BAB262C7C7EF000CD6C24 /* Povareshka.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Povareshka.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9BAB292C7C7EF000CD6C24 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CE9BAB2B2C7C7EF000CD6C24 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -52,8 +48,6 @@
 		CE9BAB402C7C99AC00CD6C24 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		CE9BAB442C7C9C4700CD6C24 /* UIColor + ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor + ext.swift"; sourceTree = "<group>"; };
 		CE9BAB462C7C9D8E00CD6C24 /* Resources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resources.swift; sourceTree = "<group>"; };
-		CE9FA7DA2C85CA2200B3CBC8 /* NewRecipeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewRecipeController.swift; sourceTree = "<group>"; };
-		CE9FA7DE2C85CF3500B3CBC8 /* SectionHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionHeaderView.swift; sourceTree = "<group>"; };
 		CE9FA7E22C85E77600B3CBC8 /* BaseView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseView.swift; sourceTree = "<group>"; };
 		CEA109E32C7DF3CB0095E989 /* NavBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavBarController.swift; sourceTree = "<group>"; };
 		CEA109E52C7DF4BF0095E989 /* UIView + ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView + ext.swift"; sourceTree = "<group>"; };
@@ -61,11 +55,13 @@
 		CEA109EC2C7E00940095E989 /* FavoriteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteViewController.swift; sourceTree = "<group>"; };
 		CEA109EF2C7E011D0095E989 /* ShopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopViewController.swift; sourceTree = "<group>"; };
 		CEA109F22C7E01490095E989 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
-		CEA12E492C8B196B0000094C /* RecipeAddController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeAddController.swift; sourceTree = "<group>"; };
-		CEA12E4B2C8B2D610000094C /* CustomButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
-		CEA12E4D2C8B2E790000094C /* SettingTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingTableViewCell.swift; sourceTree = "<group>"; };
-		CEA12E4E2C8B2E7A0000094C /* CreateIngredientsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateIngredientsTableViewCell.swift; sourceTree = "<group>"; };
-		CEA12E512C8B2EB70000094C /* CreateRecipeSettingDataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateRecipeSettingDataModel.swift; sourceTree = "<group>"; };
+		CEA3300D2CE4D82D00E42F4A /* NewRecipeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewRecipeController.swift; sourceTree = "<group>"; };
+		CEA330102CE4D90000E42F4A /* SettingsTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTVC.swift; sourceTree = "<group>"; };
+		CEA330112CE4D90000E42F4A /* CreateRecipeSettingsDataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateRecipeSettingsDataModel.swift; sourceTree = "<group>"; };
+		CEA330142CE4D91200E42F4A /* CreateIngredientsTVCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateIngredientsTVCell.swift; sourceTree = "<group>"; };
+		CEA330162CE4D91E00E42F4A /* StepAddPhotoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepAddPhotoCell.swift; sourceTree = "<group>"; };
+		CEA330172CE4D91E00E42F4A /* StepDescriptionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepDescriptionCell.swift; sourceTree = "<group>"; };
+		CEA330182CE4D91E00E42F4A /* StepPhotoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepPhotoCell.swift; sourceTree = "<group>"; };
 		CEACB9D42C80700F00FC1C63 /* UIFont + ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont + ext.swift"; sourceTree = "<group>"; };
 		CEB45B502C9AF71C000D9FE4 /* UITextView + ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView + ext.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -102,15 +98,14 @@
 		CE9BAB282C7C7EF000CD6C24 /* Povareshka */ = {
 			isa = PBXGroup;
 			children = (
-				CEA12E482C8B18E60000094C /* Recipe_Add */,
-				CE9FA7D92C85C9FD00B3CBC8 /* Recipe */,
-				CE9BAB422C7C9C2100CD6C24 /* Helpers */,
+				CEA3300C2CE4D7FE00E42F4A /* Recipe */,
 				CE9BAB3D2C7C80AC00CD6C24 /* Application */,
+				CE9BAB422C7C9C2100CD6C24 /* Helpers */,
+				CEA109E72C7DFA730095E989 /* Base */,
 				CEA109EA2C7E00700095E989 /* Main */,
 				CEA109EB2C7E007C0095E989 /* Favorite */,
 				CEA109EE2C7E00C80095E989 /* ShopList */,
 				CEA109F12C7E01330095E989 /* Profile */,
-				CEA109E72C7DFA730095E989 /* Base */,
 				CE9BAB3E2C7C80C900CD6C24 /* SupportingFiles */,
 			);
 			path = Povareshka;
@@ -151,19 +146,8 @@
 				CEA109E52C7DF4BF0095E989 /* UIView + ext.swift */,
 				CEACB9D42C80700F00FC1C63 /* UIFont + ext.swift */,
 				CEB45B502C9AF71C000D9FE4 /* UITextView + ext.swift */,
-				CE933AE92C99BEF30095B841 /* ClearButton + TextView.swift */,
 			);
 			path = Extensions;
-			sourceTree = "<group>";
-		};
-		CE9FA7D92C85C9FD00B3CBC8 /* Recipe */ = {
-			isa = PBXGroup;
-			children = (
-				CE9FA7DE2C85CF3500B3CBC8 /* SectionHeaderView.swift */,
-				CE9FA7DA2C85CA2200B3CBC8 /* NewRecipeController.swift */,
-				CE402B662C8997AE00525D84 /* CustomViewCell.swift */,
-			);
-			path = Recipe;
 			sourceTree = "<group>";
 		};
 		CEA109E72C7DFA730095E989 /* Base */ = {
@@ -210,16 +194,34 @@
 			path = Profile;
 			sourceTree = "<group>";
 		};
-		CEA12E482C8B18E60000094C /* Recipe_Add */ = {
+		CEA3300C2CE4D7FE00E42F4A /* Recipe */ = {
 			isa = PBXGroup;
 			children = (
-				CEA12E492C8B196B0000094C /* RecipeAddController.swift */,
-				CEA12E4B2C8B2D610000094C /* CustomButton.swift */,
-				CEA12E4E2C8B2E7A0000094C /* CreateIngredientsTableViewCell.swift */,
-				CEA12E4D2C8B2E790000094C /* SettingTableViewCell.swift */,
-				CEA12E512C8B2EB70000094C /* CreateRecipeSettingDataModel.swift */,
+				CEA3301C2CE4D92500E42F4A /* Models */,
+				CEA3300F2CE4D8E600E42F4A /* Cells */,
+				CEA3300D2CE4D82D00E42F4A /* NewRecipeController.swift */,
 			);
-			path = Recipe_Add;
+			path = Recipe;
+			sourceTree = "<group>";
+		};
+		CEA3300F2CE4D8E600E42F4A /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				CEA330162CE4D91E00E42F4A /* StepAddPhotoCell.swift */,
+				CEA330172CE4D91E00E42F4A /* StepDescriptionCell.swift */,
+				CEA330182CE4D91E00E42F4A /* StepPhotoCell.swift */,
+				CEA330142CE4D91200E42F4A /* CreateIngredientsTVCell.swift */,
+				CEA330102CE4D90000E42F4A /* SettingsTVC.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		CEA3301C2CE4D92500E42F4A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				CEA330112CE4D90000E42F4A /* CreateRecipeSettingsDataModel.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		CEACB9D62C809A5000FC1C63 /* Controllers */ = {
@@ -319,26 +321,24 @@
 				CE9BAB2E2C7C7EF000CD6C24 /* MainViewController.swift in Sources */,
 				CEA109E92C7DFA920095E989 /* BaseController.swift in Sources */,
 				CEB45B512C9AF71C000D9FE4 /* UITextView + ext.swift in Sources */,
-				CEA12E522C8B2EB70000094C /* CreateRecipeSettingDataModel.swift in Sources */,
+				CEA3301B2CE4D91F00E42F4A /* StepPhotoCell.swift in Sources */,
 				CEA109F02C7E011D0095E989 /* ShopViewController.swift in Sources */,
-				CEA12E4A2C8B196B0000094C /* RecipeAddController.swift in Sources */,
-				CEA12E4C2C8B2D610000094C /* CustomButton.swift in Sources */,
+				CEA330152CE4D91200E42F4A /* CreateIngredientsTVCell.swift in Sources */,
 				CE9BAB412C7C99AC00CD6C24 /* TabBarController.swift in Sources */,
+				CEA330122CE4D90000E42F4A /* SettingsTVC.swift in Sources */,
 				CEA109E62C7DF4BF0095E989 /* UIView + ext.swift in Sources */,
 				CEA109ED2C7E00940095E989 /* FavoriteViewController.swift in Sources */,
 				CE3535032C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift in Sources */,
-				CEA12E4F2C8B2E7A0000094C /* SettingTableViewCell.swift in Sources */,
 				CEA109F32C7E01490095E989 /* ProfileViewController.swift in Sources */,
 				CE9BAB2A2C7C7EF000CD6C24 /* AppDelegate.swift in Sources */,
+				CEA3300E2CE4D82D00E42F4A /* NewRecipeController.swift in Sources */,
 				CEA109E42C7DF3CB0095E989 /* NavBarController.swift in Sources */,
-				CE402B672C8997AE00525D84 /* CustomViewCell.swift in Sources */,
-				CE9FA7E02C85CF3500B3CBC8 /* SectionHeaderView.swift in Sources */,
+				CEA3301A2CE4D91F00E42F4A /* StepDescriptionCell.swift in Sources */,
+				CEA330132CE4D90000E42F4A /* CreateRecipeSettingsDataModel.swift in Sources */,
 				CE9BAB472C7C9D8E00CD6C24 /* Resources.swift in Sources */,
 				CE9BAB452C7C9C4700CD6C24 /* UIColor + ext.swift in Sources */,
 				CEACB9D52C80700F00FC1C63 /* UIFont + ext.swift in Sources */,
-				CEA12E502C8B2E7A0000094C /* CreateIngredientsTableViewCell.swift in Sources */,
-				CE9FA7DB2C85CA2200B3CBC8 /* NewRecipeController.swift in Sources */,
-				CE933AEA2C99BEF30095B841 /* ClearButton + TextView.swift in Sources */,
+				CEA330192CE4D91F00E42F4A /* StepAddPhotoCell.swift in Sources */,
 				CE9FA7E32C85E77600B3CBC8 /* BaseView.swift in Sources */,
 				CE9BAB2C2C7C7EF000CD6C24 /* SceneDelegate.swift in Sources */,
 			);

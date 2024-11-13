@@ -29,17 +29,39 @@ extension UITextView: UITextViewDelegate {
         set {
             let placeHolderLabel = self.viewWithTag(100) as! UILabel?
             if placeHolderLabel == nil {
-                self.addPlaceholderLabel(placeholderText: newValue!)
-//                self.addClearButton(hiddenStatus: false)
+                self.addPlaceholderLabel(placeholderText: newValue ?? "")
             }
             else {
                 placeHolderLabel?.text = newValue
                 placeHolderLabel?.sizeToFit()
-//                self.addClearButton(hiddenStatus: true)
             }
         }
     }
+    
+    var clearButtonStatus: Bool {
+        get {
+            var isHidden: Bool
 
+            if let button = self.viewWithTag(200) as? UIButton {
+                isHidden = button.isHidden
+            } else {
+                isHidden = true
+            }
+            return isHidden
+        }
+
+        set {
+            let button = self.viewWithTag(200) as! UIButton?
+            if button == nil {
+                self.addClearButton(isHidden: newValue)
+            } else {
+                button?.isHidden = newValue
+            }
+        }
+
+    }
+
+    
     private func addPlaceholderLabel(placeholderText: String) {
 
         let placeholderLabel = UILabel()
@@ -50,42 +72,62 @@ extension UITextView: UITextViewDelegate {
         placeholderLabel.font = self.font
         placeholderLabel.textColor = UIColor.lightGray
         placeholderLabel.tag = 100
-
-        self.addSubview(placeholderLabel)
-        self.delegate = self;
-    }
-    
-    func addClearButton(hiddenStatus: Bool) {
-        let clearButton = UIButton()
-        clearButton.layer.cornerRadius = 15
-        clearButton.setImage(UIImage(systemName: "multiply.circle.fill"), for: .normal)
-        clearButton.setTitle(nil, for: .normal)
-        clearButton.tintColor = .lightGray
-        clearButton.isHidden = false
-        clearButton.tag = 200
-        clearButton.frame = CGRect(
-            x: bounds.maxX - 30 - 4,
-            y: bounds.midY - 30 / 2,
-            width: 30,
-            height: 30
-        )
-        clearButton.addTarget(self, action: #selector(onClearClick), for: .touchUpInside)
-        textContainerInset.right = 30 + 4
         
-        self.addSubview(clearButton)
-        self.delegate = self;
+        self.addSubview(placeholderLabel)
     }
     
+    
+    private func addClearButton(isHidden: Bool) {
+        
+        let button = UIButton()
+        button.layer.cornerRadius = 15
+        button.setImage(UIImage(systemName: "multiply.circle.fill"), for: .normal)
+        button.setTitle(nil, for: .normal)
+        button.tintColor = .lightGray.withAlphaComponent(0.5)
+        button.frame = CGRect(
+            x: bounds.maxX - 30 ,
+            y: bounds.minY,
+            width: 30,
+            height: 30)
+        button.tag = 200
+        button.addTarget(self, action: #selector(onClearClick), for: .touchUpInside)
+        button.isHidden = isHidden
+        
+        self.addSubview(button)
+    }
+
     @objc private func onClearClick() {
         text = nil
         delegate?.textViewDidChange?(self)
     }
-
-    //MARK:- UITextViewDelegate
-    public func textViewDidChange(_ textView: UITextView) {
-        let placeHolderLabel = self.viewWithTag(100)
-        let clearButton = self.viewWithTag(200)
-        placeHolderLabel?.isHidden = !self.hasText
-        clearButton?.isHidden = !self.hasText
+    
+    public func setConstraints() {
+        let placeholderLabel = self.viewWithTag(100) as! UILabel
+        let clearButton = self.viewWithTag(200) as! UIButton
+        
+        NSLayoutConstraint.activate([
+            placeholderLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
+            placeholderLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15),
+            
+            clearButton.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
+            clearButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -30)
+        ])
     }
+    
+    func dynamicTextViewHeight(_ constHeight: CGFloat) {
+
+        let fixedWidth = self.frame.size.width
+        let newHeight = self.sizeThatFits(CGSize(width: fixedWidth,
+                                                     height: CGFloat.greatestFiniteMagnitude)).height
+        self.translatesAutoresizingMaskIntoConstraints = true
+        var newFrame = self.frame
+        
+        if constHeight < newHeight {
+            newFrame.size = CGSize(width: fixedWidth, height: newHeight)
+        } else {
+            newFrame.size = CGSize(width: fixedWidth, height: constHeight)
+        }
+        self.frame = newFrame
+    }
+
 }

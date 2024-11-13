@@ -1,12 +1,17 @@
-import UIKit
+//
+//  CreateIngredientsTVCell.swift
+//  RecipeAddApp
+//
+//  Created by Pavel Lakhno on 25.09.2024.
+//
 
+import UIKit
 
 class CreateIngredientsTableViewCell: UITableViewCell {
     
-    private var isEddit : Bool = false
-    
-    var itemName : String = ""
-    var itemQuantity : String = ""
+//    var itemName : String = ""
+//    var itemQuantity : String = ""
+    static let id = "ingredients"
     
     private lazy var contentStackView : UIStackView = {
         let stack = UIStackView()
@@ -18,13 +23,13 @@ class CreateIngredientsTableViewCell: UITableViewCell {
         return stack
     }()
     
-   let ingredientName : UITextField = {
+    let ingredientName : UITextField = {
         let field = UITextField()
         field.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        field.widthAnchor.constraint(equalToConstant: 164).isActive = true
         field.placeholder = "Название"
-        field.font = .helveticalBold(withSize: 20)
-        field.textColor = .gray
+        field.font = .helveticalBold(withSize: 16)
+        field.backgroundColor = .white
+        field.textColor = .black
         field.layer.borderColor = UIColor.orange.cgColor
         field.layer.borderWidth = 1
         field.layer.cornerRadius = 12
@@ -33,12 +38,13 @@ class CreateIngredientsTableViewCell: UITableViewCell {
         return field
     }()
     
-   let weightName : UITextField = {
+    let weightName : UITextField = {
         let field = UITextField()
         field.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        field.widthAnchor.constraint(equalToConstant: 115).isActive = true
+        field.widthAnchor.constraint(equalToConstant: 100).isActive = true
         field.placeholder = "кол-во"
-        field.font = .helveticalBold(withSize: 20)
+        field.font = .helveticalBold(withSize: 16)
+        field.backgroundColor = .white
         field.textColor = .gray
         field.layer.borderColor = UIColor.orange.cgColor
         field.layer.borderWidth = 1
@@ -47,16 +53,6 @@ class CreateIngredientsTableViewCell: UITableViewCell {
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
-    
-    private lazy var actionButton : UIButton = {
-        let btn = UIButton()
-        btn.setImage(Resources.Images.Icons.plusBorder, for: .normal)
-        btn.tintColor = .orange
-        btn.addTarget(self, action: #selector(taped(_:)), for: .touchUpInside)
-        btn.translatesAutoresizingMaskIntoConstraints = false
-        return btn
-    }()
-
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -67,12 +63,18 @@ class CreateIngredientsTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+         super.prepareForReuse()
+         self.ingredientName.text = ""
+         self.weightName.text = ""
+    }
+    
     private func setupCell() {
         selectionStyle = .none
+        backgroundColor = .neutral10
         contentView.addSubview(contentStackView)
         contentStackView.addArrangedSubview(ingredientName)
         contentStackView.addArrangedSubview(weightName)
-        contentStackView.addArrangedSubview(actionButton)
         ingredientName.setLeftPaddingPoints(15)
         weightName.setLeftPaddingPoints(15)
         
@@ -84,24 +86,6 @@ class CreateIngredientsTableViewCell: UITableViewCell {
         ])
     }
     
-    @objc private func taped(_ sender: UIButton) {
-        isEddit = !isEddit
-        
-        isEddit == true ? sender.setImage(Resources.Images.Icons.minusBorder, for: .normal) : sender.setImage(Resources.Images.Icons.plusBorder, for: .normal)
-        
-        if isEddit {
-            self.itemName = ingredientName.text!
-            self.itemQuantity = weightName.text!
-        } else {
-            self.itemName = ""
-            self.itemQuantity = ""
-            ingredientName.text = ""
-            weightName.text = ""
-            ingredientName.placeholder = "Название"
-            weightName.placeholder = "кол-во"
-        }
-        
-        
-    }
 
 }
+

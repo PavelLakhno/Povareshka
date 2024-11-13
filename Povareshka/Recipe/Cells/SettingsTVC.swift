@@ -1,6 +1,15 @@
+//
+//  SettingsTVC.swift
+//  RecipeAddApp
+//
+//  Created by Pavel Lakhno on 09.11.2024.
+//
+
 import UIKit
 
 class SettingTableViewCell: UITableViewCell {
+    
+    static let id = "SettingTableViewCell"
     
     var cellData : CreateRecipeSettingDataModel? {
         didSet {
@@ -9,12 +18,12 @@ class SettingTableViewCell: UITableViewCell {
         }
     }
     
-    // MARK: - UI Elements        
+    // MARK: - UI Elements
     private let bubbleView : UIView = {
         let view = UIView()
         view.heightAnchor.constraint(equalToConstant: 60).isActive = true
         view.layer.cornerRadius = 12
-        view.backgroundColor = .gray
+        view.backgroundColor = .orange.withAlphaComponent(0.2)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -39,7 +48,7 @@ class SettingTableViewCell: UITableViewCell {
     private lazy var titleLabel : UILabel = {
         let lb = UILabel()
         lb.font = .helveticalBold(withSize: 16)
-        lb.textColor = .gray
+        lb.textColor = .neutral100
         lb.textAlignment = .left
         lb.text = "Serves"
         lb.translatesAutoresizingMaskIntoConstraints = false
@@ -48,8 +57,8 @@ class SettingTableViewCell: UITableViewCell {
     
     lazy var valueLabel : UILabel = {
         let lb = UILabel()
-        lb.font = .helveticalRegular(withSize: 20)
-        lb.textColor = .gray
+        lb.font = .helveticalRegular(withSize: 16)
+        lb.textColor = .neutral50
         lb.textAlignment = .left
         lb.text = "1"
         lb.translatesAutoresizingMaskIntoConstraints = false
@@ -77,6 +86,7 @@ class SettingTableViewCell: UITableViewCell {
     
     private func setupCell() {
         selectionStyle = .none
+        backgroundColor = .neutral10
         contentView.addSubview(bubbleView)
         bubbleView.addSubview(iconBubleView)
         iconBubleView.addSubview(iconImage)

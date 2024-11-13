@@ -1,6 +1,7 @@
 {
   "images" : [
     {
+      "filename" : "camera_main.pdf",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -9,7 +10,6 @@
       "scale" : "2x"
     },
     {
-      "filename" : "camera.pdf",
       "idiom" : "universal",
       "scale" : "3x"
     }
