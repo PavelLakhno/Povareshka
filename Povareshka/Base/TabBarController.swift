@@ -40,7 +40,7 @@ class TabBarController: UITabBarController {
         tabBar.layer.masksToBounds = true
         
         let mainviewController = MainViewController()
-        let favoriteController = FavoriteViewController()
+        let favoriteController = SearchViewController()
         let shopController = ShopViewController()
         let profileController = ProfileViewController()
         
@@ -56,8 +56,8 @@ class TabBarController: UITabBarController {
         )
         
         favoriteNavigation.tabBarItem = UITabBarItem(
-            title: Resources.Strings.TabBar.favorite,
-            image: Resources.Images.TabBar.favorite,
+            title: Resources.Strings.TabBar.search,
+            image: Resources.Images.TabBar.search,
             tag: Tabs.favorite.rawValue
         )
         

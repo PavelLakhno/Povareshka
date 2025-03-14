@@ -59,17 +59,6 @@ class NewRecipeController: UIViewController {
         return stack
     }()
     
-    private lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.heightAnchor.constraint(equalToConstant: 28).isActive = true
-        label.font = .helveticalBold(withSize: 20)
-        label.textColor = .gray
-        label.textAlignment = .left
-        label.text = "Новый рецепт"
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
     private let imageBubleView : UIView = {
         let view = UIView()
         view.backgroundColor = .white
@@ -288,20 +277,27 @@ class NewRecipeController: UIViewController {
         }
     }
     
-//    @objc func backButtonTapped() {
-//        self.dismiss(animated: true)
-//
-//    }
+    @objc func backButtonTapped() {
+        self.dismiss(animated: true)
+
+    }
     
     // MARK: - LifeCycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-//        navigationItem.title = "Основное"
-//        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Отменить", style: .plain, target: self, action: #selector(backButtonTapped))
-//        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Готово", style: .plain, target: self, action: #selector(backButtonTapped))
-//        navigationItem.leftBarButtonItem?.tintColor = Resources.Colors.orange
-//        navigationItem.rightBarButtonItem?.tintColor = Resources.Colors.inactive
+
+        navigationItem.title = "Новый рецепт"
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Отменить",
+                                                           style: .plain,
+                                                           target: self,
+                                                           action: #selector(backButtonTapped))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Сохранить",
+                                                            style: .plain,
+                                                            target: self,
+                                                            action: #selector(backButtonTapped))
+        navigationItem.leftBarButtonItem?.tintColor = Resources.Colors.orange
+        navigationItem.rightBarButtonItem?.tintColor = Resources.Colors.inactive
         
         hideKeyboardWhenTappedAround()
         
@@ -342,8 +338,6 @@ class NewRecipeController: UIViewController {
         scrollView.addSubview(contentView)
         contentView.addSubview(contentStackView)
 
-        contentStackView.addArrangedSubview(titleLabel)
-
         contentStackView.addArrangedSubview(imageBubleView)
         imageBubleView.addSubview(recipeImage)
         imageBubleView.addSubview(editButton)
@@ -373,7 +367,7 @@ class NewRecipeController: UIViewController {
         
         // Ограничения для contentView внутри scrollView
         NSLayoutConstraint.activate([
-            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 100),
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 20),
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -20),
             
             // Привязка ширины contentView к ширине scrollView
@@ -386,7 +380,7 @@ class NewRecipeController: UIViewController {
        
         //Ограничения для вступительной части рецепта
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor),
+//            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor),
 
             imageBubleView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             imageBubleView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),

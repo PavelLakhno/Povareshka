@@ -27,9 +27,10 @@ final class MainViewController: BaseController {
     }()
     
     @objc func plusButtonTapped() {
-        let createRecipeViewController = NewRecipeController()//RecipeAddController() 
-        createRecipeViewController.modalPresentationStyle = .automatic
-        present(createRecipeViewController, animated: true, completion: nil)
+        let createRecipeViewController = NewRecipeController()//RecipeAddController()
+        let navVC = UINavigationController(rootViewController: createRecipeViewController)
+        navVC.modalPresentationStyle = .automatic
+        present(navVC, animated: true, completion: nil)
     }
     //------------
     override func viewDidLoad() {

@@ -28,6 +28,7 @@ enum Resources {
             static let favorite = "Избранное"
             static let shop = "Список"
             static let profile = "Профиль"
+            static let search = "Поиск"
         }
     }
     
@@ -37,6 +38,7 @@ enum Resources {
             static let favorite = UIImage(named: "favorite_tab")
             static let shop = UIImage(named: "shop_tab")
             static let profile = UIImage(named: "profile_tab")
+            static let search = UIImage(named: "search_tab")
         }
         
         enum Icons {
