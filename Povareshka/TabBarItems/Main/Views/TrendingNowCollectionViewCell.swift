@@ -21,7 +21,7 @@ class TrendingNowCollectionViewCell: UICollectionViewCell {
     
     static let identifier = "TrendingNowCell"
     
-    private var photoDish = UIImageView(image: "mealImage", cornerRadius: 16)
+    private var photoDish = UIImageView(image: Resources.Images.Icons.testMealImage, cornerRadius: 16)
 
     private var ratingContainerView = UIView(withBackgroundColor: Resources.Colors.titleBackground, cornerRadius: 8)
     private var ratingImageView: UIImageView = {
@@ -42,7 +42,7 @@ class TrendingNowCollectionViewCell: UICollectionViewCell {
                                          numberOfLines: 0)
     
     private var creatorStackView = UIStackView(axis: .horizontal, aligment: .center, spacing: 8)
-    private var creatorImageView = UIImageView(image: "Martha Stewart", cornerRadius: 16)
+    private var creatorImageView = UIImageView(image: Resources.Images.Icons.testAuthorIcon, cornerRadius: 16)
     private var creatorLabel = UILabel(text: "Ольга Митрофановна",
                                        font: .helveticalRegular(withSize: 12),
                                        textColor: Resources.Colors.secondary,
@@ -111,7 +111,5 @@ class TrendingNowCollectionViewCell: UICollectionViewCell {
         
         gradientLayer.frame = bounds
     }
-    
-    
 
 }

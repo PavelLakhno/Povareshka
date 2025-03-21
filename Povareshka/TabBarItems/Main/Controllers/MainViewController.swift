@@ -28,15 +28,16 @@ final class MainViewController: BaseController {
     
     @objc func plusButtonTapped() {
         let createRecipeViewController = NewRecipeController()//RecipeAddController()
-        let navVC = UINavigationController(rootViewController: createRecipeViewController)
-        navVC.modalPresentationStyle = .automatic
-        present(navVC, animated: true, completion: nil)
+//        let navVC = UINavigationController(rootViewController: createRecipeViewController)
+//        navVC.modalPresentationStyle = .automatic
+//        present(navVC, animated: true, completion: nil)
+        navigationController?.pushViewController(createRecipeViewController, animated: true)
     }
     //------------
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Основное"
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: Resources.Images.Icons.plus, style: .plain, target: self, action: #selector(plusButtonTapped))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(plusButtonTapped))
         navigationItem.rightBarButtonItem?.tintColor = Resources.Colors.orange
     }
     

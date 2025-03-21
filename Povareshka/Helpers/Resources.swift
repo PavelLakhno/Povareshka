@@ -30,6 +30,39 @@ enum Resources {
             static let profile = "Профиль"
             static let search = "Поиск"
         }
+        
+        enum Buttons {
+            static let done = "Готово"
+            static let save = "Сохранить"
+            static let cancel = "Отменить"
+            static let addIngredient = "Добавить ингредиент"
+            static let addStep = "Добавить шаг"
+        }
+        
+        enum Placeholders {
+            static let enterTittle = "Введите название"
+            static let enterDescription = "Введите описание"
+            static let cancel = "Отменить"
+            static let addIngredient = "Добавить ингредиент"
+            static let addStep = "Добавить шаг"
+        }
+        
+        enum Tittles {
+            static let ingredient = "Ингредиенты"
+            static let cookingStages = "Этапы приготовления"
+         }
+        
+        enum Unit: CaseIterable {
+            static let gram = "г"
+            static let kgram = "кг"
+            static let tablespoon = "ст/л"
+            static let teaspoon = "ч/л"
+            static let count = "шт"
+            static let litr = "л"
+            static let cup = "стакан"
+            
+            static let allValues = [gram, kgram, tablespoon, teaspoon, count, litr, cup]
+        }
     }
     
     enum Images {
@@ -42,10 +75,12 @@ enum Resources {
         }
         
         enum Icons {
-            
+            static let add = UIImage(systemName: "plus.circle")
+            static let trash = UIImage(systemName: "trash")
             static let arrowLeft = UIImage(named: "Icons/Arrow-Left")
             static let arrowRight = UIImage(named: "Icons/Arrow-Right")
             static let bookmark = UIImage(named: "Icons/Bookmark")
+            static let cameraMain = UIImage(named: "camera_main")
             static let clock = UIImage(named: "Icons/Clock")
             static let edit = UIImage(named: "Icons/Edit")
             static let location = UIImage(named: "Icons/Location")
@@ -61,12 +96,25 @@ enum Resources {
             static let star = UIImage(named: "Icons/Star")
             static let tickCircle = UIImage(named: "Icons/tick-circle")
             
+            static let testMealImage = UIImage(named: "mealImage")
+            static let testAuthorIcon = UIImage(named: "Martha Stewart")
+            
         }
     }
     
     enum Fonts {
         static func helvelticaRegular(with size: CGFloat) -> UIFont {
             UIFont(name: "Helvetica", size: size) ?? UIFont()
+        }
+    }
+    
+    enum Arrayes {
+        static func createServesArray() -> [String] {
+            return Array(1...20).map { "\($0)" }
+        }
+
+        static func createCookTimeArray() -> [String] {
+            return (Array(1..<20) + stride(from: 20, through: 180, by: 5)).map { "\($0)" }
         }
     }
 
