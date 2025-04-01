@@ -6,8 +6,11 @@
 //
 
 import UIKit
+import RealmSwift
 
 final class MainViewController: BaseController {
+    
+    private var recipes: Results<RecipeModel>!
 
     lazy var homeScrollView: UIScrollView = {
         let sv = UIScrollView()
@@ -38,7 +41,11 @@ final class MainViewController: BaseController {
         super.viewDidLoad()
         navigationItem.title = "Основное"
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(plusButtonTapped))
-        navigationItem.rightBarButtonItem?.tintColor = Resources.Colors.orange
+//        navigationItem.rightBarButtonItem?.tintColor = Resources.Colors.orange
+        createTempData()
+        recipes = StorageManager.shared.realm.objects(RecipeModel.self)
+        print("Recipes:")
+        print(recipes[0].title)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -47,18 +54,36 @@ final class MainViewController: BaseController {
         setupAllUI()
     }
     
+    func createTempData() {
+        if !UserDefaults.standard.bool(forKey: "done") {
+            DataManager.shared.createTempData { [unowned self] in
+                UserDefaults.standard.set(true, forKey: "done")
+                print("SUCCESS")
+                trendingCollectionView.reloadData()
+            }
+        }
+    }
+    
 }
 
 // MARK: - UICollectionViewDataSource, UICollectionViewDelegate
 
 extension MainViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        5
+        recipes.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrendingNowCollectionViewCell.identifier, for: indexPath) as! TrendingNowCollectionViewCell
+        cell.photoDish.image = UIImage(data: recipes[indexPath.row].image ?? Data())
+        cell.titleDishLabel.text = recipes[indexPath.row].title
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let recipeWatchVC = RecipeWatchController()
+        recipeWatchVC.recipe = recipes[indexPath.row]
+        navigationController?.pushViewController(recipeWatchVC, animated: true)
     }
 }
 

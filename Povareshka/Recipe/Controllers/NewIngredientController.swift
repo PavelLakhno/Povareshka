@@ -88,6 +88,7 @@ class NewIngredientViewController: UIViewController, UITextFieldDelegate, UIPick
                                                             style: .plain,
                                                             target: self,
                                                             action: #selector(saveButtonTapped))
+        navigationItem.rightBarButtonItem?.tintColor = Resources.Colors.orange
 //        navigationItem.backBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
 //                                                           target: self, action: nil)
 
@@ -143,6 +144,11 @@ class NewIngredientViewController: UIViewController, UITextFieldDelegate, UIPick
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         return true
     }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+         textField != measureTextField 
+    }
+
 
     // UIPickerViewDelegate and UIPickerViewDataSource methods
     func numberOfComponents(in pickerView: UIPickerView) -> Int {

@@ -66,3 +66,17 @@ struct Instruction: Codable {
     var image: Data?
     var describe: String?
 }
+
+struct IngredientData: Codable {
+    let id: UUID
+    var name: String
+    var amount: String
+    var isChecked: Bool
+    
+    init(id: UUID = UUID(), name: String, amount: String = "", isChecked: Bool = false) {
+        self.id = id
+        self.name = name
+        self.amount = amount
+        self.isChecked = isChecked
+    }
+}

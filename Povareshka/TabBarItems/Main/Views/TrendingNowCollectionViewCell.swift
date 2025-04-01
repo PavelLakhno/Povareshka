@@ -21,7 +21,10 @@ class TrendingNowCollectionViewCell: UICollectionViewCell {
     
     static let identifier = "TrendingNowCell"
     
-    private var photoDish = UIImageView(image: Resources.Images.Icons.testMealImage, cornerRadius: 16)
+    lazy var photoDish: UIImageView = {
+        let image = UIImageView(cornerRadius: 16)
+        return image
+    }()
 
     private var ratingContainerView = UIView(withBackgroundColor: Resources.Colors.titleBackground, cornerRadius: 8)
     private var ratingImageView: UIImageView = {
@@ -36,8 +39,7 @@ class TrendingNowCollectionViewCell: UICollectionViewCell {
     
     
     
-    private var titleDishLabel = UILabel(text: "Яичница с тостами",
-                                         font: .helveticalBold(withSize: 16),
+    lazy var titleDishLabel = UILabel(font: .helveticalBold(withSize: 16),
                                          textColor: .white,
                                          numberOfLines: 0)
     

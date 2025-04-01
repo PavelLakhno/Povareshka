@@ -10,7 +10,11 @@
 		CE3534FE2C7F0BBF006B6A26 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CE3534FD2C7F0BBF006B6A26 /* RealmSwift */; };
 		CE3535012C7F1DFD006B6A26 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = CE3535002C7F1DFD006B6A26 /* Kingfisher */; };
 		CE3535032C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3535022C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift */; };
+		CE938D782D9AE78E00CF8683 /* ShoppingListManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE938D772D9AE78E00CF8683 /* ShoppingListManager.swift */; };
 		CE93918F2D830CF2006E61A3 /* RecipeSearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE93918E2D830CF2006E61A3 /* RecipeSearchCell.swift */; };
+		CE96E2932D9985B80001B4DB /* RecipeWatchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE96E2922D9985B80001B4DB /* RecipeWatchController.swift */; };
+		CE96E2962D9985F90001B4DB /* InstructionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE96E2952D9985F90001B4DB /* InstructionTableViewCell.swift */; };
+		CE96E2982D9986250001B4DB /* IngredientTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE96E2972D9986250001B4DB /* IngredientTableViewCell.swift */; };
 		CE9BAB2A2C7C7EF000CD6C24 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB292C7C7EF000CD6C24 /* AppDelegate.swift */; };
 		CE9BAB2C2C7C7EF000CD6C24 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB2B2C7C7EF000CD6C24 /* SceneDelegate.swift */; };
 		CE9BAB2E2C7C7EF000CD6C24 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB2D2C7C7EF000CD6C24 /* MainViewController.swift */; };
@@ -24,11 +28,11 @@
 		CEA109E62C7DF4BF0095E989 /* UIView + ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA109E52C7DF4BF0095E989 /* UIView + ext.swift */; };
 		CEA109E92C7DFA920095E989 /* BaseController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA109E82C7DFA920095E989 /* BaseController.swift */; };
 		CEA109ED2C7E00940095E989 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA109EC2C7E00940095E989 /* SearchViewController.swift */; };
-		CEA109F02C7E011D0095E989 /* ShopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA109EF2C7E011D0095E989 /* ShopViewController.swift */; };
+		CEA109F02C7E011D0095E989 /* ShoppingListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA109EF2C7E011D0095E989 /* ShoppingListViewController.swift */; };
 		CEA109F32C7E01490095E989 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA109F22C7E01490095E989 /* ProfileViewController.swift */; };
 		CEA2900A2D81D3480017D499 /* MenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA290092D81D3480017D499 /* MenuItem.swift */; };
 		CEA2900D2D81D3930017D499 /* MenuItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA2900C2D81D3930017D499 /* MenuItemCell.swift */; };
-		CEA290122D81D49C0017D499 /* ShoppingListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA290112D81D49C0017D499 /* ShoppingListViewController.swift */; };
+		CEA290122D81D49C0017D499 /* ShoppingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA290112D81D49C0017D499 /* ShoppingViewController.swift */; };
 		CEA290152D81D5290017D499 /* ShoppingItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA290142D81D5290017D499 /* ShoppingItemCell.swift */; };
 		CEA290182D81D5500017D499 /* ShoppingItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA290172D81D5500017D499 /* ShoppingItem.swift */; };
 		CEA2901B2D81D6680017D499 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA2901A2D81D6680017D499 /* SettingsViewController.swift */; };
@@ -58,7 +62,11 @@
 
 /* Begin PBXFileReference section */
 		CE3535022C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingNowCollectionViewCell.swift; sourceTree = "<group>"; };
+		CE938D772D9AE78E00CF8683 /* ShoppingListManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingListManager.swift; sourceTree = "<group>"; };
 		CE93918E2D830CF2006E61A3 /* RecipeSearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeSearchCell.swift; sourceTree = "<group>"; };
+		CE96E2922D9985B80001B4DB /* RecipeWatchController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeWatchController.swift; sourceTree = "<group>"; };
+		CE96E2952D9985F90001B4DB /* InstructionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionTableViewCell.swift; sourceTree = "<group>"; };
+		CE96E2972D9986250001B4DB /* IngredientTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientTableViewCell.swift; sourceTree = "<group>"; };
 		CE9BAB262C7C7EF000CD6C24 /* Povareshka.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Povareshka.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9BAB292C7C7EF000CD6C24 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CE9BAB2B2C7C7EF000CD6C24 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -74,11 +82,11 @@
 		CEA109E52C7DF4BF0095E989 /* UIView + ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView + ext.swift"; sourceTree = "<group>"; };
 		CEA109E82C7DFA920095E989 /* BaseController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseController.swift; sourceTree = "<group>"; };
 		CEA109EC2C7E00940095E989 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
-		CEA109EF2C7E011D0095E989 /* ShopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopViewController.swift; sourceTree = "<group>"; };
+		CEA109EF2C7E011D0095E989 /* ShoppingListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingListViewController.swift; sourceTree = "<group>"; };
 		CEA109F22C7E01490095E989 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		CEA290092D81D3480017D499 /* MenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItem.swift; sourceTree = "<group>"; };
 		CEA2900C2D81D3930017D499 /* MenuItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemCell.swift; sourceTree = "<group>"; };
-		CEA290112D81D49C0017D499 /* ShoppingListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingListViewController.swift; sourceTree = "<group>"; };
+		CEA290112D81D49C0017D499 /* ShoppingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingViewController.swift; sourceTree = "<group>"; };
 		CEA290142D81D5290017D499 /* ShoppingItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingItemCell.swift; sourceTree = "<group>"; };
 		CEA290172D81D5500017D499 /* ShoppingItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingItem.swift; sourceTree = "<group>"; };
 		CEA2901A2D81D6680017D499 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
@@ -133,6 +141,24 @@
 				CE93918E2D830CF2006E61A3 /* RecipeSearchCell.swift */,
 			);
 			path = Cells;
+			sourceTree = "<group>";
+		};
+		CE96E28F2D99857B0001B4DB /* RecipeWatch */ = {
+			isa = PBXGroup;
+			children = (
+				CE96E2942D9985D30001B4DB /* Views */,
+				CE96E2922D9985B80001B4DB /* RecipeWatchController.swift */,
+			);
+			path = RecipeWatch;
+			sourceTree = "<group>";
+		};
+		CE96E2942D9985D30001B4DB /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				CE96E2952D9985F90001B4DB /* InstructionTableViewCell.swift */,
+				CE96E2972D9986250001B4DB /* IngredientTableViewCell.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		CE9BAB1D2C7C7EF000CD6C24 = {
@@ -219,6 +245,7 @@
 		CEA109EA2C7E00700095E989 /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				CE96E28F2D99857B0001B4DB /* RecipeWatch */,
 				CEACB9D62C809A5000FC1C63 /* Controllers */,
 				CEACB9D72C809A5A00FC1C63 /* Views */,
 			);
@@ -238,7 +265,7 @@
 		CEA109EE2C7E00C80095E989 /* ShopList */ = {
 			isa = PBXGroup;
 			children = (
-				CEA109EF2C7E011D0095E989 /* ShopViewController.swift */,
+				CEA109EF2C7E011D0095E989 /* ShoppingListViewController.swift */,
 			);
 			path = ShopList;
 			sourceTree = "<group>";
@@ -301,7 +328,7 @@
 		CEA290132D81D4F60017D499 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				CEA290112D81D49C0017D499 /* ShoppingListViewController.swift */,
+				CEA290112D81D49C0017D499 /* ShoppingViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -456,6 +483,7 @@
 				CEC4ACF12D8B0C53009DBCD3 /* StorageManager.swift */,
 				CEC4ACF32D8B0C69009DBCD3 /* DataManager.swift */,
 				CEC4ACF52D8B0CC0009DBCD3 /* KeyboardManager.swift */,
+				CE938D772D9AE78E00CF8683 /* ShoppingListManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -538,15 +566,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE96E2982D9986250001B4DB /* IngredientTableViewCell.swift in Sources */,
 				CE9BAB2E2C7C7EF000CD6C24 /* MainViewController.swift in Sources */,
 				CEA109E92C7DFA920095E989 /* BaseController.swift in Sources */,
 				CEB45B512C9AF71C000D9FE4 /* UITextView + ext.swift in Sources */,
+				CE938D782D9AE78E00CF8683 /* ShoppingListManager.swift in Sources */,
 				CEA3301B2CE4D91F00E42F4A /* StepPhotoCell.swift in Sources */,
-				CEA109F02C7E011D0095E989 /* ShopViewController.swift in Sources */,
+				CEA109F02C7E011D0095E989 /* ShoppingListViewController.swift in Sources */,
 				CEC4ACF42D8B0C69009DBCD3 /* DataManager.swift in Sources */,
 				CE9BAB412C7C99AC00CD6C24 /* TabBarController.swift in Sources */,
 				CEC4ACF22D8B0C53009DBCD3 /* StorageManager.swift in Sources */,
 				CEA88C2C2D84451C00281274 /* FilterCategoryCell.swift in Sources */,
+				CE96E2932D9985B80001B4DB /* RecipeWatchController.swift in Sources */,
 				CEA2900D2D81D3930017D499 /* MenuItemCell.swift in Sources */,
 				CEA330122CE4D90000E42F4A /* SettingsTVC.swift in Sources */,
 				CEA109E62C7DF4BF0095E989 /* UIView + ext.swift in Sources */,
@@ -573,9 +604,10 @@
 				CE9BAB452C7C9C4700CD6C24 /* UIColor + ext.swift in Sources */,
 				CEAC9E892CE64C0500221CCF /* Recipes.swift in Sources */,
 				CEA2901B2D81D6680017D499 /* SettingsViewController.swift in Sources */,
+				CE96E2962D9985F90001B4DB /* InstructionTableViewCell.swift in Sources */,
 				CEACB9D52C80700F00FC1C63 /* UIFont + ext.swift in Sources */,
 				CEA290182D81D5500017D499 /* ShoppingItem.swift in Sources */,
-				CEA290122D81D49C0017D499 /* ShoppingListViewController.swift in Sources */,
+				CEA290122D81D49C0017D499 /* ShoppingViewController.swift in Sources */,
 				CEA330192CE4D91F00E42F4A /* StepAddPhotoCell.swift in Sources */,
 				CE9FA7E32C85E77600B3CBC8 /* BaseView.swift in Sources */,
 				CEA290222D81D71A0017D499 /* SettingsCell.swift in Sources */,

@@ -41,7 +41,7 @@ class TabBarController: UITabBarController {
         
         let mainviewController = MainViewController()
         let favoriteController = SearchViewController()
-        let shopController = ShopViewController()
+        let shopController = ShoppingListViewController()
         let profileController = ProfileViewController()
         
         let mainviewNavigation = NavBarController(rootViewController: mainviewController)

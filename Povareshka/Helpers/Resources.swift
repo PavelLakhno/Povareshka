@@ -60,8 +60,9 @@ enum Resources {
             static let count = "шт"
             static let litr = "л"
             static let cup = "стакан"
+            static let tasty = "по вкусу"
             
-            static let allValues = [gram, kgram, tablespoon, teaspoon, count, litr, cup]
+            static let allValues = [gram, kgram, tablespoon, teaspoon, count, litr, cup, tasty]
         }
     }
     

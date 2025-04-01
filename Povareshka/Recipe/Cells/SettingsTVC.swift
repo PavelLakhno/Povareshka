@@ -50,7 +50,7 @@ class SettingTableViewCell: UITableViewCell {
         lb.font = .helveticalBold(withSize: 16)
         lb.textColor = .neutral100
         lb.textAlignment = .left
-        lb.text = "Serves"
+        lb.numberOfLines = 2
         lb.translatesAutoresizingMaskIntoConstraints = false
         return lb
     }()
@@ -60,7 +60,6 @@ class SettingTableViewCell: UITableViewCell {
         lb.font = .helveticalRegular(withSize: 16)
         lb.textColor = .neutral50
         lb.textAlignment = .left
-        lb.text = "1"
         lb.translatesAutoresizingMaskIntoConstraints = false
         return lb
     }()

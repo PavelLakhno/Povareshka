@@ -110,7 +110,7 @@ extension UIView {
 }
 
 extension UIImageView {
-    convenience init(image: UIImage?, cornerRadius: CGFloat, contentMode: ContentMode = .scaleToFill, borderWidth: CGFloat = 0  ) {
+    convenience init(image: UIImage? = UIImage(named: "camera_main"), cornerRadius: CGFloat, contentMode: ContentMode = .scaleToFill, borderWidth: CGFloat = 0  ) {
         self.init()
         self.contentMode = contentMode
         self.layer.masksToBounds = true
