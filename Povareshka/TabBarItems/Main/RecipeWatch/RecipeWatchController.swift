@@ -93,15 +93,15 @@ class RecipeWatchController: UIViewController {
         stackView.addArrangedSubview(describeLabel)
 
         let readyInMinutesLabel = UILabel()
-        readyInMinutesLabel.text = "Время приготовления: \(recipe.readyInMinutes)"
+        readyInMinutesLabel.text = "\(Resources.Strings.Tittles.timeCooking) \(recipe.readyInMinutes)"
         stackView.addArrangedSubview(readyInMinutesLabel)
         
         let servingsLabel = UILabel()
-        servingsLabel.text = "Сервировка: \(recipe.servings) чел"
+        servingsLabel.text = "\(Resources.Strings.Tittles.tableSetting) \(recipe.servings) чел"
         stackView.addArrangedSubview(servingsLabel)
         
         let ingredientsLabel = UILabel()
-        ingredientsLabel.text = "Ингридиенты:"
+        ingredientsLabel.text = Resources.Strings.Tittles.ingredient
         ingredientsLabel.font = .helveticalBold(withSize: 20)
         stackView.addArrangedSubview(ingredientsLabel)
         
@@ -110,7 +110,7 @@ class RecipeWatchController: UIViewController {
                        cellIdentifier: IngredientTableViewCell.id)
         
         let instructionsLabel = UILabel()
-        instructionsLabel.text = "Инструкция:"
+        instructionsLabel.text = Resources.Strings.Tittles.cookingStages
         instructionsLabel.font = .helveticalBold(withSize: 20)
         stackView.addArrangedSubview(instructionsLabel)
     }
@@ -131,34 +131,13 @@ extension RecipeWatchController: UITableViewDataSource, UITableViewDelegate {
         if tableView == ingredientTableView {
             let cell = tableView.dequeueReusableCell(withIdentifier: IngredientTableViewCell.id, for: indexPath) as! IngredientTableViewCell
             if let ingredient = recipe?.ingredients[indexPath.row] {
-//                cell.titleLabel.text = ingredient.name
-//                cell.countLabel.text = ingredient.amount
-                
                 var content = cell.defaultContentConfiguration()
                 content.text = "\(ingredient.name) (\(ingredient.amount))"
                 cell.contentConfiguration = content
-
-                // Create a custom button with SF Symbols
-                let addButton = UIButton(type: .system)
-                addButton.setImage(UIImage(systemName: "plus.circle.fill"), for: .normal)
-                addButton.tintColor = .systemOrange
-                addButton.tag = indexPath.row
-                addButton.addTarget(self, action: #selector(addButtonTapped(_:)), for: .touchUpInside)
-
-                // Set fixed frame for the button
-                addButton.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
-                
-//                 Create a container view for the button
-//                let buttonContainer = UIView(frame: CGRect(x: 0, y: 0, width: 44, height: 44))
-//                buttonContainer.addSubview(addButton)
-                
-//                 Set the container as the accessory view
-                cell.accessoryView = addButton
+                cell.addButton.tag = indexPath.row
+                cell.addButton.addTarget(self, action: #selector(addButtonTapped(_:)), for: .touchUpInside)
             }
             tableView.beginUpdates()
-//            DispatchQueue.main.async {
-//                tableView.reloadData()
-//            }
             tableView.endUpdates()
             tableView.dynamicHeightForTableView()
             return cell
@@ -183,8 +162,7 @@ extension RecipeWatchController: UITableViewDataSource, UITableViewDelegate {
         ShoppingListManager.shared.addIngredient(newIngredient)
         
         // Update button appearance
-        sender.setImage(UIImage(systemName: "checkmark.circle.fill"), for: .normal)
-        sender.tintColor = .systemGreen
+        sender.setImage(Resources.Images.Icons.okFill, for: .normal)
         sender.isEnabled = false
         
         // Show feedback

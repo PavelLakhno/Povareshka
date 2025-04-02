@@ -33,7 +33,7 @@ class TabBarController: UITabBarController {
     
     private func configureAppearance() {
         tabBar.tintColor = Resources.Colors.active
-        tabBar.barTintColor = Resources.Colors.inactive
+        //tabBar.barTintColor = Resources.Colors.inactive
         tabBar.backgroundColor = .white
         tabBar.layer.borderColor = Resources.Colors.separator.cgColor
         tabBar.layer.borderWidth = 1

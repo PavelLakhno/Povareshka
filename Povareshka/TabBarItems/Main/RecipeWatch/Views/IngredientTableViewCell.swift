@@ -12,50 +12,31 @@ class IngredientTableViewCell: UITableViewCell {
     static let id = "IngredientTableViewCell"
     
     // MARK: - UI Elements
-    lazy var titleLabel : UILabel = {
-        let lb = UILabel()
-        lb.numberOfLines = 0
-        lb.font = .helveticalBold(withSize: 16)
-        lb.textColor = .neutral100
-        lb.textAlignment = .left
-        lb.translatesAutoresizingMaskIntoConstraints = false
-        return lb
-    }()
-    
-    lazy var countLabel : UILabel = {
-        let lb = UILabel()
-        lb.font = .helveticalRegular(withSize: 16)
-        lb.textColor = .neutral100
-        lb.textAlignment = .right
-        lb.translatesAutoresizingMaskIntoConstraints = false
-        return lb
-    }()
+    let addButton = UIButton()
         
     // MARK: - Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupCell()
+        setupButton()
+        tintColor = Resources.Colors.orange
+        selectionStyle = .none
+        backgroundColor = .neutral10
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Methods
-     private func setupCell() {
-        selectionStyle = .none
-        backgroundColor = .neutral10
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(countLabel)
-        
-        NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
-            titleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5),
-            
-            countLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
-            countLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5),
-            countLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5)
-        ])
+    private func setupButton() {
+        addButton.setImage(Resources.Images.Icons.addFill, for: .normal)
+//        addButton.tintColor = Resources.Colors.orange
+        addButton.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
+        accessoryView = addButton
     }
+    
+//    override func didTransition(to state: UITableViewCell.StateMask) {
+//        super.didTransition(to: state)
+        // Maintain button color during transitions
+//        addButton.tintColor = .systemOrange
+//    }
 }

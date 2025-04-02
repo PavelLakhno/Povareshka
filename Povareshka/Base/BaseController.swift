@@ -20,6 +20,8 @@ class BaseController: UIViewController {
         setupViews()
         setupConstraintViews()
         configureAppearance()
+        navigationItem.rightBarButtonItem?.tintColor =  Resources.Colors.orange
+        navigationItem.leftBarButtonItem?.tintColor =  Resources.Colors.orange
     }
 
 }
@@ -58,11 +60,9 @@ extension BaseController {
         case .left:
             button.addTarget(self, action: #selector(navBarLeftButtonHandler), for: .touchUpInside)
             navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
-            navigationItem.leftBarButtonItem?.tintColor = Resources.Colors.orange
         case .right:
             button.addTarget(self, action: #selector(navBarRightButtonHandler), for: .touchUpInside)
             navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
-            navigationItem.rightBarButtonItem?.tintColor = Resources.Colors.orange
         }
     }
     

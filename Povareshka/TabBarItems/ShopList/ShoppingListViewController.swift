@@ -8,6 +8,31 @@
 import UIKit
 
 class ShoppingListViewController: BaseController {
+        private let emptyStateView: UIView = {
+            let view = UIView()
+            view.isHidden = true
+            view.translatesAutoresizingMaskIntoConstraints = false
+            return view
+        }()
+    
+        private let emptyStateImageView: UIImageView = {
+            let imageView = UIImageView()
+            imageView.image = Resources.Images.Icons.cart
+            imageView.tintColor = .gray.withAlphaComponent(0.6)
+            imageView.contentMode = .scaleAspectFit
+            imageView.translatesAutoresizingMaskIntoConstraints = false
+            return imageView
+        }()
+    
+        private let emptyStateLabel: UILabel = {
+            let label = UILabel()
+            label.text = Resources.Strings.Messages.shopListEmpty
+            label.textAlignment = .center
+            label.font = .systemFont(ofSize: 16)
+            label.textColor = .gray
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
 
     private let tableView: UITableView = {
         let table = UITableView()
@@ -34,18 +59,36 @@ class ShoppingListViewController: BaseController {
         setupNavigationBar()
         setupNotifications()
         loadIngredients()
-        title = "Shopping List"
+        title = Resources.Strings.TabBar.shop
     }
     
     private func setupUI() {
         view.backgroundColor = .systemBackground
         view.addSubview(tableView)
+        view.addSubview(emptyStateView)
+
+        emptyStateView.addSubview(emptyStateImageView)
+        emptyStateView.addSubview(emptyStateLabel)
         
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyStateView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            emptyStateView.widthAnchor.constraint(equalToConstant: 200),
+            emptyStateView.heightAnchor.constraint(equalToConstant: 200),
+
+            emptyStateImageView.topAnchor.constraint(equalTo: emptyStateView.topAnchor),
+            emptyStateImageView.centerXAnchor.constraint(equalTo: emptyStateView.centerXAnchor),
+            emptyStateImageView.widthAnchor.constraint(equalToConstant: 100),
+            emptyStateImageView.heightAnchor.constraint(equalToConstant: 100),
+
+            emptyStateLabel.topAnchor.constraint(equalTo: emptyStateImageView.bottomAnchor, constant: 16),
+            emptyStateLabel.leadingAnchor.constraint(equalTo: emptyStateView.leadingAnchor),
+            emptyStateLabel.trailingAnchor.constraint(equalTo: emptyStateView.trailingAnchor)
         ])
         
         tableView.delegate = self
@@ -71,7 +114,13 @@ class ShoppingListViewController: BaseController {
     
     private func loadIngredients() {
         ingredients = ShoppingListManager.shared.getIngredients()
+        updateEmptyState()
         tableView.reloadData()
+    }
+    
+    private func updateEmptyState() {
+        emptyStateView.isHidden = !ingredients.isEmpty
+        tableView.isHidden = ingredients.isEmpty
     }
     
     @objc private func shoppingListDidChange() {
@@ -79,17 +128,17 @@ class ShoppingListViewController: BaseController {
     }
     
     @objc private func addButtonTapped() {
-        let alert = UIAlertController(title: "Add Ingredient", message: nil, preferredStyle: .alert)
+        let alert = UIAlertController(title: Resources.Strings.Buttons.add, message: nil, preferredStyle: .alert)
         
         alert.addTextField { textField in
-            textField.placeholder = "Ingredient name"
+            textField.placeholder = Resources.Strings.Placeholders.enterTittle
         }
         
         alert.addTextField { textField in
-            textField.placeholder = "Quantity"
+            textField.placeholder = Resources.Strings.Placeholders.enterCount
         }
         
-        let addAction = UIAlertAction(title: "Add", style: .default) { _ in
+        let addAction = UIAlertAction(title: Resources.Strings.Buttons.done, style: .default) { _ in
             guard let name = alert.textFields?[0].text,
                   let quantity = alert.textFields?[1].text,
                   !name.isEmpty else { return }
@@ -98,7 +147,7 @@ class ShoppingListViewController: BaseController {
             ShoppingListManager.shared.addIngredient(ingredient)
         }
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+        let cancelAction = UIAlertAction(title: Resources.Strings.Buttons.cancel, style: .cancel)
         
         alert.addAction(addAction)
         alert.addAction(cancelAction)
@@ -108,16 +157,16 @@ class ShoppingListViewController: BaseController {
     
     @objc private func clearButtonTapped() {
         let alert = UIAlertController(
-            title: "Clear List",
-            message: "Are you sure you want to clear the entire shopping list?",
+            title: Resources.Strings.Tittles.deleteList,
+            message: Resources.Strings.Messages.delete,
             preferredStyle: .alert
         )
         
-        let clearAction = UIAlertAction(title: "Clear", style: .destructive) { _ in
+        let clearAction = UIAlertAction(title: Resources.Strings.Buttons.delete, style: .destructive) { _ in
             ShoppingListManager.shared.clearList()
         }
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+        let cancelAction = UIAlertAction(title: Resources.Strings.Buttons.cancel, style: .cancel)
         
         alert.addAction(clearAction)
         alert.addAction(cancelAction)
@@ -152,19 +201,19 @@ extension ShoppingListViewController: UITableViewDelegate, UITableViewDataSource
         tableView.deselectRow(at: indexPath, animated: true)
         
         let ingredient = ingredients[indexPath.row]
-        let alert = UIAlertController(title: "Edit Ingredient", message: nil, preferredStyle: .alert)
+        let alert = UIAlertController(title: Resources.Strings.Tittles.correctIngredient, message: nil, preferredStyle: .alert)
         
         alert.addTextField { textField in
             textField.text = ingredient.name
-            textField.placeholder = "Ingredient name"
+            textField.placeholder = Resources.Strings.Placeholders.enterTittle
         }
         
         alert.addTextField { textField in
             textField.text = ingredient.amount
-            textField.placeholder = "Quantity"
+            textField.placeholder = Resources.Strings.Placeholders.enterCount
         }
         
-        let saveAction = UIAlertAction(title: "Save", style: .default) { _ in
+        let saveAction = UIAlertAction(title: Resources.Strings.Buttons.save, style: .default) { _ in
             guard let name = alert.textFields?[0].text,
                   let quantity = alert.textFields?[1].text,
                   !name.isEmpty else { return }
@@ -173,7 +222,7 @@ extension ShoppingListViewController: UITableViewDelegate, UITableViewDataSource
             ShoppingListManager.shared.updateIngredient(updatedIngredient, at: indexPath.row)
         }
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+        let cancelAction = UIAlertAction(title: Resources.Strings.Buttons.cancel, style: .cancel)
         
         alert.addAction(saveAction)
         alert.addAction(cancelAction)

@@ -18,6 +18,7 @@ final class NavBarController: UINavigationController {
     private func configure() {
         view.backgroundColor = .white
         navigationBar.isTranslucent = false
+        navigationBar.tintColor = Resources.Colors.orange
         navigationBar.standardAppearance.titleTextAttributes = [
             .foregroundColor: Resources.Colors.titleGray,
             .font: Resources.Fonts.helvelticaRegular(with: 17)
