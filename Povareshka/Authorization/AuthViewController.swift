@@ -13,7 +13,7 @@ class AuthViewController: UIViewController {
     private let logoImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.image = UIImage(named: "logo") // You'll need to add a logo image
+//        imageView.image = Resources.Images.Icons.profile // You'll need to add a logo image
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
@@ -21,7 +21,18 @@ class AuthViewController: UIViewController {
     private let signInButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Войти", for: .normal)
-        button.backgroundColor = UIColor.systemOrange
+        button.backgroundColor = Resources.Colors.orange
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 12
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    private let signUpButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Регистрация", for: .normal)
+        button.backgroundColor = Resources.Colors.orange
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 12
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
@@ -32,8 +43,11 @@ class AuthViewController: UIViewController {
     private let continueWithoutRegButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Продолжить без регистрации", for: .normal)
-        button.setTitleColor(.systemOrange, for: .normal)
+        button.backgroundColor = Resources.Colors.orange.withAlphaComponent(0.2)
+        button.setTitleColor(Resources.Colors.orange, for: .normal)
+        button.layer.cornerRadius = 12
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        button.addTarget(self, action: #selector(loadMainView), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -46,11 +60,12 @@ class AuthViewController: UIViewController {
     
     // MARK: - UI Setup
     private func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(patternImage: Resources.Images.Background.start ?? UIImage())
         
         // Add subviews
         view.addSubview(logoImageView)
         view.addSubview(signInButton)
+        view.addSubview(signUpButton)
         view.addSubview(continueWithoutRegButton)
         
         // Setup constraints
@@ -64,14 +79,26 @@ class AuthViewController: UIViewController {
             // Sign in button constraints
             signInButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             signInButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            signInButton.bottomAnchor.constraint(equalTo: continueWithoutRegButton.topAnchor, constant: -16),
+            signInButton.bottomAnchor.constraint(equalTo: signUpButton.topAnchor, constant: -16),
             signInButton.heightAnchor.constraint(equalToConstant: 50),
+            
+            // Sign up button constraints
+            signUpButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            signUpButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            signUpButton.bottomAnchor.constraint(equalTo: continueWithoutRegButton.topAnchor, constant: -16),
+            signUpButton.heightAnchor.constraint(equalToConstant: 50),
             
             // Continue without registration button constraints
             continueWithoutRegButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             continueWithoutRegButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            continueWithoutRegButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            continueWithoutRegButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -100),
             continueWithoutRegButton.heightAnchor.constraint(equalToConstant: 50)
         ])
+    }
+    
+    @objc private func loadMainView(){
+        let tabBar = TabBarController()
+        tabBar.modalPresentationStyle = .fullScreen
+        present(tabBar, animated: true)
     }
 }

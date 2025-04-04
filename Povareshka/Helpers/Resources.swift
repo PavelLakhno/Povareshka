@@ -85,6 +85,11 @@ enum Resources {
             static let search = UIImage(named: "search_tab")
         }
         
+        enum Background {
+            static let start = UIImage(named: "Start_View_background")
+            static let auth = UIImage(named: "Registration_View_background")
+        }
+        
         enum Icons {
             static let add = UIImage(systemName: "plus.circle")
             static let addFill = UIImage(systemName: "plus.circle.fill")
