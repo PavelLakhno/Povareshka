@@ -86,8 +86,9 @@ enum Resources {
         }
         
         enum Background {
-            static let start = UIImage(named: "Start_View_background")
-            static let auth = UIImage(named: "Registration_View_background")
+            static let auth = UIImage(named: "Start_View_background")
+            static let reg = UIImage(named: "Registration_View_background")
+            static let meet = UIImage(named: "Auth_View_background")
         }
         
         enum Icons {

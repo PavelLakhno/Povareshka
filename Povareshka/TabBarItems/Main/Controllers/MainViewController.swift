@@ -45,7 +45,7 @@ final class MainViewController: BaseController {
         createTempData()
         recipes = StorageManager.shared.realm.objects(RecipeModel.self)
         print("Recipes:")
-        print(recipes[0].title)
+//        print(recipes[0].title)
     }
     
     override func viewWillAppear(_ animated: Bool) {

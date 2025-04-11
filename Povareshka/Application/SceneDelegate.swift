@@ -6,20 +6,32 @@
 //
 
 import UIKit
+import Firebase
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
-
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        
-        let tabBar = TabBarController()
+//        let tabBar = TabBarController()
 
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         window?.windowScene = windowScene
-        window?.rootViewController = tabBar
+//        window?.rootViewController = tabBar
+        
+        if Auth.auth().currentUser != nil {
+            // Пользователь авторизован — показываем основной интерфейс
+            let tabBar = TabBarController()
+            window?.rootViewController = UINavigationController(rootViewController: tabBar)
+        } else {
+            // Пользователь не авторизован — показываем экран входа
+            let authVC = BaseAuthViewController()
+            let navController = UINavigationController(rootViewController: authVC)
+            navController.navigationBar.isHidden = true
+            window?.rootViewController = navController
+        }
+        
         window?.makeKeyAndVisible()
     }
 
