@@ -14,19 +14,18 @@ import PhotosUI
 final class RegistrationController: UIViewController {
     
     var onBackTapped: (() -> Void)?
+    
     // MARK: - UI Elements
-    //    private let scrollView = UIScrollView()
-    private let contentView = UIView()
-    
-//    private let backButton: UIButton = {
-//        let btn = UIButton(type: .system)
-//        btn.setTitleColor(.orange, for: .normal)
-//        btn.setTitle("← Назад", for: .normal)
-//        btn.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
-//        btn.translatesAutoresizingMaskIntoConstraints = false
-//        return btn
-//    }()
-    
+//    private let contentView = UIView()
+    private let backButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        button.setTitle("Назад", for: .normal)
+        button.tintColor = Resources.Colors.orange
+        button.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
     
     private let nameTextField: UITextField = {
         let field = UITextField()
@@ -106,8 +105,7 @@ final class RegistrationController: UIViewController {
             attributes: attributes as [NSAttributedString.Key : Any])
         return field
     }()
-    
-//    private let genderSegmentedControl = UISegmentedControl(items: ["Муж", "Жен"])
+
     private let genderSegmentedControl: UISegmentedControl = {
         let segmentControl = UISegmentedControl(items: ["Муж", "Жен"])
         segmentControl.layer.cornerRadius = 12
@@ -116,22 +114,53 @@ final class RegistrationController: UIViewController {
         segmentControl.translatesAutoresizingMaskIntoConstraints = false
         return segmentControl
     }()
-    private let avatarImageView = UIImageView()
-    private let selectPhotoButton = UIButton(type: .system)
-    private let registerButton = UIButton(type: .system)
+    
+    private let avatarImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.layer.cornerRadius = 50
+        imageView.layer.masksToBounds = true
+        imageView.tintColor = Resources.Colors.orange
+        imageView.image = UIImage(systemName: "person.circle")
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+    
+    private let selectPhotoButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Выбрать фото", for: .normal)
+        button.tintColor = Resources.Colors.orange
+        button.addTarget(self, action: #selector(handleSelectPhoto), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    private let registerButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Регистрация", for: .normal)
+        button.backgroundColor = Resources.Colors.orange
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 12
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        button.addTarget(self, action: #selector(handleRegister), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
     
     private var selectedImage: UIImage?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupNavigationBar()
+//        setupNavigationBar()
         setupUI()
         setupConstraints()
+        
     }
+    
     private func setupNavigationBar() {
 //         1. Показываем навигационную панель
-        navigationController?.navigationBar.isHidden = false
+//        navigationController?.navigationBar.isHidden = false
         
         // 2. Настраиваем кнопку "Назад"
         let backButton = UIBarButtonItem(
@@ -150,112 +179,69 @@ final class RegistrationController: UIViewController {
     
     // MARK: - Setup UI
     private func setupUI() {
-        view.backgroundColor = .clear //UIColor(patternImage: Resources.Images.Background.meet ?? UIImage())
-        view.addSubview(contentView)
-        
-        // Avatar Image
-        avatarImageView.contentMode = .scaleAspectFill
-        avatarImageView.layer.cornerRadius = 50
-        avatarImageView.layer.masksToBounds = true
-        avatarImageView.tintColor = Resources.Colors.orange
-        avatarImageView.image = UIImage(systemName: "person.circle")
-//        contentView.addSubview(backButton)
-        contentView.addSubview(avatarImageView)
-        
-        // Select Photo Button
-        selectPhotoButton.setTitle("Выбрать фото", for: .normal)
-        selectPhotoButton.tintColor = Resources.Colors.orange
-        selectPhotoButton.addTarget(self, action: #selector(handleSelectPhoto), for: .touchUpInside)
-        contentView.addSubview(selectPhotoButton)
-        contentView.addSubview(nameTextField)
-        contentView.addSubview(emailTextField)
-        contentView.addSubview(phoneTextField)
-        contentView.addSubview(passwordTextField)
-        
-        // Gender Segmented Control
-//        genderSegmentedControl.selectedSegmentIndex = 0
-//        genderSegmentedControl.backgroundColor = Resources.Colors.orange
-//        genderSegmentedControl.selectedSegmentTintColor = Resources.Colors.orange.withAlphaComponent(0.8)
-//        genderSegmentedControl.tintColor = .gray
-        contentView.addSubview(genderSegmentedControl)
-        
-        // Register Button
-        registerButton.setTitle("Регистрация", for: .normal)
-        registerButton.backgroundColor = Resources.Colors.orange
-        registerButton.setTitleColor(.white, for: .normal)
-        registerButton.layer.cornerRadius = 12
-        registerButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        registerButton.addTarget(self, action: #selector(handleRegister), for: .touchUpInside)
-        contentView.addSubview(registerButton)
+        view.backgroundColor = .green.withAlphaComponent(0.5)
+
+        view.addSubview(backButton)
+        view.addSubview(avatarImageView)
+        view.addSubview(selectPhotoButton)
+        view.addSubview(nameTextField)
+        view.addSubview(emailTextField)
+        view.addSubview(phoneTextField)
+        view.addSubview(passwordTextField)
+        view.addSubview(genderSegmentedControl)
+        view.addSubview(registerButton)
+
     }
     
     // MARK: - Constraints
     private func setupConstraints() {
-        contentView.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            contentView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            contentView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-        ])
         
         let padding: CGFloat = 20
         let textFieldHeight: CGFloat = 44
-        
-        avatarImageView.translatesAutoresizingMaskIntoConstraints = false
-        selectPhotoButton.translatesAutoresizingMaskIntoConstraints = false
-//        nameTextField.translatesAutoresizingMaskIntoConstraints = false
-//        emailTextField.translatesAutoresizingMaskIntoConstraints = false
-//        phoneTextField.translatesAutoresizingMaskIntoConstraints = false
-//        passwordTextField.translatesAutoresizingMaskIntoConstraints = false
-//        genderSegmentedControl.translatesAutoresizingMaskIntoConstraints = false
-        registerButton.translatesAutoresizingMaskIntoConstraints = false
+
         
         NSLayoutConstraint.activate([
-//            backButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
-//            backButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
-//            backButton.bottomAnchor.constraint(equalTo: avatarImageView.topAnchor, constant: padding*2),
+            backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            backButton.topAnchor.constraint(equalTo: view.topAnchor, constant: padding*4),
             
             avatarImageView.bottomAnchor.constraint(equalTo: selectPhotoButton.topAnchor, constant: -8),
-            avatarImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            avatarImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             avatarImageView.widthAnchor.constraint(equalToConstant: 100),
             avatarImageView.heightAnchor.constraint(equalToConstant: 100),
             
             selectPhotoButton.bottomAnchor.constraint(equalTo: nameTextField.topAnchor, constant: -8),
-            selectPhotoButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            selectPhotoButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
             nameTextField.bottomAnchor.constraint(equalTo: emailTextField.topAnchor, constant: -padding),
-            nameTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
-            nameTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            nameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            nameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             nameTextField.heightAnchor.constraint(equalToConstant: textFieldHeight),
             
             emailTextField.bottomAnchor.constraint(equalTo: phoneTextField.topAnchor, constant: -padding),
-            emailTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
-            emailTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            emailTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            emailTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             emailTextField.heightAnchor.constraint(equalToConstant: textFieldHeight),
             
             phoneTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             phoneTextField.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            phoneTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
-            phoneTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            phoneTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            phoneTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             phoneTextField.heightAnchor.constraint(equalToConstant: textFieldHeight),
             
             passwordTextField.topAnchor.constraint(equalTo: phoneTextField.bottomAnchor, constant: padding),
-            passwordTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
-            passwordTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            passwordTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            passwordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             passwordTextField.heightAnchor.constraint(equalToConstant: textFieldHeight),
             
             genderSegmentedControl.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: padding),
-            genderSegmentedControl.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
-            genderSegmentedControl.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            genderSegmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            genderSegmentedControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             genderSegmentedControl.heightAnchor.constraint(equalToConstant: textFieldHeight),
             
             registerButton.topAnchor.constraint(equalTo: genderSegmentedControl.bottomAnchor, constant: padding),
-            registerButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
-            registerButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            registerButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            registerButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             registerButton.heightAnchor.constraint(equalToConstant: textFieldHeight),
-//            registerButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -padding)
         ])
     }
     
@@ -361,7 +347,9 @@ final class RegistrationController: UIViewController {
     
     @objc private func backTapped() {
         onBackTapped?()
+//        navigationController?.popViewController(animated: true)
     }
+    
 }
 
 // MARK: - PHPickerViewControllerDelegate

@@ -33,6 +33,16 @@ class BaseAuthViewController: UIViewController {
         showLoginForm()
     }
     
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+//        navigationController?.setNavigationBarHidden(true, animated: animated)
+//    }
+
+//    override func viewWillDisappear(_ animated: Bool) {
+//        super.viewWillDisappear(animated)
+//        navigationController?.setNavigationBarHidden(false, animated: animated)
+//    }
+    
     private func setupUI() {
         view.addSubview(backgroundImage)
         view.addSubview(containerView)
@@ -42,16 +52,14 @@ class BaseAuthViewController: UIViewController {
             backgroundImage.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             backgroundImage.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             backgroundImage.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+
+            containerView.topAnchor.constraint(equalTo: view.topAnchor),
+            containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
-            containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            containerView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            containerView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
-            containerView.heightAnchor.constraint(lessThanOrEqualTo: view.heightAnchor, multiplier: 0.7),
-            
-            containerView.heightAnchor.constraint(greaterThanOrEqualToConstant: 300)
         ])
-        
-        
+
     }
     
     // Переключение между формами
@@ -92,6 +100,11 @@ class BaseAuthViewController: UIViewController {
             regVC.onBackTapped = { [weak self] in
                 self?.showLoginForm()
             }
+//            let regVC = RegistrationController()
+//            regVC.onBackTapped = { [weak self] in
+//                self?.navigationController?.popViewController(animated: true)
+//            }
+//            self.navigationController?.pushViewController(regVC, animated: true)
             
             self.embedChild(regVC, in: self.containerView)
             self.containerView.alpha = 0
@@ -108,26 +121,5 @@ class BaseAuthViewController: UIViewController {
         child.view.frame = container.bounds
         child.didMove(toParent: self)
     }
-//    private func embedChild(_ child: UIViewController, in container: UIView) {
-//        // Удаляем предыдущие
-//        container.subviews.forEach { $0.removeFromSuperview() }
-//        children.forEach { $0.removeFromParent() }
-//        
-//        // Добавляем новые
-//        addChild(child)
-//        container.addSubview(child.view)
-//        child.view.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        NSLayoutConstraint.activate([
-//            child.view.topAnchor.constraint(equalTo: container.topAnchor),
-//            child.view.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-//            child.view.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-//            child.view.bottomAnchor.constraint(equalTo: container.bottomAnchor)
-//        ])
-//        
-//        child.didMove(toParent: self)
-//        
-//        // Принудительное обновление layout
-//        container.layoutIfNeeded()
-//    }
+
 }

@@ -94,7 +94,7 @@ class AuthViewController: UIViewController {
     
     // MARK: - UI Setup
     private func setupUI() {
-        view.backgroundColor = .clear //UIColor(patternImage: Resources.Images.Background.meet ?? UIImage())
+        view.backgroundColor = .green.withAlphaComponent(0.5)
         
         // Add subviews
         view.addSubview(emailTextField)
@@ -147,16 +147,14 @@ class AuthViewController: UIViewController {
     }
     
     @objc private func loadRegView(){
+//        let regVC = RegistrationController()
+//        navigationController?.pushViewController(regVC, animated: true)
         onRegisterTapped?()
-//        let regView = RegistrationController()
-//        let navBar = NavBarController(rootViewController: regView)
-//        navigationController?.pushViewController(regView, animated: true)
-//        present(navBar, animated: true)
     }
     
-//    @objc private func registerTapped() {
-//        print("touch")
-//        onRegisterTapped?()
+//    @objc private func openRegistration() {
+//        let regVC = RegistrationController()
+//        navigationController?.pushViewController(regVC, animated: true)
 //    }
-    
+  
 }
