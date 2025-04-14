@@ -12,15 +12,14 @@ import FirebaseStorage
 import PhotosUI
 
 final class RegistrationController: UIViewController {
-    
     var onBackTapped: (() -> Void)?
     
     // MARK: - UI Elements
-//    private let contentView = UIView()
-    private let backButton: UIButton = {
+
+    private lazy var backButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "chevron.left"), for: .normal)
-        button.setTitle("Назад", for: .normal)
+        button.setImage(Resources.Images.Icons.back, for: .normal)
+        button.setTitle(Resources.Strings.Buttons.back, for: .normal)
         button.tintColor = Resources.Colors.orange
         button.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -41,7 +40,7 @@ final class RegistrationController: UIViewController {
                           NSAttributedString.Key.font: UIFont.helveticalRegular(withSize: 16)]
         
         field.attributedPlaceholder = NSAttributedString(
-            string: "Имя",
+            string: Resources.Strings.Placeholders.name,
             attributes: attributes as [NSAttributedString.Key : Any])
         return field
     }()
@@ -61,7 +60,7 @@ final class RegistrationController: UIViewController {
                           NSAttributedString.Key.font: UIFont.helveticalRegular(withSize: 16)]
         
         field.attributedPlaceholder = NSAttributedString(
-            string: "Email",
+            string: Resources.Strings.Placeholders.email,
             attributes: attributes as [NSAttributedString.Key : Any])
         return field
     }()
@@ -81,7 +80,7 @@ final class RegistrationController: UIViewController {
                           NSAttributedString.Key.font: UIFont.helveticalRegular(withSize: 16)]
         
         field.attributedPlaceholder = NSAttributedString(
-            string: "Тел. +7(123)456-78-90",
+            string: Resources.Strings.Placeholders.number,
             attributes: attributes as [NSAttributedString.Key : Any])
         return field
     }()
@@ -101,14 +100,13 @@ final class RegistrationController: UIViewController {
                           NSAttributedString.Key.font: UIFont.helveticalRegular(withSize: 16)]
         
         field.attributedPlaceholder = NSAttributedString(
-            string: "Пароль (мин. 6 знаков)",
+            string: Resources.Strings.Placeholders.passwordReg,
             attributes: attributes as [NSAttributedString.Key : Any])
         return field
     }()
 
     private let genderSegmentedControl: UISegmentedControl = {
-        let segmentControl = UISegmentedControl(items: ["Муж", "Жен"])
-        segmentControl.layer.cornerRadius = 12
+        let segmentControl = UISegmentedControl(items: [Resources.Strings.Gender.man, Resources.Strings.Gender.woman])
         segmentControl.selectedSegmentIndex = 0
         segmentControl.selectedSegmentTintColor = Resources.Colors.orange.withAlphaComponent(0.9)
         segmentControl.translatesAutoresizingMaskIntoConstraints = false
@@ -121,23 +119,23 @@ final class RegistrationController: UIViewController {
         imageView.layer.cornerRadius = 50
         imageView.layer.masksToBounds = true
         imageView.tintColor = Resources.Colors.orange
-        imageView.image = UIImage(systemName: "person.circle")
+        imageView.image = Resources.Images.Icons.avatar
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
     
-    private let selectPhotoButton: UIButton = {
+    private lazy var selectPhotoButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Выбрать фото", for: .normal)
+        button.setTitle(Resources.Strings.Buttons.addPhoto, for: .normal)
         button.tintColor = Resources.Colors.orange
         button.addTarget(self, action: #selector(handleSelectPhoto), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
-    private let registerButton: UIButton = {
+    private lazy var registerButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Регистрация", for: .normal)
+        button.setTitle(Resources.Strings.Buttons.reg, for: .normal)
         button.backgroundColor = Resources.Colors.orange
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 12
@@ -152,34 +150,13 @@ final class RegistrationController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-//        setupNavigationBar()
         setupUI()
         setupConstraints()
-        
-    }
-    
-    private func setupNavigationBar() {
-//         1. Показываем навигационную панель
-//        navigationController?.navigationBar.isHidden = false
-        
-        // 2. Настраиваем кнопку "Назад"
-        let backButton = UIBarButtonItem(
-            image: UIImage(systemName: "chevron.left"),
-            style: .plain,
-            target: self,
-            action: #selector(backTapped)
-        )
-        
-        // 3. Устанавливаем кнопку
-        navigationItem.leftBarButtonItem = backButton
-        
-        // 4. Опционально: настраиваем внешний вид
-        navigationController?.navigationBar.tintColor = .orange // Цвет кнопки
     }
     
     // MARK: - Setup UI
     private func setupUI() {
-        view.backgroundColor = .green.withAlphaComponent(0.5)
+        view.backgroundColor = .clear
 
         view.addSubview(backButton)
         view.addSubview(avatarImageView)
@@ -190,58 +167,53 @@ final class RegistrationController: UIViewController {
         view.addSubview(passwordTextField)
         view.addSubview(genderSegmentedControl)
         view.addSubview(registerButton)
-
     }
     
     // MARK: - Constraints
     private func setupConstraints() {
         
-        let padding: CGFloat = 20
-        let textFieldHeight: CGFloat = 44
-
-        
         NSLayoutConstraint.activate([
-            backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            backButton.topAnchor.constraint(equalTo: view.topAnchor, constant: padding*4),
+            backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
+            backButton.topAnchor.constraint(equalTo: view.topAnchor, constant: Resources.Sizes.paddingWidth*4),
             
-            avatarImageView.bottomAnchor.constraint(equalTo: selectPhotoButton.topAnchor, constant: -8),
+            avatarImageView.bottomAnchor.constraint(equalTo: selectPhotoButton.topAnchor, constant: -Resources.Sizes.paddingHeight),
             avatarImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            avatarImageView.widthAnchor.constraint(equalToConstant: 100),
-            avatarImageView.heightAnchor.constraint(equalToConstant: 100),
+            avatarImageView.widthAnchor.constraint(equalToConstant: Resources.Sizes.avatar),
+            avatarImageView.heightAnchor.constraint(equalToConstant: Resources.Sizes.avatar),
             
-            selectPhotoButton.bottomAnchor.constraint(equalTo: nameTextField.topAnchor, constant: -8),
+            selectPhotoButton.bottomAnchor.constraint(equalTo: nameTextField.topAnchor, constant: -Resources.Sizes.paddingHeight),
             selectPhotoButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            nameTextField.bottomAnchor.constraint(equalTo: emailTextField.topAnchor, constant: -padding),
-            nameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            nameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
-            nameTextField.heightAnchor.constraint(equalToConstant: textFieldHeight),
+            nameTextField.bottomAnchor.constraint(equalTo: emailTextField.topAnchor, constant: -Resources.Sizes.paddingWidth),
+            nameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
+            nameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
+            nameTextField.heightAnchor.constraint(equalToConstant: Resources.Sizes.textFieldHeight),
             
-            emailTextField.bottomAnchor.constraint(equalTo: phoneTextField.topAnchor, constant: -padding),
-            emailTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            emailTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
-            emailTextField.heightAnchor.constraint(equalToConstant: textFieldHeight),
+            emailTextField.bottomAnchor.constraint(equalTo: phoneTextField.topAnchor, constant: -Resources.Sizes.paddingWidth),
+            emailTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
+            emailTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
+            emailTextField.heightAnchor.constraint(equalToConstant: Resources.Sizes.textFieldHeight),
             
             phoneTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             phoneTextField.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            phoneTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            phoneTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
-            phoneTextField.heightAnchor.constraint(equalToConstant: textFieldHeight),
+            phoneTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
+            phoneTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
+            phoneTextField.heightAnchor.constraint(equalToConstant: Resources.Sizes.textFieldHeight),
             
-            passwordTextField.topAnchor.constraint(equalTo: phoneTextField.bottomAnchor, constant: padding),
-            passwordTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            passwordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
-            passwordTextField.heightAnchor.constraint(equalToConstant: textFieldHeight),
+            passwordTextField.topAnchor.constraint(equalTo: phoneTextField.bottomAnchor, constant: Resources.Sizes.paddingWidth),
+            passwordTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
+            passwordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
+            passwordTextField.heightAnchor.constraint(equalToConstant: Resources.Sizes.textFieldHeight),
             
-            genderSegmentedControl.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: padding),
-            genderSegmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            genderSegmentedControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
-            genderSegmentedControl.heightAnchor.constraint(equalToConstant: textFieldHeight),
+            genderSegmentedControl.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: Resources.Sizes.paddingWidth),
+            genderSegmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
+            genderSegmentedControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
+            genderSegmentedControl.heightAnchor.constraint(equalToConstant: Resources.Sizes.buttonHeight),
             
-            registerButton.topAnchor.constraint(equalTo: genderSegmentedControl.bottomAnchor, constant: padding),
-            registerButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            registerButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
-            registerButton.heightAnchor.constraint(equalToConstant: textFieldHeight),
+            registerButton.topAnchor.constraint(equalTo: genderSegmentedControl.bottomAnchor, constant: Resources.Sizes.paddingWidth),
+            registerButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
+            registerButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
+            registerButton.heightAnchor.constraint(equalToConstant: Resources.Sizes.buttonHeight),
         ])
     }
     
@@ -263,18 +235,18 @@ final class RegistrationController: UIViewController {
             let phone = phoneTextField.text, !phone.isEmpty,
             let password = passwordTextField.text, password.count >= 6
         else {
-            showAlert(title: "Error", message: "Please fill all fields correctly.")
+            showAlert(title: Resources.Strings.Tittles.error, message: Resources.Strings.Messages.fieldsEmpty)
             return
         }
         
-        let gender = genderSegmentedControl.selectedSegmentIndex == 0 ? "Муж" : "Жен"
+        let gender = genderSegmentedControl.selectedSegmentIndex == 0 ? Resources.Strings.Gender.man : Resources.Strings.Gender.woman
         
         // 1. Создаем пользователя в Firebase Auth (Email/Password)
         Auth.auth().createUser(withEmail: email, password: password) { [weak self] authResult, error in
             guard let self = self else { return }
             
             if let error = error {
-                self.showAlert(title: "Registration Error", message: error.localizedDescription)
+                self.showAlert(title: Resources.Strings.Messages.regError, message: error.localizedDescription)
                 return
             }
             
@@ -303,7 +275,7 @@ final class RegistrationController: UIViewController {
         
         storageRef.putData(imageData, metadata: nil) { _, error in
             if let error = error {
-                print("Failed to upload avatar:", error)
+                print(Resources.Strings.Messages.uploadAvatarError, error)
                 completion(nil)
                 return
             }
@@ -329,7 +301,8 @@ final class RegistrationController: UIViewController {
         
         db.collection("users").document(uid).setData(userData) { [weak self] error in
             if let error = error {
-                self?.showAlert(title: "Error", message: "Failed to save user data: \(error.localizedDescription)")
+                self?.showAlert(title: Resources.Strings.Tittles.error,
+                                message: "\(Resources.Strings.Messages.failedSaveData) \(error.localizedDescription)")
                 return
             }
             
@@ -347,7 +320,6 @@ final class RegistrationController: UIViewController {
     
     @objc private func backTapped() {
         onBackTapped?()
-//        navigationController?.popViewController(animated: true)
     }
     
 }

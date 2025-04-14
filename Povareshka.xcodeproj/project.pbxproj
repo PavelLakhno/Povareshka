@@ -55,6 +55,7 @@
 		CEA9CD7C2D81D8D4002C11E7 /* AuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA9CD7B2D81D8D4002C11E7 /* AuthViewController.swift */; };
 		CEAC9E892CE64C0500221CCF /* Recipes.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEAC9E882CE64C0500221CCF /* Recipes.swift */; };
 		CEACB9D52C80700F00FC1C63 /* UIFont + ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEACB9D42C80700F00FC1C63 /* UIFont + ext.swift */; };
+		CEAF6C3B2DAD096D00781FB8 /* PasswordResetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEAF6C3A2DAD096D00781FB8 /* PasswordResetController.swift */; };
 		CEB45B512C9AF71C000D9FE4 /* UITextView + ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB45B502C9AF71C000D9FE4 /* UITextView + ext.swift */; };
 		CEC3EFB22D83287700248BBC /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC3EFB12D83287700248BBC /* FilterViewController.swift */; };
 		CEC4ACED2D8B0B52009DBCD3 /* RecipeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC4ACEC2D8B0B52009DBCD3 /* RecipeModel.swift */; };
@@ -112,6 +113,7 @@
 		CEA9CD7B2D81D8D4002C11E7 /* AuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
 		CEAC9E882CE64C0500221CCF /* Recipes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipes.swift; sourceTree = "<group>"; };
 		CEACB9D42C80700F00FC1C63 /* UIFont + ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont + ext.swift"; sourceTree = "<group>"; };
+		CEAF6C3A2DAD096D00781FB8 /* PasswordResetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordResetController.swift; sourceTree = "<group>"; };
 		CEB45B502C9AF71C000D9FE4 /* UITextView + ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView + ext.swift"; sourceTree = "<group>"; };
 		CEC3EFB12D83287700248BBC /* FilterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewController.swift; sourceTree = "<group>"; };
 		CEC4ACEC2D8B0B52009DBCD3 /* RecipeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeModel.swift; sourceTree = "<group>"; };
@@ -462,6 +464,7 @@
 				CE93F43D2DA909FE00CF3144 /* BaseAuthViewController.swift */,
 				CEA9CD7B2D81D8D4002C11E7 /* AuthViewController.swift */,
 				CEA502612DA69BED00DB0E47 /* RegistrationController.swift */,
+				CEAF6C3A2DAD096D00781FB8 /* PasswordResetController.swift */,
 			);
 			path = Authorization;
 			sourceTree = "<group>";
@@ -603,6 +606,7 @@
 				CEC4ACFA2D8B153E009DBCD3 /* MainIngredientsTVCell.swift in Sources */,
 				CEC4ACED2D8B0B52009DBCD3 /* RecipeModel.swift in Sources */,
 				CEA109ED2C7E00940095E989 /* SearchViewController.swift in Sources */,
+				CEAF6C3B2DAD096D00781FB8 /* PasswordResetController.swift in Sources */,
 				CE3535032C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift in Sources */,
 				CEA290152D81D5290017D499 /* ShoppingItemCell.swift in Sources */,
 				CEA109F32C7E01490095E989 /* ProfileViewController.swift in Sources */,

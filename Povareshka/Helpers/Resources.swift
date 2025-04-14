@@ -35,16 +35,28 @@ enum Resources {
             static let done = "Готово"
             static let save = "Сохранить"
             static let cancel = "Отменить"
+            static let back = "Назад"
             static let add = "Добавить"
             static let delete = "Удалить"
+            static let reg = "Регистрация"
+            static let entrance = "Войти"
             static let addIngredient = "Добавить ингредиент"
             static let addStep = "Добавить шаг"
+            static let addPhoto = "Выбрать фото"
+            static let forgetPassword = "Забыли пароль?"
         }
         
         enum Placeholders {
+            static let login = "Логин"
+            static let name = "Имя"
+            static let email = "Email"
+            static let number = "Тел. +7(123)456-78-90"
+            static let password = "Введите пароль"
+            static let passwordReg = "Пароль (мин. 6 знаков)"
             static let enterTittle = "Введите название"
             static let enterDescription = "Введите описание"
             static let enterCount = "Введите количество"
+            static let enterEmail = "Введите email"
         }
         
         enum Tittles {
@@ -55,11 +67,24 @@ enum Resources {
             static let correctIngredient = "Изменить ингредиент"
             static let timeCooking = "Время приготовления:"
             static let tableSetting = "Сервировка:"
+            static let error = "Ошибка"
+            static let success = "Успешно"
         }
         
         enum Messages {
             static let delete = "Ваш список будет очищен без возможности восстановления"
             static let shopListEmpty = "Ваш список покупок пуст"
+            static let fieldsEmpty = "Заполните все поля корректно"
+            static let regError = "Ошибка регистрации"
+            static let uploadAvatarError = "Ошибка загрузки аватарки"
+            static let letter = "Письмо для сброса пароля отправлено на"
+            static let enterEmail = "Пожалуйста, введите email"
+            static let failedSaveData = "Не удалось сохранить данные:"
+        }
+        
+        enum Gender {
+            static let man = "Муж"
+            static let woman = "Жен"
         }
         
         enum Unit: CaseIterable {
@@ -93,9 +118,11 @@ enum Resources {
         
         enum Icons {
             static let add = UIImage(systemName: "plus.circle")
+            static let back = UIImage(systemName: "chevron.left")
             static let addFill = UIImage(systemName: "plus.circle.fill")
             static let okFill = UIImage(systemName: "checkmark.circle.fill")
             static let trash = UIImage(systemName: "trash")
+            static let avatar = UIImage(systemName: "person.circle")
             static let cart = UIImage(systemName: "cart")
             static let arrowLeft = UIImage(named: "Icons/Arrow-Left")
             static let arrowRight = UIImage(named: "Icons/Arrow-Right")
@@ -136,6 +163,15 @@ enum Resources {
         static func createCookTimeArray() -> [String] {
             return (Array(1..<20) + stride(from: 20, through: 180, by: 5)).map { "\($0)" }
         }
+    }
+    
+    enum Sizes {
+        static let cornerRadius = 12.0
+        static let paddingWidth = 20.0
+        static let paddingHeight = 16.0
+        static let textFieldHeight = 44.0
+        static let buttonHeight = 44.0
+        static let avatar = 100.0
     }
 
 }

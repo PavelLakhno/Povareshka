@@ -9,11 +9,12 @@ import UIKit
 
 class AuthViewController: UIViewController {
     var onRegisterTapped: (() -> Void)?
+    var onResetPasswordTapped: (() -> Void)?
     
     // MARK: - UI Elements
-    let emailTextField: UITextField = {
+    private let loginTextField: UITextField = {
         let field = UITextField()
-        field.layer.cornerRadius = 12
+        field.layer.cornerRadius = Resources.Sizes.cornerRadius
         field.keyboardType = .emailAddress
         field.textAlignment = .left
         field.returnKeyType = .done
@@ -26,14 +27,14 @@ class AuthViewController: UIViewController {
                           NSAttributedString.Key.font: UIFont.helveticalRegular(withSize: 16)]
 
         field.attributedPlaceholder = NSAttributedString(
-            string: "Логин",
+            string: Resources.Strings.Placeholders.login,
             attributes: attributes as [NSAttributedString.Key : Any])
         return field
     }()
     
-    let passwordTextField: UITextField = {
+    private let passwordTextField: UITextField = {
         let field = UITextField()
-        field.layer.cornerRadius = 12
+        field.layer.cornerRadius = Resources.Sizes.cornerRadius
         field.isSecureTextEntry = true
         field.textAlignment = .left
         field.returnKeyType = .done
@@ -46,42 +47,42 @@ class AuthViewController: UIViewController {
                           NSAttributedString.Key.font: UIFont.helveticalRegular(withSize: 16)]
 
         field.attributedPlaceholder = NSAttributedString(
-            string: "Пароль",
+            string: Resources.Strings.Placeholders.password,
             attributes: attributes as [NSAttributedString.Key : Any])
         return field
     }()
     
     private let signInButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Войти", for: .normal)
+        button.setTitle(Resources.Strings.Buttons.entrance, for: .normal)
         button.backgroundColor = Resources.Colors.orange
         button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 12
+        button.layer.cornerRadius = Resources.Sizes.cornerRadius
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
-    private let signUpButton: UIButton = {
+    private lazy var signUpButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Регистрация", for: .normal)
+        button.setTitle(Resources.Strings.Buttons.reg, for: .normal)
         button.backgroundColor = Resources.Colors.orange
         button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 12
+        button.layer.cornerRadius = Resources.Sizes.cornerRadius
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.addTarget(self, action: #selector(loadRegView), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
-    private let continueWithoutRegButton: UIButton = {
+    private lazy var forgotPasswordButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Продолжить без регистрации", for: .normal)
+        button.setTitle(Resources.Strings.Buttons.forgetPassword, for: .normal)
         button.backgroundColor = Resources.Colors.orange.withAlphaComponent(0.2)
         button.setTitleColor(Resources.Colors.orange, for: .normal)
-        button.layer.cornerRadius = 12
+        button.layer.cornerRadius = Resources.Sizes.cornerRadius
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        button.addTarget(self, action: #selector(loadMainView), for: .touchUpInside)
+        button.addTarget(self, action: #selector(showPasswordReset), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -90,71 +91,56 @@ class AuthViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupConstraints()
     }
     
     // MARK: - UI Setup
     private func setupUI() {
-        view.backgroundColor = .green.withAlphaComponent(0.5)
-        
-        // Add subviews
-        view.addSubview(emailTextField)
+        view.backgroundColor = .clear
+
+        view.addSubview(loginTextField)
         view.addSubview(passwordTextField)
         view.addSubview(signInButton)
         view.addSubview(signUpButton)
-        view.addSubview(continueWithoutRegButton)
-        
-        let padding: CGFloat = 20
-        let textFieldHeight: CGFloat = 44
-        // Setup constraints
+        view.addSubview(forgotPasswordButton)
+    }
+    
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
             
-            emailTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            emailTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
-            emailTextField.bottomAnchor.constraint(equalTo: passwordTextField.topAnchor, constant: -16),
-            emailTextField.heightAnchor.constraint(equalToConstant: textFieldHeight),
+            loginTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
+            loginTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
+            loginTextField.bottomAnchor.constraint(equalTo: passwordTextField.topAnchor, constant: -Resources.Sizes.paddingHeight),
+            loginTextField.heightAnchor.constraint(equalToConstant: Resources.Sizes.textFieldHeight),
             
-            passwordTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            passwordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
-            passwordTextField.bottomAnchor.constraint(equalTo: signInButton.topAnchor, constant: -16),
-            passwordTextField.heightAnchor.constraint(equalToConstant: textFieldHeight),
-            
-            // Sign in button constraints
-            signInButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            signInButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            passwordTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
+            passwordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
+            passwordTextField.bottomAnchor.constraint(equalTo: signInButton.topAnchor, constant: -Resources.Sizes.paddingHeight),
+            passwordTextField.heightAnchor.constraint(equalToConstant: Resources.Sizes.textFieldHeight),
+
+            signInButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
+            signInButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
             signInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             signInButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            signInButton.heightAnchor.constraint(equalToConstant: textFieldHeight),
-            
-            // Sign up button constraints
-            signUpButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            signUpButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
-            signUpButton.topAnchor.constraint(equalTo: signInButton.bottomAnchor, constant: 16),
-            signUpButton.heightAnchor.constraint(equalToConstant: textFieldHeight),
-            
-            // Continue without registration button constraints
-            continueWithoutRegButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            continueWithoutRegButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
-            continueWithoutRegButton.topAnchor.constraint(equalTo: signUpButton.bottomAnchor, constant: 16),
-            continueWithoutRegButton.heightAnchor.constraint(equalToConstant: textFieldHeight)
+            signInButton.heightAnchor.constraint(equalToConstant: Resources.Sizes.buttonHeight),
+
+            signUpButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
+            signUpButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
+            signUpButton.topAnchor.constraint(equalTo: signInButton.bottomAnchor, constant: Resources.Sizes.paddingHeight),
+            signUpButton.heightAnchor.constraint(equalToConstant: Resources.Sizes.buttonHeight),
+
+            forgotPasswordButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
+            forgotPasswordButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
+            forgotPasswordButton.topAnchor.constraint(equalTo: signUpButton.bottomAnchor, constant: Resources.Sizes.paddingHeight),
+            forgotPasswordButton.heightAnchor.constraint(equalToConstant: Resources.Sizes.buttonHeight)
         ])
     }
-    
-    @objc private func loadMainView(){
-        onRegisterTapped?()
-        let tabBar = TabBarController()
-        tabBar.modalPresentationStyle = .fullScreen
-        present(tabBar, animated: true)
-    }
-    
+
     @objc private func loadRegView(){
-//        let regVC = RegistrationController()
-//        navigationController?.pushViewController(regVC, animated: true)
         onRegisterTapped?()
     }
     
-//    @objc private func openRegistration() {
-//        let regVC = RegistrationController()
-//        navigationController?.pushViewController(regVC, animated: true)
-//    }
-  
+    @objc private func showPasswordReset() {
+        onResetPasswordTapped?()
+    }
 }

@@ -8,7 +8,7 @@
 import UIKit
 
 class BaseAuthViewController: UIViewController {
-    // Общий фон
+    // General background
     private let backgroundImage: UIImageView = {
         let iv = UIImageView(image: Resources.Images.Background.meet)
         iv.contentMode = .scaleAspectFill
@@ -18,11 +18,10 @@ class BaseAuthViewController: UIViewController {
         return iv
     }()
     
-    // Контейнер для форм
+    // Container for forms
     private let containerView: UIView = {
         let view = UIView()
-        
-        view.isUserInteractionEnabled = true // Это критически важно
+        view.isUserInteractionEnabled = true
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -32,17 +31,7 @@ class BaseAuthViewController: UIViewController {
         setupUI()
         showLoginForm()
     }
-    
-//    override func viewWillAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-//        navigationController?.setNavigationBarHidden(true, animated: animated)
-//    }
 
-//    override func viewWillDisappear(_ animated: Bool) {
-//        super.viewWillDisappear(animated)
-//        navigationController?.setNavigationBarHidden(false, animated: animated)
-//    }
-    
     private func setupUI() {
         view.addSubview(backgroundImage)
         view.addSubview(containerView)
@@ -54,16 +43,13 @@ class BaseAuthViewController: UIViewController {
             backgroundImage.bottomAnchor.constraint(equalTo: view.bottomAnchor),
 
             containerView.topAnchor.constraint(equalTo: view.topAnchor),
-            containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
+            containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
             containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
         ])
-
     }
     
     // Переключение между формами
-    
     func showLoginForm() {
         // Анимация исчезновения текущей формы
 
@@ -77,6 +63,10 @@ class BaseAuthViewController: UIViewController {
             let loginVC = AuthViewController()
             loginVC.onRegisterTapped = { [weak self] in
                 self?.showRegistrationForm()
+            }
+            
+            loginVC.onResetPasswordTapped = { [weak self] in
+                self?.showPasswordResetForm()
             }
 
             // Добавляем новую форму (пока невидимую)
@@ -100,13 +90,28 @@ class BaseAuthViewController: UIViewController {
             regVC.onBackTapped = { [weak self] in
                 self?.showLoginForm()
             }
-//            let regVC = RegistrationController()
-//            regVC.onBackTapped = { [weak self] in
-//                self?.navigationController?.popViewController(animated: true)
-//            }
-//            self.navigationController?.pushViewController(regVC, animated: true)
             
             self.embedChild(regVC, in: self.containerView)
+            self.containerView.alpha = 0
+            
+            UIView.animate(withDuration: 0.3) {
+                self.containerView.alpha = 1
+            }
+        }
+    }
+    
+    func showPasswordResetForm() {
+        UIView.animate(withDuration: 0.3) {
+            self.containerView.alpha = 0
+        } completion: { _ in
+            self.containerView.subviews.forEach { $0.removeFromSuperview() }
+            
+            let resetVC = PasswordResetController()
+            resetVC.onBackTapped = { [weak self] in
+                self?.showLoginForm()
+            }
+            
+            self.embedChild(resetVC, in: self.containerView)
             self.containerView.alpha = 0
             
             UIView.animate(withDuration: 0.3) {
