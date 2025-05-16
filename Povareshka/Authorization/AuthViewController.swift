@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import Auth
+
 
 class AuthViewController: UIViewController {
     var onRegisterTapped: (() -> Void)?
@@ -52,13 +54,14 @@ class AuthViewController: UIViewController {
         return field
     }()
     
-    private let signInButton: UIButton = {
+    private lazy var signInButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle(Resources.Strings.Buttons.entrance, for: .normal)
         button.backgroundColor = Resources.Colors.orange
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = Resources.Sizes.cornerRadius
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        button.addTarget(self, action: #selector(signInTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -70,7 +73,7 @@ class AuthViewController: UIViewController {
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = Resources.Sizes.cornerRadius
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.addTarget(self, action: #selector(loadRegView), for: .touchUpInside)
+        button.addTarget(self, action: #selector(signUnTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -142,5 +145,81 @@ class AuthViewController: UIViewController {
     
     @objc private func showPasswordReset() {
         onResetPasswordTapped?()
+    }
+    
+    @objc private func signInTapped() {
+        guard
+            let email = loginTextField.text, !email.isEmpty,
+            let password = passwordTextField.text, !password.isEmpty
+        else {
+            print("Заполните все поля")
+            return
+        }
+        
+        Task {
+            do {
+                let response = try await SupabaseManager.shared.client.auth.signIn(email: email, password: password)
+                print("✅ Login completed:", response.user.email ?? "No email")
+                
+                (parent as? BaseAuthViewController)?.handleAuthSuccess()
+            } catch {
+                let authError: Resources.AuthError
+                        
+                        if let supabaseError = error as? Resources.AuthError {
+                            // Ошибка от Supabase
+                            authError = supabaseError
+                        } else if let urlError = error as? URLError {
+                            // Ошибка сети
+                            authError = Resources.AuthError.networkError(urlError)
+                        } else {
+                            // Неизвестная ошибка
+                            authError = Resources.AuthError.unknown(error)
+                        }
+                       
+                        // Логируем полную ошибку для разработчика
+                        print("🔴 Auth failed: \(authError.localizedDescription)")
+                        
+                        // Передаем обработанную ошибку в контроллер
+                (parent as? BaseAuthViewController)?.handleAuthError(authError)
+            }
+        }
+    }
+    
+    @objc private func signUnTapped() {
+        guard
+            let email = loginTextField.text, !email.isEmpty,
+            let password = passwordTextField.text, !password.isEmpty
+        else {
+            print("Заполните все поля")
+            return
+        }
+        
+        Task {
+            do {
+                let response = try await SupabaseManager.shared.client.auth.signUp(email: email, password: password)
+                print("✅ Login completed:", response.user.email ?? "No email")
+                
+                (parent as? BaseAuthViewController)?.handleAuthSuccess()
+            } catch {
+                let authError: Resources.AuthError
+                        
+                        if let supabaseError = error as? Resources.AuthError {
+                            // Ошибка от Supabase
+                            authError = supabaseError
+                        } else if let urlError = error as? URLError {
+                            // Ошибка сети
+                            authError = Resources.AuthError.networkError(urlError)
+                        } else {
+                            // Неизвестная ошибка
+                            authError = Resources.AuthError.unknown(error)
+                        }
+                       
+                        // Логируем полную ошибку для разработчика
+                        print("🔴 Auth failed: \(authError.localizedDescription)")
+                        
+                        // Передаем обработанную ошибку в контроллер
+                (parent as? BaseAuthViewController)?.handleAuthError(authError)
+            }
+        }
     }
 }

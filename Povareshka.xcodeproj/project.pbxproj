@@ -3,20 +3,17 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 90;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CE33BBEA2DA550B3003FD21E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CE33BBE92DA550B3003FD21E /* GoogleService-Info.plist */; };
-		CE33BBEE2DA55562003FD21E /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = CE33BBED2DA55562003FD21E /* FirebaseAuth */; };
-		CE33BBF02DA55562003FD21E /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = CE33BBEF2DA55562003FD21E /* FirebaseDatabase */; };
-		CE33BBF22DA55562003FD21E /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = CE33BBF12DA55562003FD21E /* FirebaseFirestore */; };
-		CE33BBF42DA55562003FD21E /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = CE33BBF32DA55562003FD21E /* FirebaseStorage */; };
+		CE2164F92DD764FC003479E5 /* NewPasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2164F82DD764FC003479E5 /* NewPasswordController.swift */; };
 		CE3534FE2C7F0BBF006B6A26 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CE3534FD2C7F0BBF006B6A26 /* RealmSwift */; };
 		CE3535032C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3535022C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift */; };
 		CE938D782D9AE78E00CF8683 /* ShoppingListManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE938D772D9AE78E00CF8683 /* ShoppingListManager.swift */; };
 		CE93918F2D830CF2006E61A3 /* RecipeSearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE93918E2D830CF2006E61A3 /* RecipeSearchCell.swift */; };
 		CE93F43E2DA909FE00CF3144 /* BaseAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE93F43D2DA909FE00CF3144 /* BaseAuthViewController.swift */; };
+		CE94F75C2DB150F000EC90B1 /* SupabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE94F75B2DB150F000EC90B1 /* SupabaseManager.swift */; };
 		CE96E2932D9985B80001B4DB /* RecipeWatchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE96E2922D9985B80001B4DB /* RecipeWatchController.swift */; };
 		CE96E2962D9985F90001B4DB /* InstructionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE96E2952D9985F90001B4DB /* InstructionTableViewCell.swift */; };
 		CE96E2982D9986250001B4DB /* IngredientTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE96E2972D9986250001B4DB /* IngredientTableViewCell.swift */; };
@@ -49,7 +46,8 @@
 		CEA330192CE4D91F00E42F4A /* StepAddPhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA330162CE4D91E00E42F4A /* StepAddPhotoCell.swift */; };
 		CEA3301A2CE4D91F00E42F4A /* StepDescriptionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA330172CE4D91E00E42F4A /* StepDescriptionCell.swift */; };
 		CEA3301B2CE4D91F00E42F4A /* StepPhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA330182CE4D91E00E42F4A /* StepPhotoCell.swift */; };
-		CEA502622DA69BED00DB0E47 /* RegistrationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA502612DA69BED00DB0E47 /* RegistrationController.swift */; };
+		CEA72A2B2DAFA485003473ED /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = CEA72A2A2DAFA485003473ED /* Supabase */; };
+		CEA72A322DAFF883003473ED /* ProfileSupabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA72A312DAFF883003473ED /* ProfileSupabase.swift */; };
 		CEA88C2C2D84451C00281274 /* FilterCategoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA88C2B2D84451C00281274 /* FilterCategoryCell.swift */; };
 		CEA88C2E2D84455800281274 /* CategoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA88C2D2D84455800281274 /* CategoryItem.swift */; };
 		CEA9CD7C2D81D8D4002C11E7 /* AuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA9CD7B2D81D8D4002C11E7 /* AuthViewController.swift */; };
@@ -68,11 +66,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		CE33BBE92DA550B3003FD21E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		CE2164F82DD764FC003479E5 /* NewPasswordController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPasswordController.swift; sourceTree = "<group>"; };
 		CE3535022C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingNowCollectionViewCell.swift; sourceTree = "<group>"; };
 		CE938D772D9AE78E00CF8683 /* ShoppingListManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingListManager.swift; sourceTree = "<group>"; };
 		CE93918E2D830CF2006E61A3 /* RecipeSearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeSearchCell.swift; sourceTree = "<group>"; };
 		CE93F43D2DA909FE00CF3144 /* BaseAuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseAuthViewController.swift; sourceTree = "<group>"; };
+		CE94F75B2DB150F000EC90B1 /* SupabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseManager.swift; sourceTree = "<group>"; };
 		CE96E2922D9985B80001B4DB /* RecipeWatchController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeWatchController.swift; sourceTree = "<group>"; };
 		CE96E2952D9985F90001B4DB /* InstructionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionTableViewCell.swift; sourceTree = "<group>"; };
 		CE96E2972D9986250001B4DB /* IngredientTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientTableViewCell.swift; sourceTree = "<group>"; };
@@ -107,7 +106,7 @@
 		CEA330162CE4D91E00E42F4A /* StepAddPhotoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepAddPhotoCell.swift; sourceTree = "<group>"; };
 		CEA330172CE4D91E00E42F4A /* StepDescriptionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepDescriptionCell.swift; sourceTree = "<group>"; };
 		CEA330182CE4D91E00E42F4A /* StepPhotoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepPhotoCell.swift; sourceTree = "<group>"; };
-		CEA502612DA69BED00DB0E47 /* RegistrationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationController.swift; sourceTree = "<group>"; };
+		CEA72A312DAFF883003473ED /* ProfileSupabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSupabase.swift; sourceTree = "<group>"; };
 		CEA88C2B2D84451C00281274 /* FilterCategoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCategoryCell.swift; sourceTree = "<group>"; };
 		CEA88C2D2D84455800281274 /* CategoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryItem.swift; sourceTree = "<group>"; };
 		CEA9CD7B2D81D8D4002C11E7 /* AuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
@@ -128,15 +127,10 @@
 /* Begin PBXFrameworksBuildPhase section */
 		CE9BAB232C7C7EF000CD6C24 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
-				CE33BBF02DA55562003FD21E /* FirebaseDatabase in Frameworks */,
-				CE33BBF22DA55562003FD21E /* FirebaseFirestore in Frameworks */,
+				CEA72A2B2DAFA485003473ED /* Supabase in Frameworks */,
 				CE3534FE2C7F0BBF006B6A26 /* RealmSwift in Frameworks */,
-				CE33BBF42DA55562003FD21E /* FirebaseStorage in Frameworks */,
-				CE33BBEE2DA55562003FD21E /* FirebaseAuth in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -194,10 +188,10 @@
 		CE9BAB282C7C7EF000CD6C24 /* Povareshka */ = {
 			isa = PBXGroup;
 			children = (
+				CE9BAB3D2C7C80AC00CD6C24 /* Application */,
 				CEC4ACF02D8B0C35009DBCD3 /* Managers */,
 				CEA9CD7A2D81D88E002C11E7 /* Authorization */,
 				CEA3300C2CE4D7FE00E42F4A /* Recipe */,
-				CE9BAB3D2C7C80AC00CD6C24 /* Application */,
 				CE9BAB422C7C9C2100CD6C24 /* Helpers */,
 				CEA109E72C7DFA730095E989 /* Base */,
 				CEA290242D81D7C90017D499 /* TabBarItems */,
@@ -218,7 +212,6 @@
 		CE9BAB3E2C7C80C900CD6C24 /* SupportingFiles */ = {
 			isa = PBXGroup;
 			children = (
-				CE33BBE92DA550B3003FD21E /* GoogleService-Info.plist */,
 				CE9BAB322C7C7EF300CD6C24 /* Assets.xcassets */,
 				CE9BAB342C7C7EF300CD6C24 /* LaunchScreen.storyboard */,
 				CE9BAB372C7C7EF300CD6C24 /* Info.plist */,
@@ -463,8 +456,8 @@
 			children = (
 				CE93F43D2DA909FE00CF3144 /* BaseAuthViewController.swift */,
 				CEA9CD7B2D81D8D4002C11E7 /* AuthViewController.swift */,
-				CEA502612DA69BED00DB0E47 /* RegistrationController.swift */,
 				CEAF6C3A2DAD096D00781FB8 /* PasswordResetController.swift */,
+				CE2164F82DD764FC003479E5 /* NewPasswordController.swift */,
 			);
 			path = Authorization;
 			sourceTree = "<group>";
@@ -472,6 +465,7 @@
 		CEAC9E872CE64BF300221CCF /* Recipes */ = {
 			isa = PBXGroup;
 			children = (
+				CEA72A312DAFF883003473ED /* ProfileSupabase.swift */,
 				CEAC9E882CE64C0500221CCF /* Recipes.swift */,
 				CEC4ACEC2D8B0B52009DBCD3 /* RecipeModel.swift */,
 				CEC4ACEE2D8B0BE8009DBCD3 /* SavedRecipeModel.swift */,
@@ -498,10 +492,11 @@
 		CEC4ACF02D8B0C35009DBCD3 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
-				CEC4ACF12D8B0C53009DBCD3 /* StorageManager.swift */,
 				CEC4ACF32D8B0C69009DBCD3 /* DataManager.swift */,
+				CEC4ACF12D8B0C53009DBCD3 /* StorageManager.swift */,
 				CEC4ACF52D8B0CC0009DBCD3 /* KeyboardManager.swift */,
 				CE938D772D9AE78E00CF8683 /* ShoppingListManager.swift */,
+				CE94F75B2DB150F000EC90B1 /* SupabaseManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -519,15 +514,10 @@
 			);
 			buildRules = (
 			);
-			dependencies = (
-			);
 			name = Povareshka;
 			packageProductDependencies = (
 				CE3534FD2C7F0BBF006B6A26 /* RealmSwift */,
-				CE33BBED2DA55562003FD21E /* FirebaseAuth */,
-				CE33BBEF2DA55562003FD21E /* FirebaseDatabase */,
-				CE33BBF12DA55562003FD21E /* FirebaseFirestore */,
-				CE33BBF32DA55562003FD21E /* FirebaseStorage */,
+				CEA72A2A2DAFA485003473ED /* Supabase */,
 			);
 			productName = Povareshka;
 			productReference = CE9BAB262C7C7EF000CD6C24 /* Povareshka.app */;
@@ -549,7 +539,6 @@
 				};
 			};
 			buildConfigurationList = CE9BAB212C7C7EF000CD6C24 /* Build configuration list for PBXProject "Povareshka" */;
-			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -559,8 +548,9 @@
 			mainGroup = CE9BAB1D2C7C7EF000CD6C24;
 			packageReferences = (
 				CE3534FC2C7F0BBF006B6A26 /* XCRemoteSwiftPackageReference "realm-swift" */,
-				CE33BBEC2DA55562003FD21E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				CEA72A292DAFA485003473ED /* XCRemoteSwiftPackageReference "supabase-swift" */,
 			);
+			preferredProjectObjectVersion = 90;
 			productRefGroup = CE9BAB272C7C7EF000CD6C24 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -573,20 +563,16 @@
 /* Begin PBXResourcesBuildPhase section */
 		CE9BAB242C7C7EF000CD6C24 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
-				CE33BBEA2DA550B3003FD21E /* GoogleService-Info.plist in Resources */,
 				CE9BAB362C7C7EF300CD6C24 /* LaunchScreen.storyboard in Resources */,
 				CE9BAB332C7C7EF300CD6C24 /* Assets.xcassets in Resources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		CE9BAB222C7C7EF000CD6C24 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				CE96E2982D9986250001B4DB /* IngredientTableViewCell.swift in Sources */,
 				CE9BAB2E2C7C7EF000CD6C24 /* MainViewController.swift in Sources */,
@@ -611,9 +597,9 @@
 				CEA290152D81D5290017D499 /* ShoppingItemCell.swift in Sources */,
 				CEA109F32C7E01490095E989 /* ProfileViewController.swift in Sources */,
 				CEC3EFB22D83287700248BBC /* FilterViewController.swift in Sources */,
-				CEA502622DA69BED00DB0E47 /* RegistrationController.swift in Sources */,
 				CE9BAB2A2C7C7EF000CD6C24 /* AppDelegate.swift in Sources */,
 				CEA88C2E2D84455800281274 /* CategoryItem.swift in Sources */,
+				CEA72A322DAFF883003473ED /* ProfileSupabase.swift in Sources */,
 				CEA3300E2CE4D82D00E42F4A /* NewRecipeController.swift in Sources */,
 				CEA2900A2D81D3480017D499 /* MenuItem.swift in Sources */,
 				CEA109E42C7DF3CB0095E989 /* NavBarController.swift in Sources */,
@@ -625,6 +611,7 @@
 				CE9BAB472C7C9D8E00CD6C24 /* Resources.swift in Sources */,
 				CE93F43E2DA909FE00CF3144 /* BaseAuthViewController.swift in Sources */,
 				CEA2901F2D81D6D80017D499 /* Settings.swift in Sources */,
+				CE94F75C2DB150F000EC90B1 /* SupabaseManager.swift in Sources */,
 				CEA9CD7C2D81D8D4002C11E7 /* AuthViewController.swift in Sources */,
 				CE9BAB452C7C9C4700CD6C24 /* UIColor + ext.swift in Sources */,
 				CEAC9E892CE64C0500221CCF /* Recipes.swift in Sources */,
@@ -638,8 +625,8 @@
 				CEA290222D81D71A0017D499 /* SettingsCell.swift in Sources */,
 				CE9BAB2C2C7C7EF000CD6C24 /* SceneDelegate.swift in Sources */,
 				CE93918F2D830CF2006E61A3 /* RecipeSearchCell.swift in Sources */,
+				CE2164F92DD764FC003479E5 /* NewPasswordController.swift in Sources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
@@ -655,7 +642,7 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		CE9BAB382C7C7EF300CD6C24 /* Debug */ = {
+		CE9BAB382C7C7EF300CD6C24 /* Debug configuration for PBXProject "Povareshka" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -715,7 +702,7 @@
 			};
 			name = Debug;
 		};
-		CE9BAB392C7C7EF300CD6C24 /* Release */ = {
+		CE9BAB392C7C7EF300CD6C24 /* Release configuration for PBXProject "Povareshka" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -769,7 +756,7 @@
 			};
 			name = Release;
 		};
-		CE9BAB3B2C7C7EF300CD6C24 /* Debug */ = {
+		CE9BAB3B2C7C7EF300CD6C24 /* Debug configuration for PBXNativeTarget "Povareshka" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -783,7 +770,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -794,13 +781,14 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
-		CE9BAB3C2C7C7EF300CD6C24 /* Release */ = {
+		CE9BAB3C2C7C7EF300CD6C24 /* Release configuration for PBXNativeTarget "Povareshka" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -814,7 +802,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -825,8 +813,9 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -837,67 +826,50 @@
 		CE9BAB212C7C7EF000CD6C24 /* Build configuration list for PBXProject "Povareshka" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				CE9BAB382C7C7EF300CD6C24 /* Debug */,
-				CE9BAB392C7C7EF300CD6C24 /* Release */,
+				CE9BAB382C7C7EF300CD6C24 /* Debug configuration for PBXProject "Povareshka" */,
+				CE9BAB392C7C7EF300CD6C24 /* Release configuration for PBXProject "Povareshka" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		CE9BAB3A2C7C7EF300CD6C24 /* Build configuration list for PBXNativeTarget "Povareshka" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				CE9BAB3B2C7C7EF300CD6C24 /* Debug */,
-				CE9BAB3C2C7C7EF300CD6C24 /* Release */,
+				CE9BAB3B2C7C7EF300CD6C24 /* Debug configuration for PBXNativeTarget "Povareshka" */,
+				CE9BAB3C2C7C7EF300CD6C24 /* Release configuration for PBXNativeTarget "Povareshka" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		CE33BBEC2DA55562003FD21E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
-			requirement = {
-				kind = exactVersion;
-				version = 8.0.0;
-			};
-		};
 		CE3534FC2C7F0BBF006B6A26 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/realm/realm-swift.git";
 			requirement = {
-				kind = exactVersion;
-				version = 10.39.1;
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.39.1;
+			};
+		};
+		CEA72A292DAFA485003473ED /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		CE33BBED2DA55562003FD21E /* FirebaseAuth */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CE33BBEC2DA55562003FD21E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAuth;
-		};
-		CE33BBEF2DA55562003FD21E /* FirebaseDatabase */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CE33BBEC2DA55562003FD21E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseDatabase;
-		};
-		CE33BBF12DA55562003FD21E /* FirebaseFirestore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CE33BBEC2DA55562003FD21E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseFirestore;
-		};
-		CE33BBF32DA55562003FD21E /* FirebaseStorage */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CE33BBEC2DA55562003FD21E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseStorage;
-		};
 		CE3534FD2C7F0BBF006B6A26 /* RealmSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = CE3534FC2C7F0BBF006B6A26 /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
+		};
+		CEA72A2A2DAFA485003473ED /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CEA72A292DAFA485003473ED /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

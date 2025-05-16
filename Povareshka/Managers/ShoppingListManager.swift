@@ -8,7 +8,7 @@
 import Foundation
 
 class ShoppingListManager {
-    static let shared = ShoppingListManager()
+    @MainActor static let shared = ShoppingListManager()
     
     private var ingredients: [IngredientData] = []
     

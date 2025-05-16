@@ -180,7 +180,7 @@ extension SearchViewController: UISearchBarDelegate {
     }
 }
 
-extension SearchViewController: FilterViewControllerDelegate {
+extension SearchViewController: @preconcurrency FilterViewControllerDelegate {
     func filterViewController(_ viewController: FilterViewController, didApplyFilters filters: RecipeFilters) {
         // Apply filters to search results
 //        applyFilters(filters)

@@ -132,8 +132,12 @@ class ProfileViewController: UIViewController {
     
     private func configureUser() {
         // Configure with user data
+        Task {
+            let session = try await SupabaseManager.shared.client.auth.session
+            emailLabel.text = session.user.email
+        }
         nameLabel.text = "Иван Иванов"
-        emailLabel.text = "ivan@example.com"
+        
     }
 }
 
@@ -230,7 +234,14 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     private func logout() {
         // Clear user data
         UserDefaults.standard.removeObject(forKey: "user_token")
-        
+        Task {
+            do {
+                try await SupabaseManager.shared.client.auth.signOut()
+                print("Success")
+            } catch {
+                print("Fail")
+            }
+        }
         // Present auth screen
         let authVC = AuthViewController()
         let navController = UINavigationController(rootViewController: authVC)

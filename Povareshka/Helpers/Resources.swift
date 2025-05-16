@@ -8,6 +8,11 @@
 import UIKit
 
 enum Resources {
+    enum Auth {
+        static let supabaseUrl = "https://ixedhtnqygtzezlgpgyg.supabase.co"
+        static let supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4ZWRodG5xeWd0emV6bGdwZ3lnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ3NDAyNjEsImV4cCI6MjA2MDMxNjI2MX0.SBzYsv_l0zQmLeroGOL38dik8hzjS0K9XK7MA27soVA"
+    }
+    
     enum Colors {
         static let active = UIColor(hexString: "#FF8C2B")
         static let inactive = UIColor(hexString: "#AEAEAE")
@@ -47,7 +52,7 @@ enum Resources {
         }
         
         enum Placeholders {
-            static let login = "Логин"
+            static let login = "Логин (email)"
             static let name = "Имя"
             static let email = "Email"
             static let number = "Тел. +7(123)456-78-90"
@@ -172,6 +177,49 @@ enum Resources {
         static let textFieldHeight = 44.0
         static let buttonHeight = 44.0
         static let avatar = 100.0
+    }
+    
+    enum AuthError: Error, LocalizedError {
+        case invalidCredentials
+        case emailNotVerified
+        case accountBlocked
+        case networkError(URLError)
+        case tooManyRequests
+        case unknown(Error)
+        
+        var errorDescription: String? {
+            switch self {
+            case .invalidCredentials:
+                return "Invalid email or password"
+            case .emailNotVerified:
+                return "Please verify your email first"
+            case .accountBlocked:
+                return "Account temporarily blocked"
+            case .networkError(let urlError):
+                return "Network error: \(urlError.localizedDescription)"
+            case .tooManyRequests:
+                return "Too many attempts. Try again later"
+            case .unknown(let error):
+                return "Unknown error: \(error.localizedDescription)"
+            }
+        }
+        
+        var userFriendlyMessage: String {
+            switch self {
+            case .invalidCredentials:
+                return "Неверный email или пароль. Проверьте введенные данные."
+            case .emailNotVerified:
+                return "Пожалуйста, подтвердите ваш email перед входом."
+            case .accountBlocked:
+                return "Ваш аккаунт временно заблокирован. Попробуйте позже или свяжитесь с поддержкой."
+            case .networkError:
+                return "Проблемы с интернет-соединением. Проверьте подключение."
+            case .tooManyRequests:
+                return "Слишком много попыток входа. Попробуйте через 15 минут."
+            case .unknown:
+                return "Произошла непредвиденная ошибка. Пожалуйста, попробуйте еще раз."
+            }
+        }
     }
 
 }
