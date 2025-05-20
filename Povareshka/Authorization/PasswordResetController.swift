@@ -96,7 +96,9 @@ class PasswordResetController: UIViewController {
         
         Task {
             do {
-                try await SupabaseManager.shared.client.auth.resetPasswordForEmail(email)
+                try await SupabaseManager.shared.client.auth.resetPasswordForEmail(
+                    email, redirectTo: URL(string: "povareshka-supabase://reset-password")!
+                )
                 
                 DispatchQueue.main.async {
                     self.showAlert(
@@ -122,6 +124,7 @@ class PasswordResetController: UIViewController {
     private func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            self.onBackTapped?()
             completion?()
         })
         present(alert, animated: true)

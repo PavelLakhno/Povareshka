@@ -8,7 +8,6 @@
 import UIKit
 import Auth
 
-
 class AuthViewController: UIViewController {
     var onRegisterTapped: (() -> Void)?
     var onResetPasswordTapped: (() -> Void)?

@@ -98,6 +98,26 @@ class BaseAuthViewController: UIViewController {
         }
     }
     
+    func showPasswordUpdateForm() {
+        UIView.animate(withDuration: 0.3) {
+            self.containerView.alpha = 0
+        } completion: { _ in
+            self.containerView.subviews.forEach { $0.removeFromSuperview() }
+            
+            let updateVC = NewPasswordController()
+            updateVC.onPasswordUpdateTapped = { [weak self] in
+                self?.showLoginForm()
+            }
+            
+            self.embedChild(updateVC, in: self.containerView)
+            self.containerView.alpha = 0
+            
+            UIView.animate(withDuration: 0.3) {
+                self.containerView.alpha = 1
+            }
+        }
+    }
+    
     private func embedChild(_ child: UIViewController, in container: UIView) {
         addChild(child)
         container.addSubview(child.view)

@@ -63,6 +63,7 @@
 		CEC4ACF62D8B0CC0009DBCD3 /* KeyboardManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC4ACF52D8B0CC0009DBCD3 /* KeyboardManager.swift */; };
 		CEC4ACF82D8B14C8009DBCD3 /* NewIngredientController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC4ACF72D8B14C8009DBCD3 /* NewIngredientController.swift */; };
 		CEC4ACFA2D8B153E009DBCD3 /* MainIngredientsTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC4ACF92D8B153E009DBCD3 /* MainIngredientsTVCell.swift */; };
+		CED1AC182DDCF4A9008949B2 /* AppCordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED1AC172DDCF4A9008949B2 /* AppCordinator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -122,6 +123,7 @@
 		CEC4ACF52D8B0CC0009DBCD3 /* KeyboardManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardManager.swift; sourceTree = "<group>"; };
 		CEC4ACF72D8B14C8009DBCD3 /* NewIngredientController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewIngredientController.swift; sourceTree = "<group>"; };
 		CEC4ACF92D8B153E009DBCD3 /* MainIngredientsTVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainIngredientsTVCell.swift; sourceTree = "<group>"; };
+		CED1AC172DDCF4A9008949B2 /* AppCordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCordinator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -205,6 +207,7 @@
 			children = (
 				CE9BAB292C7C7EF000CD6C24 /* AppDelegate.swift */,
 				CE9BAB2B2C7C7EF000CD6C24 /* SceneDelegate.swift */,
+				CED1AC172DDCF4A9008949B2 /* AppCordinator.swift */,
 			);
 			path = Application;
 			sourceTree = "<group>";
@@ -581,6 +584,7 @@
 				CE938D782D9AE78E00CF8683 /* ShoppingListManager.swift in Sources */,
 				CEA3301B2CE4D91F00E42F4A /* StepPhotoCell.swift in Sources */,
 				CEA109F02C7E011D0095E989 /* ShoppingListViewController.swift in Sources */,
+				CED1AC182DDCF4A9008949B2 /* AppCordinator.swift in Sources */,
 				CEC4ACF42D8B0C69009DBCD3 /* DataManager.swift in Sources */,
 				CE9BAB412C7C99AC00CD6C24 /* TabBarController.swift in Sources */,
 				CEC4ACF22D8B0C53009DBCD3 /* StorageManager.swift in Sources */,

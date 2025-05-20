@@ -9,7 +9,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>povareshka.io.supabase</string>
+				<string>povareshka-supabase</string>
 			</array>
 		</dict>
 	</array>
