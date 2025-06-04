@@ -5,4 +5,8 @@
 //  Created by user on 23.05.2025.
 //
 
-import Foundation
+import UIKit
+
+extension Notification.Name {
+    static let userDidLogout = Notification.Name("userDidLogout")
+}

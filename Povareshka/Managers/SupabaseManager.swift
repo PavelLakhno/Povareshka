@@ -9,8 +9,8 @@ import Foundation
 import Supabase
 
 
-final class SupabaseManager {
-    @MainActor static let shared = SupabaseManager()
+final class SupabaseManager: Sendable {
+    static let shared = SupabaseManager()
     let client: SupabaseClient
     
     private init() {
@@ -21,12 +21,6 @@ final class SupabaseManager {
     }
     
 }
+
     
-// Модель для профиля пользователя
-struct UserProfile: Encodable {
-    let id: UUID
-    let name: String
-    let phone: String
-    let gender: String
-    let createdAt: Date
-}
+

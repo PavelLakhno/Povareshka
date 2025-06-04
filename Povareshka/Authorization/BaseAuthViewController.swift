@@ -98,6 +98,19 @@ class BaseAuthViewController: UIViewController {
         }
     }
     
+    func showPasswordUpdateFormDirectly() {
+        // Пропускаем анимацию fade-in/fade-out при первом открытии
+        containerView.subviews.forEach { $0.removeFromSuperview() }
+        
+        let updateVC = NewPasswordController()
+        updateVC.onPasswordUpdateTapped = { [weak self] in
+            self?.showLoginForm()
+        }
+        
+        embedChild(updateVC, in: containerView)
+        containerView.alpha = 1.0 // Уже видимый
+    }
+    
     func showPasswordUpdateForm() {
         UIView.animate(withDuration: 0.3) {
             self.containerView.alpha = 0

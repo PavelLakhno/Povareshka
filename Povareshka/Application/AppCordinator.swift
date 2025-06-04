@@ -7,12 +7,14 @@
 
 import UIKit
 
+@MainActor
 final class AppCoordinator {
     
-    private let window: UIWindow
+    var window: UIWindow
     
     init(window: UIWindow) {
         self.window = window
+        setupObservers()
     }
     
     // Запуск приложения (проверка авторизации)
@@ -22,33 +24,32 @@ final class AppCoordinator {
     
     // Обработка URL (Deep Links)
     func handleIncomingURL(_ url: URL) {
+        print("🔗 Handling URL:", url.absoluteString)
+
         Task {
             do {
+                // Сначала пробуем стандартную обработку Supabase
                 try await SupabaseManager.shared.client.auth.session(from: url)
-                
+                // Определяем тип операции
                 if isPasswordResetURL(url) {
-                    await showResetPasswordScreen()
+                    await MainActor.run {
+                        print("Password reset link processed")
+                        showResetPasswordScreen()
+                    }
                 } else {
-                    await showMainApp()
+                    await MainActor.run {
+                        print("Auth link processed")
+                        showMainApp()
+                    }
                 }
             } catch {
-                print("❌ URL Handling Error:", error)
-                await showAuthScreen()
+                print("❌ Error Deep Link:", error)
             }
         }
     }
     
-    // Проверка состояния авторизации
+    
     private func checkAuthState() {
-//        Task {
-//            do {
-//                let session = try await SupabaseManager.shared.client.auth.session
-//                await showMainApp()
-//            } catch {
-//                await showAuthScreen()
-//            }
-//        }
-        
         Task {
             do {
                 let session = try await SupabaseManager.shared.client.auth.session
@@ -65,29 +66,32 @@ final class AppCoordinator {
         }
     }
     
-    // Переход к основному потоку
-    @MainActor
+    private func isPasswordResetURL(_ url: URL) -> Bool {
+        url.absoluteString.contains("reset-password")
+    }
+}
+
+@MainActor
+extension AppCoordinator {
+    
     private func showMainApp() {
         let tabBarVC = TabBarController()
         transitionToViewController(tabBarVC)
     }
     
-    // Переход к экрану авторизации
-    @MainActor
+    
     private func showAuthScreen() {
         let authVC = BaseAuthViewController()
         transitionToViewController(authVC)
     }
-    
-    // Переход к сбросу пароля
-    @MainActor
+
     private func showResetPasswordScreen() {
-        let newPasswordVC = NewPasswordController()
-        transitionToViewController(newPasswordVC)
+        // Создаем BaseAuthViewController и сразу показываем в нем форму сброса пароля
+        let baseAuthVC = BaseAuthViewController()
+        baseAuthVC.showPasswordUpdateForm() // Показываем форму обновления пароля
+        transitionToViewController(baseAuthVC)
     }
     
-    // Анимированная смена rootViewController
-    @MainActor
     private func transitionToViewController(_ viewController: UIViewController) {
         UIView.transition(
             with: window,
@@ -98,9 +102,20 @@ final class AppCoordinator {
             }
         )
     }
+  
+}
+
+extension AppCoordinator {
+    private func setupObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleLogout),
+            name: .userDidLogout,
+            object: nil
+        )
+    }
     
-    // Проверка, является ли URL ссылкой на сброс пароля
-    private func isPasswordResetURL(_ url: URL) -> Bool {
-        url.absoluteString.contains("reset-password")
+    @objc private func handleLogout() {
+        showAuthScreen()
     }
 }
