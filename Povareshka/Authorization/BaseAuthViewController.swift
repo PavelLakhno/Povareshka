@@ -61,10 +61,7 @@ class BaseAuthViewController: UIViewController {
 
             // Создаем и настраиваем LoginViewController
             let loginVC = AuthViewController()
-            loginVC.onRegisterTapped = { [weak self] in
-                self?.showRegistrationForm()
-            }
-            
+         
             loginVC.onResetPasswordTapped = { [weak self] in
                 self?.showPasswordResetForm()
             }
@@ -80,26 +77,7 @@ class BaseAuthViewController: UIViewController {
         }
     }
     
-    func showRegistrationForm() {
-        UIView.animate(withDuration: 0.3) {
-            self.containerView.alpha = 0
-        } completion: { _ in
-            self.containerView.subviews.forEach { $0.removeFromSuperview() }
-            
-            let regVC = RegistrationController()
-            regVC.onBackTapped = { [weak self] in
-                self?.showLoginForm()
-            }
-            
-            self.embedChild(regVC, in: self.containerView)
-            self.containerView.alpha = 0
-            
-            UIView.animate(withDuration: 0.3) {
-                self.containerView.alpha = 1
-            }
-        }
-    }
-    
+   
     func showPasswordResetForm() {
         UIView.animate(withDuration: 0.3) {
             self.containerView.alpha = 0
@@ -120,11 +98,65 @@ class BaseAuthViewController: UIViewController {
         }
     }
     
+    func showPasswordUpdateFormDirectly() {
+        // Пропускаем анимацию fade-in/fade-out при первом открытии
+        containerView.subviews.forEach { $0.removeFromSuperview() }
+        
+        let updateVC = NewPasswordController()
+        updateVC.onPasswordUpdateTapped = { [weak self] in
+            self?.showLoginForm()
+        }
+        
+        embedChild(updateVC, in: containerView)
+        containerView.alpha = 1.0 // Уже видимый
+    }
+    
+    func showPasswordUpdateForm() {
+        UIView.animate(withDuration: 0.3) {
+            self.containerView.alpha = 0
+        } completion: { _ in
+            self.containerView.subviews.forEach { $0.removeFromSuperview() }
+            
+            let updateVC = NewPasswordController()
+            updateVC.onPasswordUpdateTapped = { [weak self] in
+                self?.showLoginForm()
+            }
+            
+            self.embedChild(updateVC, in: self.containerView)
+            self.containerView.alpha = 0
+            
+            UIView.animate(withDuration: 0.3) {
+                self.containerView.alpha = 1
+            }
+        }
+    }
+    
     private func embedChild(_ child: UIViewController, in container: UIView) {
         addChild(child)
         container.addSubview(child.view)
         child.view.frame = container.bounds
         child.didMove(toParent: self)
     }
-
+    
+    func handleAuthSuccess() {
+        DispatchQueue.main.async {
+            // Полностью заменяем rootViewController вместо present
+            if let window = self.view.window {
+                let tabBarVC = TabBarController()
+                window.rootViewController = tabBarVC
+            }
+        }
+    }
+    
+    func handleAuthError(_ error: Error) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(
+                title: "Ошибка",
+                message: error.localizedDescription,
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            self.present(alert, animated: true)
+        }
+    }
 }

@@ -11,11 +11,11 @@ import RealmSwift
 
 
 class DataManager {
-    static let shared = DataManager()
+    @MainActor static let shared = DataManager()
     
     private init() {}
     
-    func createTempData(completion: @escaping () -> Void) {
+    @MainActor func createTempData(completion: @escaping () -> Void) {
         // ингридиенты
         let ingredient1 = IngredientModel()
         ingredient1.name = "Яица"
@@ -70,8 +70,10 @@ class DataManager {
         
         DispatchQueue.main.async {
             StorageManager.shared.save(recipe)
-            completion()
+            Task { 
+                completion()
+            }
         }
-        
+
     }
 }

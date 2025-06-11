@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import FirebaseAuth
+//import FirebaseAuth
 
 class PasswordResetController: UIViewController {
     var onBackTapped: (() -> Void)?
@@ -42,15 +42,6 @@ class PasswordResetController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-    
-//    private lazy var backButton: UIButton = {
-//        let button = UIButton(type: .system)
-//        button.setTitle("Назад", for: .normal)
-//        button.tintColor = Resources.Colors.orange
-//        button.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
-//        button.translatesAutoresizingMaskIntoConstraints = false
-//        return button
-//    }()
     
     private lazy var backButton: UIButton = {
         let button = UIButton(type: .system)
@@ -103,16 +94,25 @@ class PasswordResetController: UIViewController {
             return
         }
         
-        Auth.auth().sendPasswordReset(withEmail: email) { [weak self] error in
-            if let error = error {
-                self?.showAlert(title: Resources.Strings.Tittles.error,
-                                message: error.localizedDescription)
-                return
-            }
-            
-            self?.showAlert(title: Resources.Strings.Tittles.success,
-                            message: "\(Resources.Strings.Messages.letter) \(email)") {
-                self?.backTapped()
+        Task {
+            do {
+                try await SupabaseManager.shared.client.auth.resetPasswordForEmail(
+                    email, redirectTo: URL(string: "povareshka-supabase://reset-password")!
+                )
+                
+                DispatchQueue.main.async {
+                    self.showAlert(
+                        title: Resources.Strings.Tittles.success,
+                        message: "Password reset link sent to \(email)"
+                    )
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.showAlert(
+                        title: Resources.Strings.Tittles.error,
+                        message: error.localizedDescription
+                    )
+                }
             }
         }
     }
@@ -124,6 +124,7 @@ class PasswordResetController: UIViewController {
     private func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            self.onBackTapped?()
             completion?()
         })
         present(alert, animated: true)

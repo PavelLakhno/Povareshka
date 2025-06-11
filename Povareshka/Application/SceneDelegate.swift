@@ -6,31 +6,33 @@
 //
 
 import UIKit
-import Firebase
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
     var window: UIWindow?
-
+    private var appCoordinator: AppCoordinator?
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        window = UIWindow(frame: windowScene.coordinateSpace.bounds)
-        window?.windowScene = windowScene
         
-        if Auth.auth().currentUser != nil {
-            // Пользователь авторизован — показываем основной интерфейс
-            let tabBar = TabBarController()
-            window?.rootViewController = UINavigationController(rootViewController: tabBar)
-        } else {
-            // Пользователь не авторизован — показываем экран входа
-            let authVC = BaseAuthViewController()
-            let navController = UINavigationController(rootViewController: authVC)
-//            navController.navigationBar.isHidden = true
-            window?.rootViewController = navController
-        }
-
+        // Настройка окна
+        window = UIWindow(windowScene: windowScene)
         window?.makeKeyAndVisible()
+        
+        // Создаем координатор
+        guard let window = window else { return }
+        appCoordinator = AppCoordinator(window: window)
+        
+        // Обработка URL (если приложение запущено по ссылке)
+        if let url = connectionOptions.urlContexts.first?.url {
+            appCoordinator?.handleIncomingURL(url)
+        } else {
+            appCoordinator?.start() // Стандартный запуск
+        }
+    }
+    
+    // Обработка Deep Links (если приложение уже запущено)
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let url = URLContexts.first?.url else { return }
+        appCoordinator?.handleIncomingURL(url)
     }
 }
-

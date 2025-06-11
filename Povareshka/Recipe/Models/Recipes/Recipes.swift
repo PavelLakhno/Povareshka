@@ -7,52 +7,33 @@
 
 import Foundation
 
-//struct Recipes: Codable {
-//    let recipes: [Recipe]?
-//}
-//
-//struct Recipe: Codable {
-//    let sourceName: String?
-//    let extendedIngredients: [Ingredient]?
-//    let id: Int?
-//    let title: String?
-//    let readyInMinutes: Int?
-//    let servings: Int?
-//    let image: String?
-//    let summary: String?
-//    let analyzedInstructions: [Instruction]?
-//    let veryPopular: Bool?
-//}
-//
-//struct Ingredient: Codable {
-//    let id: Int
-//    let name: String
-//    let amount: Double
-//    let unit: String
-//    let image: String?
-//}
-//
-//struct Instruction: Codable {
-//    let steps: [Step]
-//}
-//
-//struct Step: Codable {
-//    let number: Int
-//    let image: String?
-//    let describe: String?
-//}
+struct User {
+    let uid: UUID
+    let name: String
+    let email: String
+    let phone: String
+    let gender: String
+    let avatarURL: String
+    let createdAt: Date
+    let likeRecipes: [Recipe]
+    let myRecipes: [Recipe]
+}
 
 struct Recipes: Codable {
     let recipes: [Recipe]?
 }
 
 struct Recipe: Codable {
+    let userID: String
+    let category: [String]
+    let tags: [String]
     let title: String?
     let readyInMinutes: Int?
     let servings: Int?
     let image: Data?
     let ingredients: [Ingredient]?
     let instructions: [Instruction]?
+    let createdAt: Date
 }
 
 struct Ingredient: Codable {

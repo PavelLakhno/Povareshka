@@ -124,6 +124,18 @@ extension UIImageView {
     }
 }
 
+extension UIImageView {
+    func configureProfileImage() {
+        contentMode = .scaleAspectFill
+        clipsToBounds = true
+        backgroundColor = .systemGray6
+        layer.cornerRadius = 40
+        image = UIImage(systemName: "person.circle.fill")
+        tintColor = .systemGray3
+        translatesAutoresizingMaskIntoConstraints = false
+    }
+}
+
 extension UIImage {
     func imageResized(to size: CGSize) -> UIImage {
         return UIGraphicsImageRenderer(size: size).image { _ in
@@ -165,6 +177,12 @@ extension UILabel {
         ])
 
         self.attributedText = attributedString
+    }
+    
+    func configure(font: UIFont, textColor: UIColor = .black) {
+        self.font = font
+        self.textColor = textColor
+        translatesAutoresizingMaskIntoConstraints = false
     }
      
 }
@@ -250,7 +268,6 @@ extension UITableView {
         self.sectionHeaderTopPadding = 0
         self.delegate = delegate
         self.dataSource = dataSource
-//        self.dynamicHeightForTableView()
 
         self.register(cellClass, forCellReuseIdentifier: cellIdentifier)
     }
@@ -282,6 +299,12 @@ extension UIButton {
             self.addTarget(target, action: action, for: .touchUpInside)
         }
         self.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    func configure(title: String, color: UIColor) {
+        setTitle(title, for: .normal)
+        setTitleColor(color, for: .normal)
+        translatesAutoresizingMaskIntoConstraints = false
     }
 }
 

@@ -9,7 +9,7 @@ import Foundation
 import RealmSwift
 
 class StorageManager {
-    static let shared = StorageManager()
+    @MainActor static let shared = StorageManager()
     let realm = try! Realm()
     
     private init() {}

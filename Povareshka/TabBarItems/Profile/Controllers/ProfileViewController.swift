@@ -6,10 +6,17 @@
 //
 
 import UIKit
+import Storage
 
 class ProfileViewController: UIViewController {
     
     // MARK: - UI Components
+//    private let profileHeaderView = UIView()
+//    private let profileImageView = UIImageView()
+//    private let nameLabel = UILabel()
+//    private let emailLabel = UILabel()
+//    private let editProfileButton = UIButton(type: .system)
+//    private let menuTableView = UITableView(frame: .zero, style: .grouped)
     private let profileHeaderView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
@@ -97,6 +104,23 @@ class ProfileViewController: UIViewController {
         profileHeaderView.addSubview(editProfileButton)
         view.addSubview(menuTableView)
         
+        // Настройка avatarImageView
+        profileImageView.configureProfileImage()
+
+        
+        // Настройка остальных UI-элементов
+        nameLabel.configure(font: .systemFont(ofSize: 20, weight: .semibold))
+        emailLabel.configure(font: .systemFont(ofSize: 14), textColor: .gray)
+        editProfileButton.configure(title: "Редактировать профиль", color: .systemOrange)
+        editProfileButton.addTarget(self, action: #selector(editProfileTapped), for: .touchUpInside)
+        
+        setupConstraints()
+
+    }
+    
+    private func setupConstraints() {
+        
+        
         NSLayoutConstraint.activate([
             profileHeaderView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             profileHeaderView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -130,10 +154,67 @@ class ProfileViewController: UIViewController {
         menuTableView.dataSource = self
     }
     
+    @objc private func editProfileTapped() {
+        let editProfileVC = EditProfileController()
+        editProfileVC.onProfileUpdated = { [weak self] in
+            self?.configureUser() // Обновляем данные после редактирования
+        }
+        navigationController?.pushViewController(editProfileVC, animated: true)
+    }
+    
+    @objc private func handleImageTap() {
+        editProfileTapped() // Перенаправляем на экран редактирования
+    }
+    
     private func configureUser() {
-        // Configure with user data
-        nameLabel.text = "Иван Иванов"
-        emailLabel.text = "ivan@example.com"
+        Task {
+            do {
+                let session = try await SupabaseManager.shared.client.auth.session
+                let profile = try await fetchUserProfile(userId: session.user.id)
+                
+                DispatchQueue.main.async {
+                    self.updateUI(with: session.user.email ?? "Email", profile: profile)
+                }
+            } catch {
+                print("❌ Error loading profile:", error)
+            }
+        }
+    }
+    
+    private func fetchUserProfile(userId: UUID) async throws -> Profile {
+        return try await SupabaseManager.shared.client
+            .from("profiles")
+            .select()
+            .eq("id", value: userId)
+            .single()
+            .execute()
+            .value
+    }
+    
+    private func updateUI(with email: String, profile: Profile) {
+        emailLabel.text = email
+        nameLabel.text = profile.username ?? "Пользователь"
+        
+        if let avatarURL = profile.avatarURL {
+            Task {
+                try await loadImage(from: avatarURL)
+            }
+        }
+    }
+   
+    private func loadImage(from path: String) async throws {
+        let data = try await SupabaseManager.shared.client.storage.from("avatars").download(path: path)
+        DispatchQueue.main.async {
+            self.profileImageView.image = UIImage(data: data)
+        }
+    }
+    
+    private func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            completion?()
+        })
+        present(alert, animated: true)
     }
 }
 
@@ -228,13 +309,16 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     private func logout() {
-        // Clear user data
         UserDefaults.standard.removeObject(forKey: "user_token")
-        
-        // Present auth screen
-        let authVC = AuthViewController()
-        let navController = UINavigationController(rootViewController: authVC)
-        navController.modalPresentationStyle = .fullScreen
-        present(navController, animated: true)
+        Task {
+            do {
+                try await SupabaseManager.shared.client.auth.signOut()
+                // Уведомляем координатор о необходимости переключиться на Auth Flow
+                NotificationCenter.default.post(name: .userDidLogout, object: nil)
+            } catch {
+                print("❌ Logout failed:", error)
+            }
+        }
     }
+    
 }

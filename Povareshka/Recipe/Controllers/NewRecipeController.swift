@@ -94,8 +94,6 @@ class NewRecipeController: UIViewController {
         navigationItem.title = "Новый рецепт"
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: Resources.Strings.Buttons.cancel, style: .plain, target: self, action: #selector(cancelButtonTapped))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: Resources.Strings.Buttons.save, style: .plain, target: self, action: #selector(saveButtonTapped))
-//        navigationItem.leftBarButtonItem?.tintColor = Resources.Colors.orange
-//        navigationItem.rightBarButtonItem?.tintColor = Resources.Colors.inactive
     }
 
     private func registerKeyboardNotifications() {

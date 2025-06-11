@@ -30,27 +30,22 @@ final class MainViewController: BaseController {
     }()
     
     @objc func plusButtonTapped() {
-        let createRecipeViewController = NewRecipeController()//RecipeAddController()
-//        let navVC = UINavigationController(rootViewController: createRecipeViewController)
-//        navVC.modalPresentationStyle = .automatic
-//        present(navVC, animated: true, completion: nil)
+        let createRecipeViewController = NewRecipeController()
         navigationController?.pushViewController(createRecipeViewController, animated: true)
     }
-    //------------
+
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Основное"
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(plusButtonTapped))
-//        navigationItem.rightBarButtonItem?.tintColor = Resources.Colors.orange
+
         createTempData()
         recipes = StorageManager.shared.realm.objects(RecipeModel.self)
         print("Recipes:")
-//        print(recipes[0].title)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
         setupAllUI()
     }
     

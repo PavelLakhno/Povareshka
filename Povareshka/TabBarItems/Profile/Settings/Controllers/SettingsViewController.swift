@@ -154,7 +154,7 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
 }
 
 // MARK: - SettingsCell Delegate
-extension SettingsViewController: SettingsCellDelegate {
+extension SettingsViewController: @preconcurrency SettingsCellDelegate {
     func settingsCell(_ cell: SettingsCell, didChangeToggleValue value: Bool) {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         let item = sections[indexPath.section].items[indexPath.row]
