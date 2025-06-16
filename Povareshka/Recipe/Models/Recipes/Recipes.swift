@@ -43,7 +43,7 @@ struct Ingredient: Codable {
 }
 
 struct Instruction: Codable {
-    let number: Int
+    var number: Int
     var image: Data?
     var describe: String?
 }

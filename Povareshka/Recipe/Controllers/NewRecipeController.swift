@@ -7,6 +7,8 @@
 
 import UIKit
 import RealmSwift
+import Storage
+import Supabase
 
 class NewRecipeController: UIViewController {
 
@@ -23,7 +25,7 @@ class NewRecipeController: UIViewController {
     private var servesArray: [String] = Resources.Arrayes.createServesArray()
     private var cookTimeArray: [String] = Resources.Arrayes.createCookTimeArray()
     private var ingredients: [Ingredient] = []
-    private var steps: [Instruction] = [.init(number: 1, image: nil, describe: nil)]
+    private var steps: [Instruction] = []
 
     private let ingredientsTableView = UITableView()
     private let settingsTableView = UITableView()
@@ -38,7 +40,7 @@ class NewRecipeController: UIViewController {
                                                cornerRadius: 12,
                                                contentMode: .scaleAspectFit, borderWidth: 1)
     private lazy var mainPhotoPickerView = UIImagePickerController(delegate: self)
-    private lazy var stepPhotoPickerView = UIImagePickerController(delegate: self)
+//    private lazy var stepPhotoPickerView = UIImagePickerController(delegate: self)
 
 
     private let ingredientsTitleLabel = UILabel.configureTitleLabel(text: Resources.Strings.Tittles.ingredient)
@@ -55,7 +57,6 @@ class NewRecipeController: UIViewController {
                                            action: #selector(editTaped(_:)))
 
     private lazy var addNewIngrButton = UIButton(title: Resources.Strings.Buttons.addIngredient,
-                                                 image: Resources.Images.Icons.add,
                                                  backgroundColor: .orange.withAlphaComponent(0.6),
                                                  tintColor: .white,
                                                  cornerRadius: 10,
@@ -63,7 +64,6 @@ class NewRecipeController: UIViewController {
                                                  action: #selector(addIngredientTapped(_:)))
 
     private lazy var addNewStepButton = UIButton(title: Resources.Strings.Buttons.addStep,
-                                                 image: Resources.Images.Icons.add,
                                                  backgroundColor: .orange.withAlphaComponent(0.6),
                                                  tintColor: .white,
                                                  cornerRadius: 10,
@@ -80,6 +80,12 @@ class NewRecipeController: UIViewController {
         setupConstraints()
         registerKeyboardNotifications()
     }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        stepsTableView.dynamicHeightForTableView()
+    }
+
 
     deinit {
         KeyboardManager.removeKeyboardNotifications(observer: self)
@@ -119,14 +125,34 @@ class NewRecipeController: UIViewController {
         }
         navigationController?.pushViewController(newIngredientVC, animated: true)
     }
-
+    
     @objc private func addStepTapped(_ sender: UIButton) {
-        steps.append(.init(number: steps.count + 1, image: nil, describe: nil))
-        let indexSet = IndexSet(integer: steps.count - 1)
-        stepsTableView.insertSections(indexSet, with: .automatic)
-        stepsTableView.beginUpdates()
-        stepsTableView.endUpdates()
-        stepsTableView.dynamicHeightForTableView()
+        let newStepVC = NewStepController(stepNumber: steps.count + 1)
+        newStepVC.saveStepCallback = { [weak self] newStep in
+            guard let self = self else { return }
+            self.steps.append(newStep)
+            // Оптимизация: используем performBatchUpdates для атомарных изменений
+            self.stepsTableView.performBatchUpdates({
+                self.stepsTableView.insertSections(IndexSet(integer: self.steps.count - 1), with: .automatic)
+            }, completion: { _ in
+                self.stepsTableView.dynamicHeightForTableView()
+            })
+        }
+        navigationController?.pushViewController(newStepVC, animated: true)
+    }
+    
+    private func editStep(at index: Int) {
+        let stepToEdit = steps[index]
+        let editStepVC = NewStepController(stepNumber: index + 1, existingStep: stepToEdit)
+        editStepVC.saveStepCallback = { [weak self] updatedStep in
+            guard let self = self else { return }
+            self.steps[index] = updatedStep
+            UIView.performWithoutAnimation {
+                self.stepsTableView.reloadSections(IndexSet(integer: index), with: .none)
+                self.stepsTableView.dynamicHeightForTableView()
+            }
+        }
+        navigationController?.pushViewController(editStepVC, animated: true)
     }
 
     @objc private func addSettingsTapped(_ sender: UIButton) {
@@ -176,16 +202,18 @@ class NewRecipeController: UIViewController {
     }
 
     @objc func saveButtonTapped() {
-        saveNewRecipe()
-        navigationController?.popViewController(animated: true)
-    }
-
-    private func calculateHeight(_ tableView: UITableView) -> CGFloat {
-        tableView.frame = CGRect(x: 0, y: 0,
-                                 width: contentStackView.frame.width,
-                                 height: CGFloat.greatestFiniteMagnitude)
-        tableView.layoutIfNeeded()
-        return tableView.contentSize.height
+        Task {
+            do {
+                try await saveRecipeToSupabase()
+                DispatchQueue.main.async {
+                    self.navigationController?.popViewController(animated: true)
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.showError(error)
+                }
+            }
+        }
     }
 
     // MARK: - Configure UI
@@ -256,7 +284,7 @@ class NewRecipeController: UIViewController {
 
             ingredientsTableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             ingredientsTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            ingredientsTableView.heightAnchor.constraint(greaterThanOrEqualToConstant: calculateHeight(ingredientsTableView)),
+            ingredientsTableView.heightAnchor.constraint(greaterThanOrEqualToConstant: 0),//calculateHeight(ingredientsTableView)),
 
             addNewIngrButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             addNewIngrButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
@@ -267,7 +295,7 @@ class NewRecipeController: UIViewController {
 
             stepsTableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             stepsTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            stepsTableView.heightAnchor.constraint(greaterThanOrEqualToConstant: calculateHeight(stepsTableView)),
+            stepsTableView.heightAnchor.constraint(greaterThanOrEqualToConstant: 0),//calculateHeight(stepsTableView)),
 
             addNewStepButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             addNewStepButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
@@ -278,9 +306,9 @@ class NewRecipeController: UIViewController {
     private func setupTableViews() {
         ingredientsTableView.configure(cellClass: MainIngredientsTableViewCell.self, cellIdentifier: MainIngredientsTableViewCell.id, delegate: self, dataSource: self)
         settingsTableView.configure(cellClass: SettingTableViewCell.self, cellIdentifier: SettingTableViewCell.id, delegate: self, dataSource: self)
+        stepsTableView.configure(cellClass: StepLabelCell.self, cellIdentifier: StepLabelCell.id, delegate: self, dataSource: self)
         stepsTableView.configure(cellClass: StepPhotoCell.self, cellIdentifier: StepPhotoCell.id, delegate: self, dataSource: self)
         stepsTableView.configure(cellClass: StepAddPhotoCell.self, cellIdentifier: StepAddPhotoCell.id, delegate: self, dataSource: self)
-        stepsTableView.configure(cellClass: StepDescriptionCell.self, cellIdentifier: StepDescriptionCell.id, delegate: self, dataSource: self)
     }
 
     private func setupPicker() {
@@ -311,24 +339,55 @@ class NewRecipeController: UIViewController {
         view.addSubview(pickerViewContainer)
     }
 
-    private func saveNewRecipe() {
+//    private func saveNewRecipe() {
+//        let recipeModel = RecipeModel()
+//        recipeModel.image = recipeImage.image?.pngData()
+//        recipeModel.title = recipeNameTextField.text ?? ""
+//
+//        guard let serveCell = settingsTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? SettingTableViewCell,
+//              let timeCookCell = settingsTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? SettingTableViewCell else { return }
+//
+//        recipeModel.readyInMinutes = serveCell.valueLabel.text ?? ""
+//        recipeModel.servings = Int(timeCookCell.valueLabel.text ?? "") ?? 0
+//
+//        for ingredient in ingredients {
+//            let ingredientModel = IngredientModel()
+//            ingredientModel.name = ingredient.name
+//            ingredientModel.amount = ingredient.amount
+//            recipeModel.ingredients.append(ingredientModel)
+//        }
+//
+//        for step in steps {
+//            let instructionModel = InstructionModel()
+//            instructionModel.number = step.number
+//            instructionModel.image = step.image
+//            instructionModel.describe = step.describe
+//            recipeModel.instructions.append(instructionModel)
+//        }
+//
+//        StorageManager.shared.save(recipeModel)
+//    }
+    
+    private func saveToRealm(recipeId: UUID) {
         let recipeModel = RecipeModel()
-        recipeModel.image = recipeImage.image?.pngData()
         recipeModel.title = recipeNameTextField.text ?? ""
-
-        guard let serveCell = settingsTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? SettingTableViewCell,
-              let timeCookCell = settingsTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? SettingTableViewCell else { return }
-
-        recipeModel.readyInMinutes = serveCell.valueLabel.text ?? ""
-        recipeModel.servings = Int(timeCookCell.valueLabel.text ?? "") ?? 0
-
+        recipeModel.image = recipeImage.image?.pngData()
+        
+        if let serveCell = settingsTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? SettingTableViewCell {
+            recipeModel.readyInMinutes = serveCell.valueLabel.text ?? ""
+        }
+        
+        if let timeCookCell = settingsTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? SettingTableViewCell {
+            recipeModel.servings = Int(timeCookCell.valueLabel.text ?? "") ?? 0
+        }
+        
         for ingredient in ingredients {
             let ingredientModel = IngredientModel()
             ingredientModel.name = ingredient.name
             ingredientModel.amount = ingredient.amount
             recipeModel.ingredients.append(ingredientModel)
         }
-
+        
         for step in steps {
             let instructionModel = InstructionModel()
             instructionModel.number = step.number
@@ -336,7 +395,7 @@ class NewRecipeController: UIViewController {
             instructionModel.describe = step.describe
             recipeModel.instructions.append(instructionModel)
         }
-
+        
         StorageManager.shared.save(recipeModel)
     }
 }
@@ -377,23 +436,19 @@ extension NewRecipeController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if tableView == stepsTableView {
             let stepSection = steps[indexPath.section]
+            
             if indexPath.row == 0 {
-                let cellDescription = tableView.dequeueReusableCell(withIdentifier: StepDescriptionCell.id, for: indexPath) as! StepDescriptionCell
-                self.indexPath = indexPath
-                cellDescription.stepDescribeTextView.delegate = self
-                cellDescription.stepDescribeTextView.tag = indexPath.section
-                cellDescription.textInput = stepSection.describe
-                return cellDescription
+                let cell = tableView.dequeueReusableCell(withIdentifier: StepLabelCell.id, for: indexPath) as! StepLabelCell
+                cell.configure(with: stepSection.describe)
+                return cell
             } else {
                 if stepSection.image == nil {
-                    let cellAddPhoto = tableView.dequeueReusableCell(withIdentifier: StepAddPhotoCell.id, for: indexPath) as! StepAddPhotoCell
-                    return cellAddPhoto
-                } else if stepSection.image != nil {
-                    let cellPhoto = tableView.dequeueReusableCell(withIdentifier: StepPhotoCell.id, for: indexPath) as! StepPhotoCell
-                    cellPhoto.recipeImage.image = UIImage(data: stepSection.image ?? Data())
-                    return cellPhoto
+                    let cell = tableView.dequeueReusableCell(withIdentifier: StepAddPhotoCell.id, for: indexPath) as! StepAddPhotoCell
+                    return cell
                 } else {
-                    return UITableViewCell()
+                    let cell = tableView.dequeueReusableCell(withIdentifier: StepPhotoCell.id, for: indexPath) as! StepPhotoCell
+                    cell.recipeImage.image = UIImage(data: stepSection.image ?? Data())
+                    return cell
                 }
             }
         } else if tableView == settingsTableView {
@@ -421,96 +476,234 @@ extension NewRecipeController: UITableViewDelegate, UITableViewDataSource {
             return false
         }
     }
-
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let deleteAction = UIContextualAction(style: .destructive, title: nil) { [unowned self] (_, _, completionHandler) in
-            if tableView == stepsTableView {
-                self.indexPath = indexPath
-                if steps.count > 1 {
-                    steps.remove(at: indexPath.section)
-                    stepsTableView.deleteSections([indexPath.section], with: .none)
-                }
-            } else {
+        if tableView == ingredientsTableView {
+            let deleteAction = UIContextualAction(style: .destructive, title: nil) { [unowned self] (_, _, completionHandler) in
+                
                 if ingredients.count > 1 {
                     ingredients.remove(at: indexPath.row)
                     ingredientsTableView.deleteRows(at: [indexPath], with: .none)
                 }
+                
+                tableView.beginUpdates()
+                DispatchQueue.main.async {
+                    tableView.reloadData()
+                }
+                tableView.endUpdates()
+                tableView.dynamicHeightForTableView()
+                completionHandler(true)
             }
-            tableView.beginUpdates()
-            DispatchQueue.main.async {
-                tableView.reloadData()
-            }
-            tableView.endUpdates()
-            tableView.dynamicHeightForTableView()
-            completionHandler(true)
+            deleteAction.image = Resources.Images.Icons.trash
+            deleteAction.backgroundColor = .orange.withAlphaComponent(0.3)
+            
+            let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+            return configuration
+        } else {
+            return nil
         }
-        deleteAction.image = Resources.Images.Icons.trash
-        deleteAction.backgroundColor = .orange.withAlphaComponent(0.3)
+    }
+   
+    //new add
 
-        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
-        return configuration
+    private func showDeleteAlert(for section: Int, completion: ((Bool) -> Void)? = nil) {
+        let alert = UIAlertController(
+            title: "Удалить шаг?",
+            message: "Вы уверены, что хотите удалить этот шаг?",
+            preferredStyle: .alert
+        )
+        
+        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+            guard let self = self else { return }
+            
+            guard self.steps.count > 1 else {
+                self.showAlert(title: "Ошибка", message: "Должен остаться хотя бы один шаг")
+                completion?(false)
+                return
+            }
+            
+            self.steps.remove(at: section)
+            
+            UIView.performWithoutAnimation {
+                self.stepsTableView.beginUpdates()
+                self.stepsTableView.deleteSections([section], with: .automatic)
+                self.stepsTableView.endUpdates()
+            }
+            
+            DispatchQueue.main.async {
+                self.stepsTableView.dynamicHeightForTableView()
+                self.renumberSteps()
+            }
+            
+            completion?(true)
+        }
+        
+        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel) { _ in
+            completion?(false)
+        }
+        
+        alert.addAction(deleteAction)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true)
+    }
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard tableView == stepsTableView else { return nil }
+        
+        let headerView = UIView()
+        headerView.backgroundColor = .neutral10
+        
+        let titleLabel = UILabel()
+        titleLabel.text = "Шаг \(section + 1)"
+        titleLabel.font = .helveticalBold(withSize: 16)
+        titleLabel.textColor = .neutral100
+        
+        let deleteButton = UIButton(type: .system)
+        deleteButton.setImage(Resources.Images.Icons.trash, for: .normal)
+        deleteButton.tintColor = .orange
+        deleteButton.addTarget(self, action: #selector(deleteSection(_:)), for: .touchUpInside)
+        deleteButton.tag = section
+        
+        headerView.addSubview(titleLabel)
+        headerView.addSubview(deleteButton)
+        
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        deleteButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            titleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            titleLabel.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
+            
+            deleteButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
+            deleteButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
+            deleteButton.widthAnchor.constraint(equalToConstant: 30),
+            deleteButton.heightAnchor.constraint(equalToConstant: 30)
+        ])
+        
+        return headerView
+    }
+
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return tableView == stepsTableView ? 44 : 0
+    }
+
+    
+    @objc private func deleteSection(_ sender: UIButton) {
+        let section = sender.tag
+        
+        let alert = UIAlertController(
+            title: "Удалить шаг?",
+            message: "Вы уверены, что хотите удалить этот шаг?",
+            preferredStyle: .alert
+        )
+        
+        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+            guard let self = self else { return }
+            
+            // Удаляем только если шагов больше одного
+            guard self.steps.count > 1 else {
+                self.showAlert(title: "Ошибка", message: "Должен остаться хотя бы один шаг")
+                return
+            }
+            
+            self.steps.remove(at: section)
+            
+            UIView.performWithoutAnimation {
+                self.stepsTableView.beginUpdates()
+                self.stepsTableView.deleteSections([section], with: .automatic)
+                self.stepsTableView.endUpdates()
+            }
+            
+            DispatchQueue.main.async {
+                self.stepsTableView.dynamicHeightForTableView()
+                self.renumberSteps()
+            }
+        }
+        
+        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel)
+        
+        alert.addAction(deleteAction)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true)
+    }
+
+    private func renumberSteps() {
+        // Обновляем номера шагов после удаления
+        for (index, _) in steps.enumerated() {
+            steps[index].number = index + 1
+        }
+        stepsTableView.reloadData()
+    }
+
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if tableView == stepsTableView {
-            let stepSection = steps[indexPath.section]
-            if stepSection.image == nil && indexPath.row == 1 {
-                return 60
-            } else if stepSection.image != nil && indexPath.row == 1 {
-                return 200
-            } else {
+            if indexPath.row == 0 {
+                // Для ячейки с текстом используем автоматический расчет
                 return UITableView.automaticDimension
+            } else {
+                // Для ячейки с изображением
+                return steps[indexPath.section].image == nil ? 60 : 200
             }
-        } else {
-            return UITableView.automaticDimension
         }
+        return UITableView.automaticDimension
     }
-
+    
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         if tableView == stepsTableView {
-            let stepSection = steps[indexPath.section]
-            if stepSection.image == nil && indexPath.row == 1 {
-                return 60
-            } else if stepSection.image != nil && indexPath.row == 1 {
-                return 200
+            if indexPath.row == 0 {
+                return 44 // Примерная начальная высота для текста
             } else {
-                return 80
+                return steps[indexPath.section].image == nil ? 60 : 200
             }
-        } else {
-            return UITableView.automaticDimension
         }
+        return UITableView.automaticDimension
     }
 
 
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        if tableView == stepsTableView {
+//            if indexPath.row == 1 {
+//                customIndexPathSection = indexPath.section
+//                self.indexPath = indexPath
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+//                    self.present(self.stepPhotoPickerView, animated: true)
+//                }
+//            }
+//        }
+//    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
         if tableView == stepsTableView {
-            if indexPath.row == 1 {
-                customIndexPathSection = indexPath.section
-                self.indexPath = indexPath
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                    self.present(self.stepPhotoPickerView, animated: true)
-                }
-            }
+            editStep(at: indexPath.section)
         }
     }
 }
 
 // MARK: - ImagePickerControllerDelegate
 extension NewRecipeController: UIImagePickerControllerDelegate & UINavigationControllerDelegate {
-
+    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-        let choosenImage = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
+        guard let chosenImage = info[.originalImage] as? UIImage else { return }
+        
         if picker == mainPhotoPickerView {
-            recipeImage.image = choosenImage
+            recipeImage.image = chosenImage
             recipeImage.contentMode = .scaleToFill
             recipeImage.layer.borderColor = UIColor.clear.cgColor
         } else {
             guard let indexPath = self.indexPath else { return }
-            steps[indexPath.section].image = choosenImage.pngData()
+            steps[indexPath.section].image = chosenImage.pngData()
             stepsTableView.reloadData()
             stepsTableView.dynamicHeightForTableView()
         }
-        self.dismiss(animated: true, completion: nil)
+        
+        dismiss(animated: true)
     }
 
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -621,5 +814,205 @@ extension NewRecipeController: UIPickerViewDataSource, UIPickerViewDelegate {
 
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         pickerView == servesPicker ? servesArray[row] : cookTimeArray[row]
+    }
+}
+
+// MARK: - Supabase Methods
+extension NewRecipeController {
+    private func uploadRecipeImage(_ image: UIImage, currentRecipeID: UUID) async throws -> String? {
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            return nil
+        }
+        
+        let currentUser = try await SupabaseManager.shared.client.auth.session.user
+        let userId = currentUser.id.uuidString.lowercased()
+        let recipeId = currentRecipeID
+        let fileName = "main_\(UUID().uuidString).jpeg"
+        let fullPath = "\(userId)/\(recipeId)/\(fileName)"
+        
+        try await SupabaseManager.shared.client.storage
+            .from("recipes")
+            .upload(
+                fullPath,
+                data: imageData,
+                options: FileOptions(
+                    contentType: "image/jpeg",
+                )
+            )
+        
+        return fullPath
+    }
+    
+    private func uploadStepImage(_ image: UIImage, forStep stepNumber: Int, currentRecipeID: UUID) async throws -> String? {
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            return nil
+        }
+        
+        let currentUser = try await SupabaseManager.shared.client.auth.session.user
+        let userId = currentUser.id.uuidString.lowercased()
+        let recipeId = currentRecipeID
+        let fileName = "step_\(stepNumber)_\(UUID().uuidString).jpeg"
+        let fullPath = "\(userId)/\(recipeId)/\(fileName)"
+        
+        try await SupabaseManager.shared.client.storage
+            .from("recipes")
+            .upload(
+                fullPath,
+                data: imageData,
+                options: FileOptions(
+                    contentType: "image/jpeg",
+                )
+            )
+        
+        return fullPath
+    }
+    
+    private func saveRecipeToSupabase() async throws {
+        // 1. Получаем текущего пользователя
+        let currentUser = try await SupabaseManager.shared.client.auth.session.user
+        
+        let recipeId = UUID()
+        // 2. Загружаем основное изображение рецепта (если есть)
+        let imagePath = try await uploadMainImageIfNeeded(for: recipeId)
+        
+        // 3. Создаем рецепт в базе данных
+        
+        let recipe = RecipeSupabase(
+            id: recipeId,
+            userId: currentUser.id,
+            title: recipeNameTextField.text ?? "",
+            description: recipeDescribeTextView.text,
+            imagePath: imagePath,
+            readyInMinutes: getReadyInMinutes(),
+            servings: getServings(),
+            isPublic: true,
+            createdAt: Date(),
+            updatedAt: Date()
+        )
+        
+        try await saveRecipeToDatabase(recipe)
+        
+        // 4. Сохраняем ингредиенты
+        try await saveIngredients(for: recipeId)
+        
+        // 5. Сохраняем шаги приготовления
+        try await saveInstructions(for: recipeId)
+        
+        // 6. Сохраняем в Realm для оффлайн-доступа
+//        saveToRealm(recipeId: recipeId)
+    }
+
+    private func uploadMainImageIfNeeded(for recipeID: UUID) async throws -> String? {
+        guard let image = recipeImage.image, image != Resources.Images.Icons.cameraMain else {
+            return nil
+        }
+        return try await uploadRecipeImage(image, currentRecipeID: recipeID)
+    }
+
+    private func getReadyInMinutes() -> Int? {
+        guard let cell = settingsTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? SettingTableViewCell,
+              let text = cell.valueLabel.text?.replacingOccurrences(of: " мин", with: "") else {
+            return nil
+        }
+        return Int(text)
+    }
+
+    private func getServings() -> Int? {
+        guard let cell = settingsTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? SettingTableViewCell,
+              let text = cell.valueLabel.text?.replacingOccurrences(of: " чел", with: "") else {
+            return nil
+        }
+        return Int(text)
+    }
+    
+    private func saveRecipeToDatabase(_ recipe: RecipeSupabase) async throws {
+        try await SupabaseManager.shared.client
+            .from("recipes")
+            .insert(recipe)
+            .execute()
+    }
+
+    private func saveIngredients(for recipeId: UUID) async throws {
+        for (index, ingredient) in ingredients.enumerated() {
+            let ingredientSupabase = IngredientSupabase(
+                id: UUID(),
+                recipeId: recipeId,
+                name: ingredient.name,
+                amount: ingredient.amount + ingredient.measure,
+                orderIndex: index
+            )
+            
+            try await SupabaseManager.shared.client
+                .from("ingredients")
+                .insert(ingredientSupabase)
+                .execute()
+        }
+    }
+
+    private func saveInstructions(for recipeId: UUID) async throws {
+        for (index, step) in steps.enumerated() {
+            var imagePath: String? = nil
+            
+            // Загружаем изображение шага, если оно есть
+            if let imageData = step.image, let image = UIImage(data: imageData) {
+                imagePath = try await uploadStepImage(image, forStep: index + 1, currentRecipeID: recipeId)
+            }
+            
+            let instruction = InstructionSupabase(
+                id: UUID(),
+                recipeId: recipeId,
+                stepNumber: index + 1,
+                description: step.describe,
+                imagePath: imagePath,
+                orderIndex: index
+            )
+            
+            try await SupabaseManager.shared.client
+                .from("instructions")
+                .insert(instruction)
+                .execute()
+        }
+    }
+}
+
+enum SupabaseError: Error {
+    case invalidURL
+    case networkError(Error)
+    case storageError(String)
+    case databaseError(String)
+    
+    var localizedDescription: String {
+        switch self {
+        case .invalidURL: return "Неверный URL сервера"
+        case .networkError(let error): return "Ошибка сети: \(error.localizedDescription)"
+        case .storageError(let desc): return "Ошибка хранилища: \(desc)"
+        case .databaseError(let desc): return "Ошибка базы данных: \(desc)"
+        }
+    }
+}
+
+extension NewRecipeController {
+    private func showError(_ error: Error) {
+        var message = error.localizedDescription
+        
+        if let supabaseError = error as? SupabaseError {
+            switch supabaseError {
+            case .invalidURL: message = "Неверный URL сервера"
+            case .networkError(let underlyingError):
+                message = "Ошибка сети: \(underlyingError.localizedDescription)"
+            case .storageError(let description):
+                message = "Ошибка хранилища: \(description)"
+            case .databaseError(let description):
+                message = "Ошибка базы данных: \(description)"
+            }
+        }
+        
+        let alert = UIAlertController(
+            title: "Ошибка",
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 }

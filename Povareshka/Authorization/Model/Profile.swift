@@ -99,3 +99,40 @@ struct InstructionSupabase: Codable, Identifiable {
         case orderIndex = "order_index"
     }
 }
+
+struct RecipeShortInfo: Decodable {
+    let id: UUID
+    let title: String
+    let imagePath: String?
+    let authorId: UUID
+    let authorName: String
+    let authorAvatarPath: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id, title
+        case imagePath = "image_path"
+        case authorId = "user_id"
+        case profile = "profiles"  // Ключ для вложенного объекта
+    }
+    
+    enum ProfileKeys: String, CodingKey {
+        case username
+        case avatarUrl = "avatar_url"
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        title = try container.decode(String.self, forKey: .title)
+        imagePath = try container.decodeIfPresent(String.self, forKey: .imagePath)
+        authorId = try container.decode(UUID.self, forKey: .authorId)
+        
+        // Декодируем вложенный объект профиля
+        let profileContainer = try container.nestedContainer(
+            keyedBy: ProfileKeys.self,
+            forKey: .profile
+        )
+        authorName = try profileContainer.decode(String.self, forKey: .username)
+        authorAvatarPath = try profileContainer.decodeIfPresent(String.self, forKey: .avatarUrl)
+    }
+}

@@ -9,6 +9,10 @@ import UIKit
 //import Kingfisher
 
 class TrendingNowCollectionViewCell: UICollectionViewCell {
+    static let identifier = "TrendingNowCell"
+    
+    private var mainImageTask: Task<Void, Never>?
+    private var avatarImageTask: Task<Void, Never>?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -19,7 +23,7 @@ class TrendingNowCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    static let identifier = "TrendingNowCell"
+    
     
     lazy var photoDish: UIImageView = {
         let image = UIImageView(cornerRadius: 16)
@@ -44,17 +48,83 @@ class TrendingNowCollectionViewCell: UICollectionViewCell {
                                          numberOfLines: 0)
     
     private var creatorStackView = UIStackView(axis: .horizontal, aligment: .center, spacing: 8)
-    private var creatorImageView = UIImageView(image: Resources.Images.Icons.testAuthorIcon, cornerRadius: 16)
-    private var creatorLabel = UILabel(text: "Ольга Митрофановна",
-                                       font: .helveticalRegular(withSize: 12),
+    private var creatorImageView = UIImageView(cornerRadius: 16)
+    private var creatorLabel = UILabel(font: .helveticalRegular(withSize: 12),
                                        textColor: Resources.Colors.secondary,
                                        numberOfLines: 1)
     
+
+    //SB (optimizated)
+    func configure(with recipe: RecipeShortInfo) {
+        titleDishLabel.text = recipe.title
+        creatorLabel.text = recipe.authorName
+       
+        loadMainImage(path: recipe.imagePath)
+        loadAuthorAvatar(path: recipe.authorAvatarPath)
+
+    }
     
+    private func loadMainImage(path: String?) {
+        guard let path = path else {
+            photoDish.image = UIImage(named: "recipe_placeholder")
+            return
+        }
+        
+        // Проверяем кэш
+        if let cachedImage = ImageCache.shared.image(for: path) {
+            photoDish.image = cachedImage
+            return
+        }
+        mainImageTask?.cancel()
+        mainImageTask = Task {
+            do {
+                let data = try await SupabaseManager.shared.client
+                    .storage
+                    .from("recipes")
+                    .download(path: path)
+                
+                if !Task.isCancelled, let image = UIImage(data: data) {
+                    ImageCache.shared.setImage(image, for: path)
+                    photoDish.image = image
+                }
+            } catch {
+                if !Task.isCancelled {
+                    photoDish.image = UIImage(named: "placeholder")
+                }
+            }
+        }
+    }
     
-    
-    func configureCell(with recipe: String) {
-        titleDishLabel.text = recipe
+    private func loadAuthorAvatar(path: String?) {
+        guard let path = path else {
+            creatorImageView.image = UIImage(systemName: "person.circle.fill")
+            return
+        }
+        
+        // Проверка кэша
+        if let cachedImage = ImageCache.shared.image(for: path) {
+            creatorImageView.image = cachedImage
+            return
+        }
+        
+        avatarImageTask?.cancel()
+        avatarImageTask = Task {
+            do {
+                let data = try await SupabaseManager.shared.client
+                    .storage
+                    .from("avatars")
+                    .download(path: path)
+                
+                if !Task.isCancelled, let image = UIImage(data: data) {
+                    ImageCache.shared.setImage(image, for: path)
+                    creatorImageView.image = image
+                }
+            } catch {
+                if !Task.isCancelled {
+                    creatorImageView.image = UIImage(systemName: "person.circle.fill")
+                }
+            }
+        }
     }
     
     let gradientLayer = CAGradientLayer()
@@ -108,10 +178,33 @@ class TrendingNowCollectionViewCell: UICollectionViewCell {
         ])
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        super.prepareForReuse()
+        mainImageTask?.cancel()
+        avatarImageTask?.cancel()
+        photoDish.image = nil
+        creatorImageView.image = nil
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         
         gradientLayer.frame = bounds
     }
 
+}
+
+@MainActor
+class ImageCache {
+    static let shared = ImageCache()
+    private let cache = NSCache<NSString, UIImage>()
+    
+    func image(for key: String) -> UIImage? {
+        return cache.object(forKey: key as NSString)
+    }
+    
+    func setImage(_ image: UIImage, for key: String) {
+        cache.setObject(image, forKey: key as NSString)
+    }
 }

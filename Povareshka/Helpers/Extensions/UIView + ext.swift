@@ -235,6 +235,7 @@ extension UITableView {
         self.layoutIfNeeded()
         self.constraints.filter { $0.firstAttribute == .height }.forEach { $0.constant = self.contentSize.height }
     }
+    
     // notes
     func scrollToCenterOf(view: UIView) {
         guard let scrollView = view.superview as? UIScrollView else { return }

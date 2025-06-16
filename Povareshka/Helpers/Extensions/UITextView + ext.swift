@@ -131,3 +131,28 @@ extension UITextView: UITextViewDelegate {
     }
 
 }
+extension UITextView {
+    func dynamicTextViewHeight(minHeight: CGFloat) {
+        guard minHeight > 0 else { return }
+        
+        let fixedWidth = self.frame.size.width
+        let newSize = self.sizeThatFits(CGSize(width: fixedWidth,
+                                              height: CGFloat.greatestFiniteMagnitude))
+        
+        // Находим height constraint (если есть)
+        let heightConstraint = self.constraints.first { $0.firstAttribute == .height }
+        
+        // Устанавливаем новую высоту (не меньше minHeight)
+        let newHeight = max(newSize.height, minHeight)
+        
+        // Обновляем constraint или frame
+        if let heightConstraint = heightConstraint {
+            heightConstraint.constant = newHeight
+        } else {
+            self.frame.size.height = newHeight
+        }
+        
+        self.layoutIfNeeded()
+    }
+}
+

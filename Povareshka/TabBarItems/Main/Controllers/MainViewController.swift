@@ -9,8 +9,12 @@ import UIKit
 import RealmSwift
 
 final class MainViewController: BaseController {
-    
+    private let activityIndicator = UIActivityIndicatorView(style: .medium)
     private var recipes: Results<RecipeModel>!
+    
+    // SB
+    private var recipesSupabase: [RecipeShortInfo] = []
+    private var isLoading = false
 
     lazy var homeScrollView: UIScrollView = {
         let sv = UIScrollView()
@@ -39,14 +43,22 @@ final class MainViewController: BaseController {
         navigationItem.title = "Основное"
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(plusButtonTapped))
 
-        createTempData()
-        recipes = StorageManager.shared.realm.objects(RecipeModel.self)
+//        createTempData()
+//        recipes = StorageManager.shared.realm.objects(RecipeModel.self)
         print("Recipes:")
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupAllUI()
+        // SB
+        loadRecipes()
+        setupActivityIndicator()
+    }
+    
+    private func setupActivityIndicator() {
+        view.addSubview(activityIndicator)
+        activityIndicator.center = view.center
     }
     
     func createTempData() {
@@ -59,25 +71,83 @@ final class MainViewController: BaseController {
         }
     }
     
+    private func loadRecipes() {
+        guard !isLoading else { return }
+        isLoading = true
+        activityIndicator.startAnimating()
+        Task {
+            do {
+                let response: [RecipeShortInfo] = try await SupabaseManager.shared.client
+                    .from("recipes")
+                //                    .select("id, title, image_path")
+                    .select("""
+                            id,
+                            title,
+                            image_path,
+                            user_id,
+                            profiles!recipes_user_id_fkey(username, avatar_url)
+                        """)
+                    .order("created_at", ascending: false)
+                    .execute()
+                    .value
+                
+                DispatchQueue.main.async {
+                    self.recipesSupabase = response
+                    self.trendingCollectionView.reloadData()
+                    self.isLoading = false
+                    self.activityIndicator.stopAnimating()
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    print("Ошибка загрузки рецептов: \(error)")
+                    self.isLoading = false
+                    self.activityIndicator.stopAnimating()
+                }
+            }
+        }
+    }
 }
 
-// MARK: - UICollectionViewDataSource, UICollectionViewDelegate
+// MARK: - UICollectionViewDataSource, UICollectionViewDelegate (Realm)
 
+//extension MainViewController: UICollectionViewDataSource, UICollectionViewDelegate {
+//    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+//        recipes.count
+//    }
+//    
+//    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+//        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrendingNowCollectionViewCell.identifier, for: indexPath) as! TrendingNowCollectionViewCell
+//        cell.photoDish.image = UIImage(data: recipes[indexPath.row].image ?? Data())
+//        cell.titleDishLabel.text = recipes[indexPath.row].title
+//        return cell
+//    }
+//    
+//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+//        let recipeWatchVC = RecipeWatchController()
+//        recipeWatchVC.recipe = recipes[indexPath.row]
+//        navigationController?.pushViewController(recipeWatchVC, animated: true)
+//    }
+//}
+
+// MARK: - UICollectionViewDataSource, UICollectionViewDelegate (Supabase)
 extension MainViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        recipes.count
+        recipesSupabase.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrendingNowCollectionViewCell.identifier, for: indexPath) as! TrendingNowCollectionViewCell
-        cell.photoDish.image = UIImage(data: recipes[indexPath.row].image ?? Data())
-        cell.titleDishLabel.text = recipes[indexPath.row].title
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: TrendingNowCollectionViewCell.identifier,
+            for: indexPath
+        ) as! TrendingNowCollectionViewCell
+        
+        cell.configure(with: recipesSupabase[indexPath.row])
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let recipeWatchVC = RecipeWatchController()
-        recipeWatchVC.recipe = recipes[indexPath.row]
+        recipeWatchVC.recipeId = recipesSupabase[indexPath.row].id
         navigationController?.pushViewController(recipeWatchVC, animated: true)
     }
 }
