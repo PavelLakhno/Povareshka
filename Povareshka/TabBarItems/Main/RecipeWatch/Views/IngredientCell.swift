@@ -1,5 +1,5 @@
 //
-//  IngredientTableViewCell.swift
+//  IngredientCell.swift
 //  Povareshka
 //
 //  Created by Pavel Lakhno on 30.03.2025.
@@ -7,9 +7,9 @@
 
 import UIKit
 
-class IngredientTableViewCell: UITableViewCell {
+class IngredientCell: UITableViewCell {
     
-    static let id = "IngredientTableViewCell"
+    static let id = "IngredientCell"
     
     // MARK: - UI Elements
     let addButton = UIButton()
