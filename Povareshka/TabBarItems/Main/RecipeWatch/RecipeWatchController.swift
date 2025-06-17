@@ -135,6 +135,7 @@ class RecipeWatchController: UIViewController {
         let titleLabel = UILabel()
         titleLabel.text = recipe.title
         titleLabel.font = .helveticalBold(withSize: 24)
+        titleLabel.numberOfLines = 0
         titleLabel.textAlignment = .center
         stackView.addArrangedSubview(titleLabel)
         
@@ -189,33 +190,40 @@ class RecipeWatchController: UIViewController {
         // Ингредиенты
         let ingredientsLabel = UILabel()
         ingredientsLabel.text = Resources.Strings.Tittles.ingredient
+        ingredientsLabel.textAlignment = .center
         ingredientsLabel.font = .helveticalBold(withSize: 20)
         stackView.addArrangedSubview(ingredientsLabel)
         
         setupTableView(tableView: ingredientTableView,
-                      cellType: IngredientTableViewCell.self,
-                      cellIdentifier: IngredientTableViewCell.id)
+                      cellType: IngredientCell.self,
+                      cellIdentifier: IngredientCell.id)
         
         // Инструкции
         let instructionsLabel = UILabel()
         instructionsLabel.text = Resources.Strings.Tittles.cookingStages
+        instructionsLabel.textAlignment = .center
         instructionsLabel.font = .helveticalBold(withSize: 20)
         stackView.addArrangedSubview(instructionsLabel)
         
-        setupTableView(tableView: stepTableView,
-                      cellType: InstructionTableViewCell.self,
-                      cellIdentifier: InstructionTableViewCell.id)
-
+        setupTableView(tableView: stepTableView, cellType: InstructionTextCell.self, cellIdentifier: InstructionTextCell.id)
+        setupTableView(tableView: stepTableView, cellType: InstructionImageCell.self, cellIdentifier: InstructionImageCell.id)
     }
 }
 
 extension RecipeWatchController: UITableViewDataSource, UITableViewDelegate {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        if tableView == stepTableView {
+            return instructions.count
+        }
+        return 1
+    }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if tableView == ingredientTableView {
             return ingredients.count
         } else {
-            return instructions.count
+            let instruction = instructions[section]
+            return instruction.imagePath != nil ? 2 : 1 // 2 ячейки если есть изображение (текст + изображение)
         }
     }
     
@@ -223,10 +231,10 @@ extension RecipeWatchController: UITableViewDataSource, UITableViewDelegate {
         tableView.isScrollEnabled = false
         
         if tableView == ingredientTableView {
-            let cell = tableView.dequeueReusableCell(withIdentifier: IngredientTableViewCell.id, for: indexPath) as! IngredientTableViewCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: IngredientCell.id, for: indexPath) as! IngredientCell
             let ingredient = ingredients[indexPath.row]
             var content = cell.defaultContentConfiguration()
-            content.text = "\(ingredient.name) \(ingredient.amount)"
+            content.text = "\(ingredient.name)  \(ingredient.amount)"
             cell.contentConfiguration = content
             cell.addButton.tag = indexPath.row
             cell.addButton.addTarget(self, action: #selector(addButtonTapped(_:)), for: .touchUpInside)
@@ -236,16 +244,31 @@ extension RecipeWatchController: UITableViewDataSource, UITableViewDelegate {
 
             return cell
         } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: InstructionTableViewCell.id, for: indexPath) as! InstructionTableViewCell
-            let instruction = instructions[indexPath.row]
-            cell.configure(with: instruction)
-
-            DispatchQueue.main.async {
-                tableView.dynamicHeightForTableView()
-            }
+            let instruction = instructions[indexPath.section]
             
-            return cell
+            if indexPath.row == 0 {
+                // Cell for text
+                let cell = tableView.dequeueReusableCell(withIdentifier: InstructionTextCell.id, for: indexPath) as! InstructionTextCell
+                cell.configure(stepNumber: instruction.stepNumber, description: instruction.description ?? "")
+                DispatchQueue.main.async {
+                    tableView.dynamicHeightForTableView()
+                }
+                return cell
+            } else {
+                // Cell for image
+                let cell = tableView.dequeueReusableCell(withIdentifier: InstructionImageCell.id, for: indexPath) as! InstructionImageCell
+                if let imagePath = instruction.imagePath {
+                    cell.configure(with: imagePath)
+                    DispatchQueue.main.async {
+                        tableView.dynamicHeightForTableView()
+                    }
+                }
+                
+
+                return cell
+            }
         }
+
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

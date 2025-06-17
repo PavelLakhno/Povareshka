@@ -192,7 +192,6 @@ class TrendingNowCollectionViewCell: UICollectionViewCell {
         
         gradientLayer.frame = bounds
     }
-
 }
 
 @MainActor

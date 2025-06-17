@@ -39,12 +39,12 @@ class InstructionTextCell: UITableViewCell {
         
         NSLayoutConstraint.activate([
             stepLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
-            stepLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            stepLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            stepLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
+            stepLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5),
             
-            descriptionLabel.topAnchor.constraint(equalTo: stepLabel.bottomAnchor, constant: 8),
-            descriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            descriptionLabel.topAnchor.constraint(equalTo: stepLabel.bottomAnchor, constant: 5),
+            descriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
+            descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5),
             descriptionLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
         ])
     }

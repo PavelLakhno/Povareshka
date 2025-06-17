@@ -40,8 +40,8 @@ class InstructionImageCell: UITableViewCell {
         
         NSLayoutConstraint.activate([
             stepImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
-            stepImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            stepImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            stepImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
+            stepImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5),
             stepImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0),
             stepImageView.heightAnchor.constraint(equalTo: stepImageView.widthAnchor, multiplier: 0.6)
         ])

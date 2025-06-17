@@ -23,8 +23,7 @@
 		CE93F43E2DA909FE00CF3144 /* BaseAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE93F43D2DA909FE00CF3144 /* BaseAuthViewController.swift */; };
 		CE94F75C2DB150F000EC90B1 /* SupabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE94F75B2DB150F000EC90B1 /* SupabaseManager.swift */; };
 		CE96E2932D9985B80001B4DB /* RecipeWatchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE96E2922D9985B80001B4DB /* RecipeWatchController.swift */; };
-		CE96E2962D9985F90001B4DB /* InstructionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE96E2952D9985F90001B4DB /* InstructionTableViewCell.swift */; };
-		CE96E2982D9986250001B4DB /* IngredientTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE96E2972D9986250001B4DB /* IngredientTableViewCell.swift */; };
+		CE96E2982D9986250001B4DB /* IngredientCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE96E2972D9986250001B4DB /* IngredientCell.swift */; };
 		CE9BAB2A2C7C7EF000CD6C24 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB292C7C7EF000CD6C24 /* AppDelegate.swift */; };
 		CE9BAB2C2C7C7EF000CD6C24 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB2B2C7C7EF000CD6C24 /* SceneDelegate.swift */; };
 		CE9BAB2E2C7C7EF000CD6C24 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9BAB2D2C7C7EF000CD6C24 /* MainViewController.swift */; };
@@ -86,8 +85,7 @@
 		CE93F43D2DA909FE00CF3144 /* BaseAuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseAuthViewController.swift; sourceTree = "<group>"; };
 		CE94F75B2DB150F000EC90B1 /* SupabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseManager.swift; sourceTree = "<group>"; };
 		CE96E2922D9985B80001B4DB /* RecipeWatchController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeWatchController.swift; sourceTree = "<group>"; };
-		CE96E2952D9985F90001B4DB /* InstructionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionTableViewCell.swift; sourceTree = "<group>"; };
-		CE96E2972D9986250001B4DB /* IngredientTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientTableViewCell.swift; sourceTree = "<group>"; };
+		CE96E2972D9986250001B4DB /* IngredientCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientCell.swift; sourceTree = "<group>"; };
 		CE9BAB262C7C7EF000CD6C24 /* Povareshka.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Povareshka.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9BAB292C7C7EF000CD6C24 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CE9BAB2B2C7C7EF000CD6C24 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -193,8 +191,7 @@
 		CE96E2942D9985D30001B4DB /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				CE96E2952D9985F90001B4DB /* InstructionTableViewCell.swift */,
-				CE96E2972D9986250001B4DB /* IngredientTableViewCell.swift */,
+				CE96E2972D9986250001B4DB /* IngredientCell.swift */,
 				CEA7CDF02DF9CE8100925A0B /* InstructionImageCell.swift */,
 				CEA7CDF22DF9CEB700925A0B /* InstructionTextCell.swift */,
 			);
@@ -627,7 +624,7 @@
 		CE9BAB222C7C7EF000CD6C24 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
-				CE96E2982D9986250001B4DB /* IngredientTableViewCell.swift in Sources */,
+				CE96E2982D9986250001B4DB /* IngredientCell.swift in Sources */,
 				CE9BAB2E2C7C7EF000CD6C24 /* MainViewController.swift in Sources */,
 				CEA109E92C7DFA920095E989 /* BaseController.swift in Sources */,
 				CEB45B512C9AF71C000D9FE4 /* UITextView + ext.swift in Sources */,
@@ -674,7 +671,6 @@
 				CEE919242DECA717001C03D7 /* Profile.swift in Sources */,
 				CEAC9E892CE64C0500221CCF /* Recipes.swift in Sources */,
 				CEA2901B2D81D6680017D499 /* SettingsViewController.swift in Sources */,
-				CE96E2962D9985F90001B4DB /* InstructionTableViewCell.swift in Sources */,
 				CEACB9D52C80700F00FC1C63 /* UIFont + ext.swift in Sources */,
 				CEA290182D81D5500017D499 /* ShoppingItem.swift in Sources */,
 				CEDF130D2DE0CDF4000E13D0 /* Notification + ext.swift in Sources */,
