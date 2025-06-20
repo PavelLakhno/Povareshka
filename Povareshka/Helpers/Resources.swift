@@ -48,6 +48,7 @@ enum Resources {
             static let addIngredient = "Добавить ингредиент"
             static let addStep = "Добавить шаг"
             static let addPhoto = "Выбрать фото"
+            static let addTag = "Добавить тэг"
             static let forgetPassword = "Забыли пароль?"
         }
         

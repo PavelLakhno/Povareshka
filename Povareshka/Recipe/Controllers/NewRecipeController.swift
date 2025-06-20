@@ -26,6 +26,8 @@ class NewRecipeController: UIViewController {
     private var cookTimeArray: [String] = Resources.Arrayes.createCookTimeArray()
     private var ingredients: [Ingredient] = []
     private var steps: [Instruction] = []
+    private var tags: [String] = []//
+    private let tagsManager = TagsManager()
 
     private let ingredientsTableView = UITableView()
     private let settingsTableView = UITableView()
@@ -40,8 +42,6 @@ class NewRecipeController: UIViewController {
                                                cornerRadius: 12,
                                                contentMode: .scaleAspectFit, borderWidth: 1)
     private lazy var mainPhotoPickerView = UIImagePickerController(delegate: self)
-//    private lazy var stepPhotoPickerView = UIImagePickerController(delegate: self)
-
 
     private let ingredientsTitleLabel = UILabel.configureTitleLabel(text: Resources.Strings.Tittles.ingredient)
     private let stepsTitleLabel = UILabel.configureTitleLabel(text: Resources.Strings.Tittles.cookingStages)
@@ -69,11 +69,31 @@ class NewRecipeController: UIViewController {
                                                  cornerRadius: 10,
                                                  size: CGSize(width: 25, height: 25), target: self,
                                                  action: #selector(addStepTapped(_:)))
+    
+    // Добавляем UI элементы для тегов
+    private let tagsTitleLabel = UILabel.configureTitleLabel(text: "Теги")
+    private lazy var tagsCollectionView: UICollectionView = {
+        let layout = LeftAlignedCollectionViewFlowLayout()
+        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        layout.minimumInteritemSpacing = 8
+        layout.minimumLineSpacing = 8
+        
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
+        collectionView.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: TagCollectionViewCell.id)
+        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "AddTagCell")
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.isScrollEnabled = false
+        return collectionView
+    }()
 
     // MARK: - LifeCycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        setupTags()//
         setupNavigationBar()
         addSubviews()
         setupTableViews()
@@ -95,7 +115,8 @@ class NewRecipeController: UIViewController {
         view.backgroundColor = .white
         hideKeyboardWhenTappedAround()
     }
-
+    
+ 
     private func setupNavigationBar() {
         navigationItem.title = "Новый рецепт"
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: Resources.Strings.Buttons.cancel, style: .plain, target: self, action: #selector(cancelButtonTapped))
@@ -104,6 +125,14 @@ class NewRecipeController: UIViewController {
 
     private func registerKeyboardNotifications() {
         KeyboardManager.registerForKeyboardNotifications(observer: self, showSelector: #selector(kbWillShow), hideSelector: #selector(kbWillHide))
+    }
+    
+    // MARK: Setup Tags
+    private func setupTags() {
+        tagsManager.onChange = { [weak self] _ in
+            self?.tagsCollectionView.reloadData()
+            self?.tagsCollectionView.dynamicHeightForCollectionView()
+        }
     }
 
     // MARK: - Buttons Methods
@@ -229,12 +258,15 @@ class NewRecipeController: UIViewController {
         contentStackView.addArrangedSubview(recipeNameTextField)
         contentStackView.addArrangedSubview(recipeDescribeTextView)
         contentStackView.addArrangedSubview(settingsTableView)
+        contentStackView.addArrangedSubview(tagsTitleLabel)
+        contentStackView.addArrangedSubview(tagsCollectionView)
         contentStackView.addArrangedSubview(ingredientsTitleLabel)
         contentStackView.addArrangedSubview(ingredientsTableView)
         contentStackView.addArrangedSubview(addNewIngrButton)
         contentStackView.addArrangedSubview(stepsTitleLabel)
         contentStackView.addArrangedSubview(stepsTableView)
         contentStackView.addArrangedSubview(addNewStepButton)
+ 
     }
 
     private func setupConstraints() {
@@ -278,6 +310,13 @@ class NewRecipeController: UIViewController {
             settingsTableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             settingsTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             settingsTableView.heightAnchor.constraint(greaterThanOrEqualToConstant: 140),
+            
+            tagsTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            tagsTitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            
+            tagsCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            tagsCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            tagsCollectionView.heightAnchor.constraint(greaterThanOrEqualToConstant: 40),
 
             ingredientsTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             ingredientsTitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
@@ -585,6 +624,12 @@ extension NewRecipeController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return tableView == stepsTableView ? 44 : 0
     }
+    
+    @objc private func addTagTapped(_ sender: UIButton) {
+        let addTagVC = AddTagViewController()
+        addTagVC.originalTags = tagsManager.tags // Передаем менеджер
+        navigationController?.pushViewController(addTagVC, animated: true)
+    }
 
     
     @objc private func deleteSection(_ sender: UIButton) {
@@ -665,19 +710,6 @@ extension NewRecipeController: UITableViewDelegate, UITableViewDataSource {
         return UITableView.automaticDimension
     }
 
-
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        if tableView == stepsTableView {
-//            if indexPath.row == 1 {
-//                customIndexPathSection = indexPath.section
-//                self.indexPath = indexPath
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-//                    self.present(self.stepPhotoPickerView, animated: true)
-//                }
-//            }
-//        }
-//    }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
         if tableView == stepsTableView {
@@ -799,6 +831,8 @@ extension NewRecipeController {
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
+    
+    
 }
 
 // MARK: - UIPickerViewDataSource, UIPickerViewDelegate
@@ -900,6 +934,9 @@ extension NewRecipeController {
         
         // 6. Сохраняем в Realm для оффлайн-доступа
 //        saveToRealm(recipeId: recipeId)
+        
+        // 7. Сохраняем tags
+//        try await saveTags(for: recipeId)
     }
 
     private func uploadMainImageIfNeeded(for recipeID: UUID) async throws -> String? {
@@ -930,6 +967,27 @@ extension NewRecipeController {
             .from("recipes")
             .insert(recipe)
             .execute()
+    }
+    
+    private func saveTags(for recipeId: UUID) async throws {
+        for tag in tags {
+            let recipeTag = RecipeTagSupabase(
+                id: UUID(),
+                recipeId: recipeId,
+                tag: tag.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+            )
+//            for tag in tagsManager.tags {
+//                let recipeTag = RecipeTagSupabase(
+//                    id: UUID(),
+//                    recipeId: recipeId,
+//                    tag: tag.lowercased()
+//                )
+            
+            try await SupabaseManager.shared.client
+                .from("recipe_tags")
+                .insert(recipeTag)
+                .execute()
+        }
     }
 
     private func saveIngredients(for recipeId: UUID) async throws {
@@ -975,6 +1033,71 @@ extension NewRecipeController {
     }
 }
 
+// MARK: - UICollectionViewDataSource, UICollectionViewDelegate
+extension NewRecipeController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        tagsManager.tags.count + 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if indexPath.item == 0 {
+            // Ячейка "Добавить тег"
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "AddTagCell" , for: indexPath)
+            if cell.contentView.subviews.isEmpty {
+                let label = UILabel()
+                label.text = "+ Добавить тег"
+                label.textColor = .white
+                label.font = .systemFont(ofSize: 14)
+                
+                cell.contentView.addSubview(label)
+                label.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    label.centerXAnchor.constraint(equalTo: cell.contentView.centerXAnchor),
+                    label.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor)
+                ])
+                
+                cell.backgroundColor = .orange.withAlphaComponent(0.6)
+                cell.layer.cornerRadius = 15
+                cell.clipsToBounds = true
+            }
+            return cell
+        } else {
+
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagCollectionViewCell.id, for: indexPath) as! TagCollectionViewCell
+            cell.configure(with: tagsManager.tags[indexPath.item - 1])
+            cell.deleteAction = { [weak self] in
+                self?.tagsManager.removeTag(at: indexPath.item - 1)
+            }
+            return cell
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard indexPath.item == 0 else { return }
+        let addTagVC = AddTagViewController()
+        
+        addTagVC.originalTags = tagsManager.tags
+        addTagVC.saveTagsCallback = { [weak self] tags in
+            self?.tagsManager.setTags(tags)
+        }
+        navigationController?.pushViewController(addTagVC, animated: true)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if indexPath.item == 0 {
+            // Размер для кнопки "Добавить тег"
+            return CGSize(width: 120, height: 30)
+        } else {
+            // Размер для обычного тега
+            let tag = tagsManager.tags[indexPath.item - 1]
+            let font = UIFont.systemFont(ofSize: 14)
+            let attributes = [NSAttributedString.Key.font: font]
+            let size = (tag as NSString).size(withAttributes: attributes)
+            return CGSize(width: size.width + 48, height: 30) // +48 для отступов и кнопки удаления
+        }
+    }
+}
+
 enum SupabaseError: Error {
     case invalidURL
     case networkError(Error)
@@ -1016,3 +1139,4 @@ extension NewRecipeController {
         present(alert, animated: true)
     }
 }
+

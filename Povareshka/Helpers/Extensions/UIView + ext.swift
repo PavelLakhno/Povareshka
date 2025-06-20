@@ -80,6 +80,7 @@ extension UITableView {
     }
 }
 
+
 extension UIView {
     func dynamicViewHeight() {
 
@@ -226,6 +227,14 @@ extension UICollectionView {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.delegate = delegate
         self.dataSource = dataSource
+    }
+}
+
+extension UICollectionView {
+    func dynamicHeightForCollectionView() {
+        self.invalidateIntrinsicContentSize()
+        self.layoutIfNeeded()
+        self.constraints.filter { $0.firstAttribute == .height }.forEach { $0.constant = self.contentSize.height }
     }
 }
 

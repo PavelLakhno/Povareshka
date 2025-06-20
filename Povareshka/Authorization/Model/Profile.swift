@@ -100,6 +100,13 @@ struct InstructionSupabase: Codable, Identifiable {
     }
 }
 
+// MARK: - RecipeTagSupabase
+struct RecipeTagSupabase: Codable {
+    let id: UUID
+    let recipeId: UUID
+    let tag: String
+}
+
 struct RecipeShortInfo: Decodable {
     let id: UUID
     let title: String

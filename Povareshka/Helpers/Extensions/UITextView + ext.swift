@@ -13,7 +13,8 @@ extension UITextView {
     }
 }
 
-extension UITextView: UITextViewDelegate {
+//extension UITextView: @retroactive UIScrollViewDelegate {}
+extension UITextView: @retroactive UITextViewDelegate {
 
     var placeholder: String? {
 
