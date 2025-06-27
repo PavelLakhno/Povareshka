@@ -20,14 +20,17 @@ class NewRecipeController: UIViewController {
 
     private lazy var servesPicker = UIPickerView()
     private lazy var cookTimePicker = UIPickerView()
+    private lazy var difficultyPicker = UIPickerView()
 
     // Collections Data
     private var servesArray: [String] = Resources.Arrayes.createServesArray()
     private var cookTimeArray: [String] = Resources.Arrayes.createCookTimeArray()
+    private var difficultyArray: [String] = Resources.Arrayes.createDifficultyArray()
     private var ingredients: [Ingredient] = []
     private var steps: [Instruction] = []
     private var tags: [String] = []//
     private let tagsManager = TagsManager()
+    private var selectedCategories: [String] = []
 
     private let ingredientsTableView = UITableView()
     private let settingsTableView = UITableView()
@@ -69,6 +72,30 @@ class NewRecipeController: UIViewController {
                                                  cornerRadius: 10,
                                                  size: CGSize(width: 25, height: 25), target: self,
                                                  action: #selector(addStepTapped(_:)))
+    // Добавляем UI элементы для категорий
+    private let categoryTitleLabel = UILabel.configureTitleLabel(text: "Категории")
+    private lazy var addCategoryButton = UIButton(title: Resources.Strings.Buttons.addCategory,
+                                                 backgroundColor: .orange.withAlphaComponent(0.6),
+                                                 tintColor: .white,
+                                                 cornerRadius: 10,
+                                                 size: CGSize(width: 25, height: 25), target: self,
+                                                  action: #selector(addCategoriesTapped(_:)))
+    private lazy var categoriesCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumInteritemSpacing = 8
+        layout.minimumLineSpacing = 8
+        
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
+        collectionView.register(CategoryGridCell.self, forCellWithReuseIdentifier: CategoryGridCell.id)
+        collectionView.register(AddCategoryGridCell.self, forCellWithReuseIdentifier: AddCategoryGridCell.id)
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.isScrollEnabled = false
+        return collectionView
+    }()
     
     // Добавляем UI элементы для тегов
     private let tagsTitleLabel = UILabel.configureTitleLabel(text: "Теги")
@@ -104,6 +131,7 @@ class NewRecipeController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         stepsTableView.dynamicHeightForTableView()
+        settingsTableView.dynamicHeightForTableView()
     }
 
 
@@ -170,6 +198,15 @@ class NewRecipeController: UIViewController {
         navigationController?.pushViewController(newStepVC, animated: true)
     }
     
+    @objc private func addCategoriesTapped(_ sender: UIButton)  {
+        let vc = CategoriesSelectionController()
+        vc.selectedCategories = selectedCategories
+        vc.completion = { [weak self] categories in
+            self?.selectedCategories = categories
+        }
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
     private func editStep(at index: Int) {
         let stepToEdit = steps[index]
         let editStepVC = NewStepController(stepNumber: index + 1, existingStep: stepToEdit)
@@ -205,6 +242,8 @@ class NewRecipeController: UIViewController {
             cell.valueLabel.text = "\(servesArray[servesPicker.selectedRow(inComponent: 0)]) чел"
         case 1:
             cell.valueLabel.text = "\(cookTimeArray[cookTimePicker.selectedRow(inComponent: 0)]) мин"
+        case 2:
+            cell.valueLabel.text = "\(difficultyArray[difficultyPicker.selectedRow(inComponent: 0)]) / \(difficultyArray.count)"
         default: break
         }
 
@@ -260,6 +299,10 @@ class NewRecipeController: UIViewController {
         contentStackView.addArrangedSubview(settingsTableView)
         contentStackView.addArrangedSubview(tagsTitleLabel)
         contentStackView.addArrangedSubview(tagsCollectionView)
+        
+        contentStackView.addArrangedSubview(categoryTitleLabel)
+        contentStackView.addArrangedSubview(addCategoryButton)
+        
         contentStackView.addArrangedSubview(ingredientsTitleLabel)
         contentStackView.addArrangedSubview(ingredientsTableView)
         contentStackView.addArrangedSubview(addNewIngrButton)
@@ -309,7 +352,7 @@ class NewRecipeController: UIViewController {
 
             settingsTableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             settingsTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            settingsTableView.heightAnchor.constraint(greaterThanOrEqualToConstant: 140),
+            settingsTableView.heightAnchor.constraint(greaterThanOrEqualToConstant: 300),
             
             tagsTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             tagsTitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
@@ -317,6 +360,13 @@ class NewRecipeController: UIViewController {
             tagsCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             tagsCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             tagsCollectionView.heightAnchor.constraint(greaterThanOrEqualToConstant: 40),
+            
+            categoryTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            categoryTitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            
+            addCategoryButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            addCategoryButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            addCategoryButton.heightAnchor.constraint(equalToConstant: 40),
 
             ingredientsTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             ingredientsTitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
@@ -364,6 +414,10 @@ class NewRecipeController: UIViewController {
                 cookTimePicker = UIPickerView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 300))
                 cookTimePicker.configure(dataSource: self, delegate: self)
                 pickerViewContainer.addSubview(cookTimePicker)
+            case 2:
+                difficultyPicker = UIPickerView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 300))
+                difficultyPicker.configure(dataSource: self, delegate: self)
+                pickerViewContainer.addSubview(difficultyPicker)
             default: break
             }
         }
@@ -843,11 +897,23 @@ extension NewRecipeController: UIPickerViewDataSource, UIPickerViewDelegate {
     }
 
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        pickerView == servesPicker ? servesArray.count : cookTimeArray.count
+//        pickerView == servesPicker ? servesArray.count : cookTimeArray.count
+        switch pickerView {
+        case servesPicker: return servesArray.count
+        case cookTimePicker: return cookTimeArray.count
+        case difficultyPicker: return difficultyArray.count
+        default: return 0
+        }
     }
 
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        pickerView == servesPicker ? servesArray[row] : cookTimeArray[row]
+//        pickerView == servesPicker ? servesArray[row] : cookTimeArray[row]
+        switch pickerView {
+        case servesPicker: return servesArray[row]
+        case cookTimePicker: return cookTimeArray[row]
+        case difficultyPicker: return difficultyArray[row]
+        default: return "error"
+        }
     }
 }
 
@@ -1084,16 +1150,25 @@ extension NewRecipeController: UICollectionViewDataSource, UICollectionViewDeleg
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        if indexPath.item == 0 {
-            // Размер для кнопки "Добавить тег"
-            return CGSize(width: 120, height: 30)
+        if collectionView == tagsCollectionView {
+            if indexPath.item == 0 {
+                // Размер для кнопки "Добавить тег"
+                return CGSize(width: 120, height: 30)
+            } else {
+                // Размер для обычного тега
+                let tag = tagsManager.tags[indexPath.item - 1]
+                let font = UIFont.systemFont(ofSize: 14)
+                let attributes = [NSAttributedString.Key.font: font]
+                let size = (tag as NSString).size(withAttributes: attributes)
+                return CGSize(width: size.width + 48, height: 30) // +48 для отступов и кнопки удаления
+            }
         } else {
-            // Размер для обычного тега
-            let tag = tagsManager.tags[indexPath.item - 1]
-            let font = UIFont.systemFont(ofSize: 14)
-            let attributes = [NSAttributedString.Key.font: font]
-            let size = (tag as NSString).size(withAttributes: attributes)
-            return CGSize(width: size.width + 48, height: 30) // +48 для отступов и кнопки удаления
+            let padding: CGFloat = 16 * 2 // Отступы слева и справа
+            let spacing: CGFloat = 8 * 2  // Пространство между ячейками
+            let availableWidth = collectionView.bounds.width - padding - spacing
+            let cellWidth = availableWidth / 3
+            
+            return CGSize(width: cellWidth, height: 100) // Высота фиксированная
         }
     }
 }
@@ -1140,3 +1215,15 @@ extension NewRecipeController {
     }
 }
 
+//extension NewRecipeController: UICollectionViewDelegateFlowLayout {
+//    func collectionView(_ collectionView: UICollectionView,
+//                       layout collectionViewLayout: UICollectionViewLayout,
+//                       sizeForItemAt indexPath: IndexPath) -> CGSize {
+//        let padding: CGFloat = 16 * 2 // Отступы слева и справа
+//        let spacing: CGFloat = 8 * 2  // Пространство между ячейками
+//        let availableWidth = collectionView.bounds.width - padding - spacing
+//        let cellWidth = availableWidth / 3
+//        
+//        return CGSize(width: cellWidth, height: 100) // Высота фиксированная
+//    }
+//}

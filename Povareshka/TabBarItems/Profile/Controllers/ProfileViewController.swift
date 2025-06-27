@@ -11,12 +11,7 @@ import Storage
 class ProfileViewController: UIViewController {
     
     // MARK: - UI Components
-//    private let profileHeaderView = UIView()
-//    private let profileImageView = UIImageView()
-//    private let nameLabel = UILabel()
-//    private let emailLabel = UILabel()
-//    private let editProfileButton = UIButton(type: .system)
-//    private let menuTableView = UITableView(frame: .zero, style: .grouped)
+
     private let profileHeaderView: UIView = {
         let view = UIView()
         view.backgroundColor = .white

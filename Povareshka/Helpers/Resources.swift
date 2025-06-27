@@ -49,6 +49,7 @@ enum Resources {
             static let addStep = "Добавить шаг"
             static let addPhoto = "Выбрать фото"
             static let addTag = "Добавить тэг"
+            static let addCategory = "Добавить категории"
             static let forgetPassword = "Забыли пароль?"
         }
         
@@ -106,6 +107,33 @@ enum Resources {
             
             static let allValues = [gram, kgram, tablespoon, teaspoon, count, mlitr, litr, cup, tasty]
         }
+        
+        enum Category: CaseIterable {
+            static let breakfast = "Завтраки"
+            static let mainCourses = "Основные блюда"
+            static let soups = "Супы"
+            static let salads = "Салаты"
+            static let appetizers = "Закуски"
+            static let desserts = "Десерты"
+            static let pastries = "Выпечка"
+            static let drinks = "Напитки"
+            static let saucesAndMarinades = "Соусы и маринады"
+            static let pastaAndPizza = "Паста и пицца"
+            static let meatDishes = "Мясные блюда"
+            static let fishAndSeafood = "Рыба и морепродукты"
+            static let sideDishes = "Гарниры"
+            static let quickRecipes = "Быстрые рецепты"
+            static let childrenDishes = "Детские блюда"
+            static let festiveDishes = "Праздничные блюда"
+            
+            static let allValues = [breakfast, mainCourses, soups, salads,
+                                    appetizers, desserts, pastries, drinks,
+                                    saucesAndMarinades, pastaAndPizza,
+                                    meatDishes, fishAndSeafood, sideDishes,
+                                    quickRecipes, childrenDishes, festiveDishes]
+
+        }
+        
     }
     
     enum Images {
@@ -169,6 +197,10 @@ enum Resources {
 
         static func createCookTimeArray() -> [String] {
             return (Array(1..<20) + stride(from: 20, through: 180, by: 5)).map { "\($0)" }
+        }
+        
+        static func createDifficultyArray() -> [String] {
+            return Array(1...5).map { "\($0)" }
         }
     }
     

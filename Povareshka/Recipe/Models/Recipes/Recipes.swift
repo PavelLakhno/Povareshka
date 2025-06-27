@@ -61,3 +61,30 @@ struct IngredientData: Codable {
         self.isChecked = isChecked
     }
 }
+
+struct RecipeCategory {
+    let title: String
+    let iconName: String
+    var isSelected: Bool
+    
+    static func allCategories() -> [RecipeCategory] {
+        return [
+            RecipeCategory(title: "Завтраки", iconName: "Breakfast", isSelected: false),
+            RecipeCategory(title: "Основные блюда", iconName: "Основные блюда", isSelected: false),
+            RecipeCategory(title: "Супы", iconName: "Супы", isSelected: false),
+            RecipeCategory(title: "Салаты", iconName: "Салаты", isSelected: false),
+            RecipeCategory(title: "Закуски", iconName: "Закуски", isSelected: false),
+            RecipeCategory(title: "Десерты", iconName: "Десерты", isSelected: false),
+            RecipeCategory(title: "Выпечка", iconName: "Выпечка", isSelected: false),
+            RecipeCategory(title: "Напитки", iconName: "Напитки", isSelected: false),
+            RecipeCategory(title: "Соусы и маринады", iconName: "Соусы и маринады", isSelected: false),
+            RecipeCategory(title: "Паста и пицца", iconName: "Pizza", isSelected: false),
+            RecipeCategory(title: "Мясные блюда", iconName: "Мясные блюда", isSelected: false),
+            RecipeCategory(title: "Рыба и морепродукты", iconName: "Рыба и морепродукты", isSelected: false),
+            RecipeCategory(title: "Гарниры", iconName: "Гарниры", isSelected: false),
+            RecipeCategory(title: "Быстрые рецепты", iconName: "Быстрые рецепты", isSelected: false),
+            RecipeCategory(title: "Детские блюда", iconName: "Детские блюда", isSelected: false),
+            RecipeCategory(title: "Праздничные блюда", iconName: "Праздничные блюда", isSelected: false)
+        ]
+    }
+}

@@ -15,6 +15,7 @@ struct CreateRecipeSettingDataModel {
 extension CreateRecipeSettingDataModel {
     static let prebuildData : [CreateRecipeSettingDataModel] = [
         .init(iconImageName: "Icons/Profile", titleText: "Порции"),
-        .init(iconImageName: "Icons/Clock", titleText: "Время \nприготовления")
+        .init(iconImageName: "Icons/Clock", titleText: "Время \nприготовления"),
+        .init(iconImageName: "Icons/More", titleText: "Сложность")
     ]
 }

@@ -9,24 +9,34 @@ import UIKit
 
 class RecipeWatchController: UIViewController {
     
-//    var recipe: RecipeModel?
-    //SB
-    var recipeId: UUID? // Будем передавать только ID
+    var recipeId: UUID?
     private var recipe: RecipeSupabase?
     private var ingredients: [IngredientSupabase] = []
     private var instructions: [InstructionSupabase] = []
+    private var tags: [String] = ["Вкуснотищааа", "Сало", "Мясо", "Быстро", "Даженеподумалбы"]
+    
+    private let recipeImageView = RecipeImageWithFavoriteView()
     
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
     private let ingredientTableView = UITableView()
     private let stepTableView = UITableView()
+    private let tagsCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "AddTagCell")
+        cv.showsHorizontalScrollIndicator = false
+        return cv
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-
         setupScrollView()
         setupStackView()
+        setupTagsCollectionView()
         loadRecipeData()
     }
 
@@ -55,8 +65,14 @@ class RecipeWatchController: UIViewController {
             stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
+    
+    private func setupTagsCollectionView() {
+        tagsCollectionView.delegate = self
+        tagsCollectionView.dataSource = self
+        tagsCollectionView.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: TagCollectionViewCell.id)
+        tagsCollectionView.backgroundColor = .clear
+    }
 
-        
     private func setupTableView<T: UITableViewCell>(tableView: UITableView, cellType: T.Type, cellIdentifier: String) {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.dataSource = self
@@ -78,13 +94,15 @@ class RecipeWatchController: UIViewController {
                 async let recipe = loadRecipe(id: recipeId)
                 async let ingredients = loadIngredients(recipeId: recipeId)
                 async let instructions = loadInstructions(recipeId: recipeId)
+//                async let tags = loadTags(recipeId: recipeId)
                 
-                let (recipeResult, ingredientsResult, instructionsResult) = await (try recipe, try ingredients, try instructions)
+                let (recipeResult, ingredientsResult, instructionsResult) = await (try recipe, try ingredients, try instructions)//, try tags)
                 
                 DispatchQueue.main.async {
                     self.recipe = recipeResult
                     self.ingredients = ingredientsResult
                     self.instructions = instructionsResult
+//                    self.tags = tagsResult
                     self.updateUI()
                 }
             } catch {
@@ -125,10 +143,25 @@ class RecipeWatchController: UIViewController {
             .value
     }
     
+//    private func loadCurrentUserId() async throws -> UUID? {
+//        // Получаем текущую сессию
+//        let session = try await SupabaseManager.shared.client.auth.session
+//        // Возвращаем ID пользователя, если он есть
+//        return UUID(uuidString: session.user.id.uuidString.lowercased())
+//    }
+    
+//    private func loadTags(recipeId: UUID) async throws -> [String] {
+//        try await SupabaseManager.shared.client
+//            .from("tags")
+//            .select()
+//            .eq("recipe_id", value: recipeId)
+//            .execute()
+//            .value
+//    }
+    
     private func updateUI() {
         guard let recipe = recipe else { return }
         
-        // Очищаем предыдущие вью
         stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
         // Заголовок
@@ -140,14 +173,10 @@ class RecipeWatchController: UIViewController {
         stackView.addArrangedSubview(titleLabel)
         
         // Изображение
+        recipeImageView.heightAnchor.constraint(equalToConstant: self.view.frame.width/1.5).isActive = true
+        stackView.addArrangedSubview(recipeImageView)
+        
         if let imagePath = recipe.imagePath {
-            let imageView = UIImageView()
-            imageView.heightAnchor.constraint(equalToConstant: self.view.frame.width/1.5).isActive = true
-            imageView.clipsToBounds = true
-            imageView.contentMode = .scaleAspectFill
-            imageView.layer.cornerRadius = 25
-            imageView.translatesAutoresizingMaskIntoConstraints = false
-            stackView.addArrangedSubview(imageView)
             
             Task {
                 do {
@@ -156,14 +185,35 @@ class RecipeWatchController: UIViewController {
                         .from("recipes")
                         .download(path: imagePath)
                     
+                    
+                    let image = UIImage(data: data)
+                    
+                    // Проверяем, является ли текущий пользователь создателем рецепта
+                    async let isCreator = self.checkIfCurrentUserIsCreator(recipe: recipe)
+                    // Проверяем, находится ли рецепт в избранном
+                    async let isFavorite = self.checkIfRecipeIsFavorite(recipeId: recipe.id)
+                    let (creator, favorite) = await (try isCreator, isFavorite)
                     DispatchQueue.main.async {
-                        imageView.image = UIImage(data: data)
+                        self.recipeImageView.configure(
+                            with: image,
+                            isFavorite: favorite,
+                            isCreator: creator
+                        )
+                        
+                        if !creator {
+                            self.addRateButton()
+                        }
                     }
                 } catch {
                     print("Ошибка загрузки изображения: \(error)")
                 }
             }
         }
+
+        // Горизонтальный стек для метаданных
+        let metaStack = RecipeMetaStackView()
+        metaStack.configure(with: recipe)
+        stackView.addArrangedSubview(metaStack)
         
         // Описание
         if let description = recipe.description {
@@ -173,18 +223,11 @@ class RecipeWatchController: UIViewController {
             stackView.addArrangedSubview(describeLabel)
         }
         
-        // Время приготовления
-        if let time = recipe.readyInMinutes {
-            let readyInMinutesLabel = UILabel()
-            readyInMinutesLabel.text = "\(Resources.Strings.Tittles.timeCooking) \(time) мин"
-            stackView.addArrangedSubview(readyInMinutesLabel)
-        }
-        
-        // Количество порций
-        if let servings = recipe.servings {
-            let servingsLabel = UILabel()
-            servingsLabel.text = "\(Resources.Strings.Tittles.tableSetting) \(servings) чел"
-            stackView.addArrangedSubview(servingsLabel)
+        // Тэги
+        if !tags.isEmpty {
+            tagsCollectionView.reloadData()
+            tagsCollectionView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            stackView.addArrangedSubview(tagsCollectionView)
         }
         
         // Ингредиенты
@@ -207,6 +250,137 @@ class RecipeWatchController: UIViewController {
         
         setupTableView(tableView: stepTableView, cellType: InstructionTextCell.self, cellIdentifier: InstructionTextCell.id)
         setupTableView(tableView: stepTableView, cellType: InstructionImageCell.self, cellIdentifier: InstructionImageCell.id)
+
+    }
+    
+    private func addRateButton() {
+        let rateButton = UIButton(type: .system)
+        rateButton.backgroundColor = .systemOrange
+        rateButton.setTitleColor(.white, for: .normal)
+        rateButton.layer.cornerRadius = 8
+        rateButton.titleLabel?.font = .boldSystemFont(ofSize: 16)
+        rateButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        //временная заглушка
+        rateButton.setTitle("Оценить рецепт", for: .normal)
+        rateButton.addTarget(self, action: #selector(self.rateButtonTapped), for: .touchUpInside)
+        // Проверяем, оценивал ли уже пользователь рецепт
+//        Task {
+//            let hasRating = await checkIfUserHasRating()
+//            DispatchQueue.main.async {
+//                rateButton.setTitle(hasRating ? "Изменить оценку" : "Оценить рецепт", for: .normal)
+//                rateButton.addTarget(self, action: #selector(self.rateButtonTapped), for: .touchUpInside)
+//            }
+//        }
+        
+        stackView.addArrangedSubview(rateButton)
+    }
+    
+    private func checkIfUserHasRating() async -> Bool {
+
+        do {
+            guard let recipeId = recipeId,
+                  let userId = try await SupabaseManager.shared.getCurrentUserId() else {
+                return false
+            }
+            let ratings: [Rating] = try await SupabaseManager.shared.client
+                .from("ratings")
+                .select()
+                .eq("recipe_id", value: recipeId)
+                .eq("user_id", value: userId)
+                .execute()
+                .value
+            
+            return !ratings.isEmpty
+        } catch {
+            print("Ошибка проверки оценки: \(error)")
+            return false
+        }
+    }
+        
+
+    
+    @objc private func rateButtonTapped() {
+        let rateVC = RateRecipeController()
+        self.navigationController?.pushViewController(rateVC, animated: true)
+//        guard let recipe = recipe else { return }
+//        
+//        // Проверяем текущую оценку пользователя
+//        Task {
+//            let currentRating = await getCurrentUserRating()
+//            let currentComment = await getCurrentUserComment()
+//            
+//            DispatchQueue.main.async {
+//                let rateVC = RateRecipeController()
+//                rateVC.recipeId = recipe.id
+//                rateVC.currentRating = currentRating
+//                rateVC.comment = currentComment
+//                self.navigationController?.pushViewController(rateVC, animated: true)
+//            }
+//        }
+    }
+    
+    private func getCurrentUserRating() async -> Int? {
+       
+        do {
+            guard let recipeId = recipeId,
+                  let userId = try await SupabaseManager.shared.getCurrentUserId() else {
+                return nil
+            }
+            let ratings: [Rating] = try await SupabaseManager.shared.client
+                .from("ratings")
+                .select()
+                .eq("recipe_id", value: recipeId)
+                .eq("user_id", value: userId)
+                .execute()
+                .value
+            
+            return ratings.first?.rating
+        } catch {
+            print("Ошибка получения оценки: \(error)")
+            return nil
+        }
+    }
+    
+    private func getCurrentUserComment() async -> String? {
+        
+        do {
+            guard let recipeId = recipeId,
+                  let userId = try await SupabaseManager.shared.getCurrentUserId() else {
+                return nil
+            }
+            let ratings: [Rating] = try await SupabaseManager.shared.client
+                .from("ratings")
+                .select()
+                .eq("recipe_id", value: recipeId)
+                .eq("user_id", value: userId)
+                .execute()
+                .value
+            
+            return ratings.first?.comment
+        } catch {
+            print("Ошибка получения комментария: \(error)")
+            return nil
+        }
+    }
+    
+    private func checkIfCurrentUserIsCreator(recipe: RecipeSupabase) async -> Bool {
+        do {
+            guard let currentUserId = try await SupabaseManager.shared.getCurrentUserId(),
+                  let creatorId = UUID(uuidString: recipe.userId.uuidString.lowercased()) else {
+                return false
+            }
+            return currentUserId == creatorId
+        } catch {
+            print("Ошибка получения текущего пользователя: \(error)")
+            return false
+        }
+    }
+    
+    
+    private func checkIfRecipeIsFavorite(recipeId: UUID) async -> Bool {
+        // Здесь реализуйте проверку, находится ли рецепт в избранном
+        // Верните true, если рецепт в избранном
+        return false // временная заглушка
     }
 }
 
@@ -223,7 +397,7 @@ extension RecipeWatchController: UITableViewDataSource, UITableViewDelegate {
             return ingredients.count
         } else {
             let instruction = instructions[section]
-            return instruction.imagePath != nil ? 2 : 1 // 2 ячейки если есть изображение (текст + изображение)
+            return instruction.imagePath != nil ? 2 : 1
         }
     }
     
@@ -241,13 +415,11 @@ extension RecipeWatchController: UITableViewDataSource, UITableViewDelegate {
             DispatchQueue.main.async {
                 tableView.dynamicHeightForTableView()
             }
-
             return cell
         } else {
             let instruction = instructions[indexPath.section]
             
             if indexPath.row == 0 {
-                // Cell for text
                 let cell = tableView.dequeueReusableCell(withIdentifier: InstructionTextCell.id, for: indexPath) as! InstructionTextCell
                 cell.configure(stepNumber: instruction.stepNumber, description: instruction.description ?? "")
                 DispatchQueue.main.async {
@@ -255,7 +427,6 @@ extension RecipeWatchController: UITableViewDataSource, UITableViewDelegate {
                 }
                 return cell
             } else {
-                // Cell for image
                 let cell = tableView.dequeueReusableCell(withIdentifier: InstructionImageCell.id, for: indexPath) as! InstructionImageCell
                 if let imagePath = instruction.imagePath {
                     cell.configure(with: imagePath)
@@ -263,12 +434,9 @@ extension RecipeWatchController: UITableViewDataSource, UITableViewDelegate {
                         tableView.dynamicHeightForTableView()
                     }
                 }
-                
-
                 return cell
             }
         }
-
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -287,3 +455,25 @@ extension RecipeWatchController: UITableViewDataSource, UITableViewDelegate {
         feedback.notificationOccurred(.success)
     }
 }
+
+extension RecipeWatchController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return tags.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagCollectionViewCell.id, for: indexPath) as! TagCollectionViewCell
+
+        cell.configure(with: tags[indexPath.item])
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let tag = tags[indexPath.item]
+        let font = UIFont.systemFont(ofSize: 14)
+        let attributes = [NSAttributedString.Key.font: font]
+        let size = (tag as NSString).size(withAttributes: attributes)
+        return CGSize(width: size.width + 24, height: 30)
+    }
+}
+
