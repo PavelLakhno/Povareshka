@@ -28,3 +28,12 @@ class InstructionModel: Object {
     @Persisted var image: Data?
     @Persisted var describe: String?
 }
+
+
+// MARK: Category
+
+class CategoryRealm: Object {
+    @Persisted(primaryKey: true) var id: UUID
+    @Persisted var title: String
+    @Persisted var iconName: String
+}

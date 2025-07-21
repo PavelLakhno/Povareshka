@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct CreateRecipeSettingDataModel {
     let iconImageName : String
@@ -14,8 +15,12 @@ struct CreateRecipeSettingDataModel {
 
 extension CreateRecipeSettingDataModel {
     static let prebuildData : [CreateRecipeSettingDataModel] = [
-        .init(iconImageName: "Icons/Profile", titleText: "Порции"),
-        .init(iconImageName: "Icons/Clock", titleText: "Время \nприготовления"),
-        .init(iconImageName: "Icons/More", titleText: "Сложность")
+        .init(iconImageName: Resources.Images.Icons.persons, titleText: "Порции"),
+        .init(iconImageName: Resources.Images.Icons.clockFill, titleText: "Время \nприготовления"),
+        .init(iconImageName: Resources.Images.Icons.level, titleText: "Сложность")
+        
+//        .init(iconImageName: "Icons/Profile", titleText: "Порции"),
+//        .init(iconImageName: "Icons/Clock", titleText: "Время \nприготовления"),
+//        .init(iconImageName: "Icons/More", titleText: "Сложность")
     ]
 }

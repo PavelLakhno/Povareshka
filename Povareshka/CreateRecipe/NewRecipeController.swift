@@ -30,7 +30,7 @@ class NewRecipeController: UIViewController {
     private var steps: [Instruction] = []
     private var tags: [String] = []//
     private let tagsManager = TagsManager()
-    private var selectedCategories: [String] = []
+    private var selectedCategories: [CategorySupabase] = []
 
     private let ingredientsTableView = UITableView()
     private let settingsTableView = UITableView()
@@ -74,12 +74,7 @@ class NewRecipeController: UIViewController {
                                                  action: #selector(addStepTapped(_:)))
     // Добавляем UI элементы для категорий
     private let categoryTitleLabel = UILabel.configureTitleLabel(text: "Категории")
-    private lazy var addCategoryButton = UIButton(title: Resources.Strings.Buttons.addCategory,
-                                                 backgroundColor: .orange.withAlphaComponent(0.6),
-                                                 tintColor: .white,
-                                                 cornerRadius: 10,
-                                                 size: CGSize(width: 25, height: 25), target: self,
-                                                  action: #selector(addCategoriesTapped(_:)))
+
     private lazy var categoriesCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -157,7 +152,8 @@ class NewRecipeController: UIViewController {
     
     // MARK: Setup Tags
     private func setupTags() {
-        tagsManager.onChange = { [weak self] _ in
+        tagsManager.onChange = { [weak self] newTags in
+            self?.tags = newTags
             self?.tagsCollectionView.reloadData()
             self?.tagsCollectionView.dynamicHeightForCollectionView()
         }
@@ -197,12 +193,18 @@ class NewRecipeController: UIViewController {
         }
         navigationController?.pushViewController(newStepVC, animated: true)
     }
-    
-    @objc private func addCategoriesTapped(_ sender: UIButton)  {
-        let vc = CategoriesSelectionController()
-        vc.selectedCategories = selectedCategories
+
+    //MARK: ATANTION
+    @objc private func addCategoriesTapped(_ sender: UIButton) {
+        let allCategories = CategorySupabase.allCategories() // метод получения всех категорий
+        let vc = CategoriesSelectionController(
+            allCategories: allCategories,
+            selectedCategories: selectedCategories
+        )
         vc.completion = { [weak self] categories in
             self?.selectedCategories = categories
+            self?.categoriesCollectionView.reloadData()
+            self?.categoriesCollectionView.dynamicHeightForCollectionView()
         }
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -301,7 +303,7 @@ class NewRecipeController: UIViewController {
         contentStackView.addArrangedSubview(tagsCollectionView)
         
         contentStackView.addArrangedSubview(categoryTitleLabel)
-        contentStackView.addArrangedSubview(addCategoryButton)
+        contentStackView.addArrangedSubview(categoriesCollectionView)
         
         contentStackView.addArrangedSubview(ingredientsTitleLabel)
         contentStackView.addArrangedSubview(ingredientsTableView)
@@ -364,9 +366,10 @@ class NewRecipeController: UIViewController {
             categoryTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             categoryTitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             
-            addCategoryButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            addCategoryButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            addCategoryButton.heightAnchor.constraint(equalToConstant: 40),
+            //new
+            categoriesCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            categoriesCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            categoriesCollectionView.heightAnchor.constraint(greaterThanOrEqualToConstant: 100),
 
             ingredientsTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             ingredientsTitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
@@ -897,7 +900,6 @@ extension NewRecipeController: UIPickerViewDataSource, UIPickerViewDelegate {
     }
 
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-//        pickerView == servesPicker ? servesArray.count : cookTimeArray.count
         switch pickerView {
         case servesPicker: return servesArray.count
         case cookTimePicker: return cookTimeArray.count
@@ -907,7 +909,6 @@ extension NewRecipeController: UIPickerViewDataSource, UIPickerViewDelegate {
     }
 
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-//        pickerView == servesPicker ? servesArray[row] : cookTimeArray[row]
         switch pickerView {
         case servesPicker: return servesArray[row]
         case cookTimePicker: return cookTimeArray[row]
@@ -985,6 +986,7 @@ extension NewRecipeController {
             imagePath: imagePath,
             readyInMinutes: getReadyInMinutes(),
             servings: getServings(),
+            difficulty: getDifficultyLevel(),
             isPublic: true,
             createdAt: Date(),
             updatedAt: Date()
@@ -1002,7 +1004,10 @@ extension NewRecipeController {
 //        saveToRealm(recipeId: recipeId)
         
         // 7. Сохраняем tags
-//        try await saveTags(for: recipeId)
+        try await saveTags(for: recipeId)
+        
+        // 8. Сохраняем categories
+        try await saveCategories(for: recipeId)
     }
 
     private func uploadMainImageIfNeeded(for recipeID: UUID) async throws -> String? {
@@ -1028,6 +1033,34 @@ extension NewRecipeController {
         return Int(text)
     }
     
+    private func getDifficultyLevel() -> Int? {
+        guard let cell = settingsTableView.cellForRow(at: IndexPath(row: 2, section: 0)) as? SettingTableViewCell,
+              let text = cell.valueLabel.text else {
+            return nil
+        }
+        
+        // Преобразуем текст в уровень сложности (1-3)
+//        if text.contains("Легкий") { return 1 }
+//        if text.contains("Средний") { return 2 }
+//        if text.contains("Сложный") { return 3 }
+        return Int(text)
+    }
+    
+    private func saveCategories(for recipeId: UUID) async throws {
+        for category in selectedCategories {
+            let recipeCategory = RecipeCategorySupabase(
+                id: UUID(),
+                recipeId: recipeId,
+                categoryId: category.id
+            )
+            
+            try await SupabaseManager.shared.client
+                .from("recipe_categories") // Нужно создать эту таблицу
+                .insert(recipeCategory)
+                .execute()
+        }
+    }
+    
     private func saveRecipeToDatabase(_ recipe: RecipeSupabase) async throws {
         try await SupabaseManager.shared.client
             .from("recipes")
@@ -1036,19 +1069,15 @@ extension NewRecipeController {
     }
     
     private func saveTags(for recipeId: UUID) async throws {
+        print("Saving tags: \(tags)")
+        
         for tag in tags {
             let recipeTag = RecipeTagSupabase(
                 id: UUID(),
                 recipeId: recipeId,
                 tag: tag.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
             )
-//            for tag in tagsManager.tags {
-//                let recipeTag = RecipeTagSupabase(
-//                    id: UUID(),
-//                    recipeId: recipeId,
-//                    tag: tag.lowercased()
-//                )
-            
+
             try await SupabaseManager.shared.client
                 .from("recipe_tags")
                 .insert(recipeTag)
@@ -1102,51 +1131,86 @@ extension NewRecipeController {
 // MARK: - UICollectionViewDataSource, UICollectionViewDelegate
 extension NewRecipeController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        tagsManager.tags.count + 1
+        if collectionView == tagsCollectionView {
+            return tagsManager.tags.count + 1
+        } else {
+            return selectedCategories.count + 1 
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if indexPath.item == 0 {
-            // Ячейка "Добавить тег"
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "AddTagCell" , for: indexPath)
-            if cell.contentView.subviews.isEmpty {
-                let label = UILabel()
-                label.text = "+ Добавить тег"
-                label.textColor = .white
-                label.font = .systemFont(ofSize: 14)
+        if collectionView == tagsCollectionView {
+            if indexPath.item == 0 {
+                // Ячейка "Добавить тег"
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "AddTagCell" , for: indexPath)
+                if cell.contentView.subviews.isEmpty {
+                    let label = UILabel()
+                    label.text = "+ Добавить тег"
+                    label.textColor = .white
+                    label.font = .systemFont(ofSize: 14)
+                    
+                    cell.contentView.addSubview(label)
+                    label.translatesAutoresizingMaskIntoConstraints = false
+                    NSLayoutConstraint.activate([
+                        label.centerXAnchor.constraint(equalTo: cell.contentView.centerXAnchor),
+                        label.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor)
+                    ])
+                    
+                    cell.backgroundColor = .orange.withAlphaComponent(0.6)
+                    cell.layer.cornerRadius = 15
+                    cell.clipsToBounds = true
+                }
+                return cell
+            } else {
                 
-                cell.contentView.addSubview(label)
-                label.translatesAutoresizingMaskIntoConstraints = false
-                NSLayoutConstraint.activate([
-                    label.centerXAnchor.constraint(equalTo: cell.contentView.centerXAnchor),
-                    label.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor)
-                ])
-                
-                cell.backgroundColor = .orange.withAlphaComponent(0.6)
-                cell.layer.cornerRadius = 15
-                cell.clipsToBounds = true
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagCollectionViewCell.id, for: indexPath) as! TagCollectionViewCell
+                cell.configure(with: tagsManager.tags[indexPath.item - 1])
+                cell.deleteAction = { [weak self] in
+                    self?.tagsManager.removeTag(at: indexPath.item - 1)
+                }
+                return cell
             }
-            return cell
         } else {
-
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagCollectionViewCell.id, for: indexPath) as! TagCollectionViewCell
-            cell.configure(with: tagsManager.tags[indexPath.item - 1])
-            cell.deleteAction = { [weak self] in
-                self?.tagsManager.removeTag(at: indexPath.item - 1)
+            if indexPath.item == 0 {
+                // Всегда первая ячейка - кнопка добавления
+                return collectionView.dequeueReusableCell(withReuseIdentifier: AddCategoryGridCell.id, for: indexPath)
+            } else {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoryGridCell.id, for: indexPath) as! CategoryGridCell
+                let category = selectedCategories[indexPath.item - 1]
+//                let iconName = category.iconName
+                cell.configure(with: category.title, iconName: category.iconName, isSelected: true)
+                return cell
             }
-            return cell
         }
+        
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard indexPath.item == 0 else { return }
-        let addTagVC = AddTagViewController()
-        
-        addTagVC.originalTags = tagsManager.tags
-        addTagVC.saveTagsCallback = { [weak self] tags in
-            self?.tagsManager.setTags(tags)
+        if collectionView == tagsCollectionView {
+            guard indexPath.item == 0 else { return }
+            let addTagVC = AddTagViewController()
+            
+            addTagVC.originalTags = tagsManager.tags
+            addTagVC.saveTagsCallback = { [weak self] tags in
+                self?.tagsManager.setTags(tags)
+            }
+            navigationController?.pushViewController(addTagVC, animated: true)
+        } else {
+            guard indexPath.item == 0 else { return }
+            let allCategories = CategorySupabase.allCategories()
+            let vc = CategoriesSelectionController(
+                allCategories: allCategories,
+                selectedCategories: selectedCategories
+            )
+            vc.completion = { [weak self] categories in
+                self?.selectedCategories = categories
+                self?.categoriesCollectionView.reloadData()
+                self?.categoriesCollectionView.dynamicHeightForCollectionView()
+            }
+            navigationController?.pushViewController(vc, animated: true)
+            
         }
-        navigationController?.pushViewController(addTagVC, animated: true)
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -1215,15 +1279,3 @@ extension NewRecipeController {
     }
 }
 
-//extension NewRecipeController: UICollectionViewDelegateFlowLayout {
-//    func collectionView(_ collectionView: UICollectionView,
-//                       layout collectionViewLayout: UICollectionViewLayout,
-//                       sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        let padding: CGFloat = 16 * 2 // Отступы слева и справа
-//        let spacing: CGFloat = 8 * 2  // Пространство между ячейками
-//        let availableWidth = collectionView.bounds.width - padding - spacing
-//        let cellWidth = availableWidth / 3
-//        
-//        return CGSize(width: cellWidth, height: 100) // Высота фиксированная
-//    }
-//}

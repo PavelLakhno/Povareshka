@@ -7,7 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CE079C732E0C35DA00FE9805 /* Supabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE079C722E0C35DA00FE9805 /* Supabase.swift */; };
+		CE04BFC02E2501F20009A94A /* TagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE04BFBF2E2501F20009A94A /* TagCollectionViewCell.swift */; };
+		CE04BFC12E2501F20009A94A /* CategoryGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE04BFBD2E2501F20009A94A /* CategoryGridCell.swift */; };
+		CE04BFC22E2501F20009A94A /* CategoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE04BFBC2E2501F20009A94A /* CategoryCell.swift */; };
+		CE04BFC32E2501F20009A94A /* AddCategoryGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE04BFBB2E2501F20009A94A /* AddCategoryGridCell.swift */; };
+		CE04BFC42E2501F20009A94A /* StepLabelCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE04BFBE2E2501F20009A94A /* StepLabelCell.swift */; };
 		CE2164F92DD764FC003479E5 /* NewPasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2164F82DD764FC003479E5 /* NewPasswordController.swift */; };
 		CE3535032C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3535022C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift */; };
 		CE497BFD2DF0A2AE00789ED9 /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = CE497BFC2DF0A2AE00789ED9 /* Auth */; };
@@ -18,6 +22,7 @@
 		CE497C072DF0A2AE00789ED9 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = CE497C062DF0A2AE00789ED9 /* Supabase */; };
 		CE497C0C2DF0A3D500789ED9 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CE497C0B2DF0A3D500789ED9 /* RealmSwift */; };
 		CE6454702DEF357C000278A0 /* EditProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE64546F2DEF357C000278A0 /* EditProfileController.swift */; };
+		CE80EEB82E27D90C00E61A7F /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = CE497C0B2DF0A3D500789ED9 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE8F04CF2E05444700978883 /* TagsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8F04CE2E05444700978883 /* TagsManager.swift */; };
 		CE938D782D9AE78E00CF8683 /* ShoppingListManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE938D772D9AE78E00CF8683 /* ShoppingListManager.swift */; };
 		CE93918F2D830CF2006E61A3 /* RecipeSearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE93918E2D830CF2006E61A3 /* RecipeSearchCell.swift */; };
@@ -79,8 +84,24 @@
 		CEE919242DECA717001C03D7 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE919232DECA717001C03D7 /* Profile.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		CE80EEB92E27D90C00E61A7F /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "";
+			dstSubfolder = Frameworks;
+			files = (
+				CE80EEB82E27D90C00E61A7F /* RealmSwift in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		CE079C722E0C35DA00FE9805 /* Supabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Supabase.swift; sourceTree = "<group>"; };
+		CE04BFBB2E2501F20009A94A /* AddCategoryGridCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCategoryGridCell.swift; sourceTree = "<group>"; };
+		CE04BFBC2E2501F20009A94A /* CategoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCell.swift; sourceTree = "<group>"; };
+		CE04BFBD2E2501F20009A94A /* CategoryGridCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryGridCell.swift; sourceTree = "<group>"; };
+		CE04BFBE2E2501F20009A94A /* StepLabelCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepLabelCell.swift; sourceTree = "<group>"; };
+		CE04BFBF2E2501F20009A94A /* TagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagCollectionViewCell.swift; sourceTree = "<group>"; };
 		CE2164F82DD764FC003479E5 /* NewPasswordController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPasswordController.swift; sourceTree = "<group>"; };
 		CE3535022C7F42A2006B6A26 /* TrendingNowCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingNowCollectionViewCell.swift; sourceTree = "<group>"; };
 		CE64546F2DEF357C000278A0 /* EditProfileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileController.swift; sourceTree = "<group>"; };
@@ -148,11 +169,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		CE93D98B2DF75309008AC5DF /* Views */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Views;
-			sourceTree = "<group>";
-		};
 		CEE2461D2E094A3D00DBA388 /* Cells */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Cells;
@@ -176,6 +192,95 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CE04BFEA2E2551470009A94A /* Instruction */ = {
+			isa = PBXGroup;
+			children = (
+				CE04BFEC2E2551940009A94A /* Controllers */,
+				CE04BFEB2E25517D0009A94A /* Cells */,
+			);
+			path = Instruction;
+			sourceTree = "<group>";
+		};
+		CE04BFEB2E25517D0009A94A /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				CE04BFBE2E2501F20009A94A /* StepLabelCell.swift */,
+				CEA330162CE4D91E00E42F4A /* StepAddPhotoCell.swift */,
+				CEA330172CE4D91E00E42F4A /* StepDescriptionCell.swift */,
+				CEA330182CE4D91E00E42F4A /* StepPhotoCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		CE04BFEC2E2551940009A94A /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				CE93D9872DF705DD008AC5DF /* NewStepController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		CE04BFED2E2551B40009A94A /* Category */ = {
+			isa = PBXGroup;
+			children = (
+				CE04BFEE2E2551DC0009A94A /* Controllers */,
+				CE04BFEF2E2551F50009A94A /* Cells */,
+			);
+			path = Category;
+			sourceTree = "<group>";
+		};
+		CE04BFEE2E2551DC0009A94A /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				CEA528602E0D79E200C26AB8 /* CategorySelectionController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		CE04BFEF2E2551F50009A94A /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				CE04BFBB2E2501F20009A94A /* AddCategoryGridCell.swift */,
+				CE04BFBC2E2501F20009A94A /* CategoryCell.swift */,
+				CE04BFBD2E2501F20009A94A /* CategoryGridCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		CE04BFF02E2552100009A94A /* Ingredients */ = {
+			isa = PBXGroup;
+			children = (
+				CE04BFF22E2552410009A94A /* Cells */,
+				CE04BFF12E2552360009A94A /* Controllers */,
+			);
+			path = Ingredients;
+			sourceTree = "<group>";
+		};
+		CE04BFF12E2552360009A94A /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				CEC4ACF72D8B14C8009DBCD3 /* NewIngredientController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		CE04BFF22E2552410009A94A /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				CEC4ACF92D8B153E009DBCD3 /* MainIngredientsTVCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		CE04BFF32E2552AC0009A94A /* Tags */ = {
+			isa = PBXGroup;
+			children = (
+				CEA290102D81D4710017D499 /* Controllers */,
+				CEA3300F2CE4D8E600E42F4A /* Cells */,
+			);
+			path = Tags;
+			sourceTree = "<group>";
+		};
 		CE9391902D830D01006E61A3 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -232,10 +337,11 @@
 		CE9BAB282C7C7EF000CD6C24 /* Povareshka */ = {
 			isa = PBXGroup;
 			children = (
+				CEA3301C2CE4D92500E42F4A /* Models */,
 				CE9BAB3D2C7C80AC00CD6C24 /* Application */,
 				CEC4ACF02D8B0C35009DBCD3 /* Managers */,
 				CEA9CD7A2D81D88E002C11E7 /* Authorization */,
-				CEA3300C2CE4D7FE00E42F4A /* Recipe */,
+				CEA3300C2CE4D7FE00E42F4A /* CreateRecipe */,
 				CE9BAB422C7C9C2100CD6C24 /* Helpers */,
 				CEA109E72C7DFA730095E989 /* Base */,
 				CEA290242D81D7C90017D499 /* TabBarItems */,
@@ -372,12 +478,7 @@
 		CEA290102D81D4710017D499 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				CEA528602E0D79E200C26AB8 /* CategorySelectionController.swift */,
 				CE960A312E0404EC009BD784 /* AddTagViewController.swift */,
-				CEA3300D2CE4D82D00E42F4A /* NewRecipeController.swift */,
-				CEC4ACF72D8B14C8009DBCD3 /* NewIngredientController.swift */,
-				CE93D9872DF705DD008AC5DF /* NewStepController.swift */,
-				CE93D98B2DF75309008AC5DF /* Views */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -451,24 +552,23 @@
 			path = TabBarItems;
 			sourceTree = "<group>";
 		};
-		CEA3300C2CE4D7FE00E42F4A /* Recipe */ = {
+		CEA3300C2CE4D7FE00E42F4A /* CreateRecipe */ = {
 			isa = PBXGroup;
 			children = (
-				CEA3301C2CE4D92500E42F4A /* Models */,
-				CEA3300F2CE4D8E600E42F4A /* Cells */,
-				CEA290102D81D4710017D499 /* Controllers */,
+				CEA3300D2CE4D82D00E42F4A /* NewRecipeController.swift */,
+				CEA330102CE4D90000E42F4A /* SettingsTVC.swift */,
+				CE04BFF02E2552100009A94A /* Ingredients */,
+				CE04BFED2E2551B40009A94A /* Category */,
+				CE04BFEA2E2551470009A94A /* Instruction */,
+				CE04BFF32E2552AC0009A94A /* Tags */,
 			);
-			path = Recipe;
+			path = CreateRecipe;
 			sourceTree = "<group>";
 		};
 		CEA3300F2CE4D8E600E42F4A /* Cells */ = {
 			isa = PBXGroup;
 			children = (
-				CEA330162CE4D91E00E42F4A /* StepAddPhotoCell.swift */,
-				CEA330172CE4D91E00E42F4A /* StepDescriptionCell.swift */,
-				CEA330182CE4D91E00E42F4A /* StepPhotoCell.swift */,
-				CEA330102CE4D90000E42F4A /* SettingsTVC.swift */,
-				CEC4ACF92D8B153E009DBCD3 /* MainIngredientsTVCell.swift */,
+				CE04BFBF2E2501F20009A94A /* TagCollectionViewCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -515,7 +615,6 @@
 			isa = PBXGroup;
 			children = (
 				CEE919232DECA717001C03D7 /* Profile.swift */,
-				CE079C722E0C35DA00FE9805 /* Supabase.swift */,
 				CEAC9E882CE64C0500221CCF /* Recipes.swift */,
 				CEC4ACEC2D8B0B52009DBCD3 /* RecipeModel.swift */,
 				CEC4ACEE2D8B0BE8009DBCD3 /* SavedRecipeModel.swift */,
@@ -563,11 +662,11 @@
 				CE9BAB222C7C7EF000CD6C24 /* Sources */,
 				CE9BAB232C7C7EF000CD6C24 /* Frameworks */,
 				CE9BAB242C7C7EF000CD6C24 /* Resources */,
+				CE80EEB92E27D90C00E61A7F /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			fileSystemSynchronizedGroups = (
-				CE93D98B2DF75309008AC5DF /* Views */,
 				CEE2461D2E094A3D00DBA388 /* Cells */,
 			);
 			name = Povareshka;
@@ -643,6 +742,11 @@
 				CEA3301B2CE4D91F00E42F4A /* StepPhotoCell.swift in Sources */,
 				CEA109F02C7E011D0095E989 /* ShoppingListViewController.swift in Sources */,
 				CE8F04CF2E05444700978883 /* TagsManager.swift in Sources */,
+				CE04BFC02E2501F20009A94A /* TagCollectionViewCell.swift in Sources */,
+				CE04BFC12E2501F20009A94A /* CategoryGridCell.swift in Sources */,
+				CE04BFC22E2501F20009A94A /* CategoryCell.swift in Sources */,
+				CE04BFC32E2501F20009A94A /* AddCategoryGridCell.swift in Sources */,
+				CE04BFC42E2501F20009A94A /* StepLabelCell.swift in Sources */,
 				CED1AC182DDCF4A9008949B2 /* AppCordinator.swift in Sources */,
 				CEC4ACF42D8B0C69009DBCD3 /* DataManager.swift in Sources */,
 				CE6454702DEF357C000278A0 /* EditProfileController.swift in Sources */,
@@ -667,7 +771,6 @@
 				CEA3300E2CE4D82D00E42F4A /* NewRecipeController.swift in Sources */,
 				CEA2900A2D81D3480017D499 /* MenuItem.swift in Sources */,
 				CEA109E42C7DF3CB0095E989 /* NavBarController.swift in Sources */,
-				CE079C732E0C35DA00FE9805 /* Supabase.swift in Sources */,
 				CEA3301A2CE4D91F00E42F4A /* StepDescriptionCell.swift in Sources */,
 				CEA330132CE4D90000E42F4A /* CreateRecipeSettingsDataModel.swift in Sources */,
 				CEC4ACF62D8B0CC0009DBCD3 /* KeyboardManager.swift in Sources */,

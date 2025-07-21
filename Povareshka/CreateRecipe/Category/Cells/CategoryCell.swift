@@ -58,11 +58,11 @@ final class CategoryCell: UITableViewCell {
         ])
     }
     
-    func configure(with category: RecipeCategory) {
+    func configure(with category: CategorySupabase, isSelected: Bool) {
         iconView.image = UIImage(named: category.iconName)?.withRenderingMode(.alwaysTemplate)
 //        UIImage(systemName: category.iconName)
         titleLabel.text = category.title
-        checkmarkView.isHidden = !category.isSelected
+        checkmarkView.isHidden = !isSelected
     }
     
     required init?(coder: NSCoder) {

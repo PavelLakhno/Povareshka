@@ -42,7 +42,7 @@ final class CategoryGridCell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             iconView.widthAnchor.constraint(equalToConstant: 40),
             iconView.heightAnchor.constraint(equalToConstant: 40),
-            
+
             stack.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             stack.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             stack.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9)

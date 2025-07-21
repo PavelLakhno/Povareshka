@@ -42,6 +42,10 @@ final class RecipeMetaStackView: UIStackView {
 //        if let comments = recipe.comments {
         addMetaItem(iconName: "message.fill", text: "34")
         //        }
+        
+        if let difficulty = recipe.difficulty {
+            addMetaItem(iconName: Resources.Images.Icons.level, text: "\(difficulty)")
+        }
     }
     
     func addMetaItem(iconName: String, text: String, iconColor: UIColor = .systemOrange) {

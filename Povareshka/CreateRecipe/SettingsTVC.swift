@@ -13,7 +13,7 @@ class SettingTableViewCell: UITableViewCell {
     
     var cellData : CreateRecipeSettingDataModel? {
         didSet {
-            self.iconImage.image = UIImage(named: cellData!.iconImageName)
+            self.iconImage.image = UIImage(systemName: cellData!.iconImageName)
             self.titleLabel.text = cellData?.titleText
         }
     }
@@ -40,7 +40,7 @@ class SettingTableViewCell: UITableViewCell {
     
     private lazy var iconImage : UIImageView = {
         let img = UIImageView()
-        img.image = Resources.Images.Icons.profile
+        img.tintColor = .neutral90
         img.translatesAutoresizingMaskIntoConstraints = false
         return img
     }()

@@ -13,7 +13,11 @@ class RecipeWatchController: UIViewController {
     private var recipe: RecipeSupabase?
     private var ingredients: [IngredientSupabase] = []
     private var instructions: [InstructionSupabase] = []
-    private var tags: [String] = ["Вкуснотищааа", "Сало", "Мясо", "Быстро", "Даженеподумалбы"]
+//    private var tags: [String] = ["Вкуснотищааа", "Сало", "Мясо", "Быстро", "Даженеподумалбы"]
+
+    // new collectionViews
+    private var tags: [String] = []
+    private var categories: [CategorySupabase] = []
     
     private let recipeImageView = RecipeImageWithFavoriteView()
     
@@ -31,12 +35,38 @@ class RecipeWatchController: UIViewController {
         return cv
     }()
     
+    // new added
+//    private let categoriesCollectionView: UICollectionView = {
+//        let layout = UICollectionViewFlowLayout()
+//        layout.scrollDirection = .horizontal
+//        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+//        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+//        cv.register(CategoryGridCell.self, forCellWithReuseIdentifier: CategoryGridCell.id)
+//        cv.showsHorizontalScrollIndicator = false
+//        return cv
+//    }()
+    
+    private lazy var categoriesCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumInteritemSpacing = 8
+        layout.minimumLineSpacing = 8
+        
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
+        collectionView.register(CategoryGridCell.self, forCellWithReuseIdentifier: CategoryGridCell.id)
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.isScrollEnabled = false
+        return collectionView
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupScrollView()
         setupStackView()
         setupTagsCollectionView()
+        setupCategoriesCollectionView()
         loadRecipeData()
     }
 
@@ -72,6 +102,14 @@ class RecipeWatchController: UIViewController {
         tagsCollectionView.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: TagCollectionViewCell.id)
         tagsCollectionView.backgroundColor = .clear
     }
+    
+    
+    private func setupCategoriesCollectionView() {
+        categoriesCollectionView.delegate = self
+        categoriesCollectionView.dataSource = self
+//        categoriesCollectionView.register(CategoryGridCell.self, forCellWithReuseIdentifier: CategoryGridCell.id)
+        categoriesCollectionView.backgroundColor = .clear
+    }
 
     private func setupTableView<T: UITableViewCell>(tableView: UITableView, cellType: T.Type, cellIdentifier: String) {
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -94,16 +132,21 @@ class RecipeWatchController: UIViewController {
                 async let recipe = loadRecipe(id: recipeId)
                 async let ingredients = loadIngredients(recipeId: recipeId)
                 async let instructions = loadInstructions(recipeId: recipeId)
-//                async let tags = loadTags(recipeId: recipeId)
+                async let tags = loadTags(recipeId: recipeId)
+                async let categories = loadCategories(recipeId: recipeId)
+
                 
-                let (recipeResult, ingredientsResult, instructionsResult) = await (try recipe, try ingredients, try instructions)//, try tags)
+                let (recipeResult, ingredientsResult, instructionsResult, tagsResult, categoriesResult) =
+                await (try recipe, try ingredients, try instructions, try tags, try categories)
                 
                 DispatchQueue.main.async {
                     self.recipe = recipeResult
                     self.ingredients = ingredientsResult
                     self.instructions = instructionsResult
-//                    self.tags = tagsResult
+                    self.tags = tagsResult
+                    self.categories = categoriesResult
                     self.updateUI()
+
                 }
             } catch {
                 DispatchQueue.main.async {
@@ -111,6 +154,7 @@ class RecipeWatchController: UIViewController {
                 }
             }
         }
+
     }
 
     private func loadRecipe(id: UUID) async throws -> RecipeSupabase {
@@ -150,14 +194,44 @@ class RecipeWatchController: UIViewController {
 //        return UUID(uuidString: session.user.id.uuidString.lowercased())
 //    }
     
-//    private func loadTags(recipeId: UUID) async throws -> [String] {
-//        try await SupabaseManager.shared.client
-//            .from("tags")
-//            .select()
-//            .eq("recipe_id", value: recipeId)
-//            .execute()
-//            .value
-//    }
+    private func loadTags(recipeId: UUID) async throws -> [String] {
+        let tags: [RecipeTagSupabase] = try await SupabaseManager.shared.client
+            .from("recipe_tags")
+            .select()
+            .eq("recipe_id", value: recipeId)
+            .execute()
+            .value
+        
+        return tags.map { $0.tag }
+    }
+ 
+    private func loadCategories(recipeId: UUID) async throws -> [CategorySupabase] {
+        // 1. Получаем связи рецепта с категориями
+        let recipeCategories: [RecipeCategorySupabase] = try await SupabaseManager.shared.client
+            .from("recipe_categories")
+            .select()
+            .eq("recipe_id", value: recipeId)
+            .execute()
+            .value
+        
+        // 2. Извлекаем ID категорий и преобразуем в строки
+        let categoryId = recipeCategories.map { $0.categoryId }
+        
+        guard !categoryId.isEmpty else { return [] }
+        
+        print("Ищем категории с ID:", categoryId)
+        
+        // 3. Получаем сами категории
+        let categories: [CategorySupabase] = try await SupabaseManager.shared.client
+            .from("categories")
+            .select()
+            .in("id", values: categoryId)
+            .execute()
+            .value
+
+        print("Найдены категории:", categories)
+        return categories
+    }
     
     private func updateUI() {
         guard let recipe = recipe else { return }
@@ -222,9 +296,29 @@ class RecipeWatchController: UIViewController {
             describeLabel.text = description
             stackView.addArrangedSubview(describeLabel)
         }
+       
+        if !categories.isEmpty {
+            let categoriesLabel = UILabel()
+            categoriesLabel.text = "Категории"
+            categoriesLabel.font = .helveticalBold(withSize: 18)
+            stackView.addArrangedSubview(categoriesLabel)
+            
+            categoriesCollectionView.reloadData()
+            let rows = ceil(Double(categories.count) / 3.0)
+            let height = rows * 100 + (rows - 1) * 8 // 100 - высота ячейки, 8 - spacing
+            
+            categoriesCollectionView.heightAnchor.constraint(equalToConstant: height).isActive = true
+
+            stackView.addArrangedSubview(categoriesCollectionView)
+        }
         
-        // Тэги
+        // Tags
         if !tags.isEmpty {
+            let tagsLabel = UILabel()
+            tagsLabel.text = "Теги"
+            tagsLabel.font = .helveticalBold(withSize: 18)
+            stackView.addArrangedSubview(tagsLabel)
+            
             tagsCollectionView.reloadData()
             tagsCollectionView.heightAnchor.constraint(equalToConstant: 40).isActive = true
             stackView.addArrangedSubview(tagsCollectionView)
@@ -457,23 +551,45 @@ extension RecipeWatchController: UITableViewDataSource, UITableViewDelegate {
 }
 
 extension RecipeWatchController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return tags.count
+        if collectionView == tagsCollectionView {
+            return tags.count
+        } else {
+            return categories.count
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagCollectionViewCell.id, for: indexPath) as! TagCollectionViewCell
-
-        cell.configure(with: tags[indexPath.item])
-        return cell
+        if collectionView == tagsCollectionView {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagCollectionViewCell.id, for: indexPath) as! TagCollectionViewCell
+            cell.configure(with: tags[indexPath.item])
+            return cell
+        } else {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoryGridCell.id, for: indexPath) as! CategoryGridCell
+            cell.configure(with: categories[indexPath.item].title, iconName: categories[indexPath.item].iconName, isSelected: false)
+            return cell
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let tag = tags[indexPath.item]
-        let font = UIFont.systemFont(ofSize: 14)
-        let attributes = [NSAttributedString.Key.font: font]
-        let size = (tag as NSString).size(withAttributes: attributes)
-        return CGSize(width: size.width + 24, height: 30)
+        if collectionView == tagsCollectionView {
+            let tag = tags[indexPath.item]
+            let font = UIFont.systemFont(ofSize: 14)
+            let attributes = [NSAttributedString.Key.font: font]
+            let size = (tag as NSString).size(withAttributes: attributes)
+            return CGSize(width: size.width + 24, height: 30)
+        } else {
+            // Расчет размера для категорий (3 в ряд)
+            let padding: CGFloat = 16 * 2
+            let spacing: CGFloat = 8 * 2
+            let availableWidth = collectionView.bounds.width - padding - spacing
+            let cellWidth = availableWidth / 3
+            return CGSize(width: cellWidth, height: 100)
+        }
     }
 }
 
