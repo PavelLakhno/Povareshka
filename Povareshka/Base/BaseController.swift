@@ -34,9 +34,9 @@ class BaseController: UIViewController {
         view.backgroundColor = Resources.Colors.background
     }
     
-//    func configure() {
-//        view.backgroundColor = Resources.Colors.background
-//    }
+    func configure() {
+        view.backgroundColor = Resources.Colors.background
+    }
     
     func navBarLeftButtonHandler() {
         print("NavBar left button tapped")

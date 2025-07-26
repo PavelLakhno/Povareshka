@@ -1,6 +1,15 @@
 {
-  "originHash" : "1fa406ebf0b96b5f16e3d4566d85b78cc985cabfb6d282562a3bfed466d6a5ce",
+  "originHash" : "45e4c751d5938bbf122284d7e7cfd780006f545e9b29eddef525fa500393613b",
   "pins" : [
+    {
+      "identity" : "kingfisher",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/onevcat/Kingfisher.git",
+      "state" : {
+        "revision" : "2015fda791daa72c8058619545a593bf8c1dd59f",
+        "version" : "8.5.0"
+      }
+    },
     {
       "identity" : "realm-core",
       "kind" : "remoteSourceControl",

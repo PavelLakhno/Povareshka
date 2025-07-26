@@ -181,6 +181,15 @@ enum Resources {
             static let testMealImage = UIImage(named: "mealImage")
             static let testAuthorIcon = UIImage(named: "Martha Stewart")
             
+//            static let level = UIImage(systemName: "cellularbars")
+//            static let clockFill = UIImage(systemName: "clock.fill")
+//            static let persons = UIImage(systemName: "person.2.fill")
+            static let level = "cellularbars"
+            static let clockFill = "clock.fill"
+            static let persons = "person.2.fill"
+            static let starEmpty = UIImage(systemName: "star")
+            static let starFilled = UIImage(systemName: "star.fill")
+            
         }
     }
     

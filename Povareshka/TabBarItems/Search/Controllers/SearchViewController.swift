@@ -77,7 +77,7 @@ class SearchViewController: BaseController {
     
     // MARK: - Setup
     private func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         title = "Поиск"
         
         view.addSubview(searchBar)
