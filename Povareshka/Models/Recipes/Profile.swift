@@ -25,6 +25,19 @@ struct Profile: Codable, Identifiable {
     }
 }
 
+// ShortInfoUser
+struct UserProfile: Codable {
+    let id: UUID
+    let username: String?
+    let avatarPath: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case username
+        case avatarPath = "avatar_url"
+    }
+}
+
 struct RecipeSupabase: Codable, Identifiable {
     let id: UUID
     let userId: UUID
@@ -96,7 +109,6 @@ struct RecipeTagSupabase: Codable {
     enum CodingKeys: String, CodingKey {
         case id, tag
         case recipeId = "recipe_id"
-//        case tag
     }
 }
 
@@ -116,13 +128,10 @@ struct CategorySupabase: Codable, Identifiable, Hashable  {
     let id: UUID
     let title: String
     let iconName: String
-//    var isSelected: Bool
     
     enum CodingKeys: String, CodingKey {
-        case id
-        case title
+        case id, title
         case iconName = "icon_name"
-//        case isSelected
     }
     
     static func allCategories() -> [CategorySupabase] {
@@ -222,7 +231,7 @@ struct Rating: Codable, Identifiable {
     let userId: UUID
     let rating: Int
     let comment: String?
-    let createdAt: Date?
+    let createdAt: Date
     
     enum CodingKeys: String, CodingKey {
         case id

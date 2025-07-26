@@ -14,7 +14,7 @@ class ProfileViewController: UIViewController {
 
     private let profileHeaderView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()

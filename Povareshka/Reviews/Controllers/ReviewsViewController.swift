@@ -7,8 +7,70 @@
 
 import UIKit
 
+// MARK: - RatingsSorter
+struct RatingsSorter {
+    static func sorted(ratings: [Rating], by option: ReviewsViewController.SortOption, photos: [ReviewPhoto]) -> [Rating] {
+        switch option {
+        case .dateDesc: return ratings.sorted { $0.createdAt > $1.createdAt }
+        case .dateAsc: return ratings.sorted { $0.createdAt < $1.createdAt }
+        case .ratingDesc: return ratings.sorted { $0.rating > $1.rating }
+        case .ratingAsc: return ratings.sorted { $0.rating < $1.rating }
+        case .withPhotos:
+            let ratingsWithPhotos = Set(photos.map { $0.userId })
+            return ratings.filter { ratingsWithPhotos.contains($0.userId) }
+        case .withComments:
+            return ratings.filter { $0.comment?.isEmpty == false }
+        }
+    }
+    
+    static func title(for option: ReviewsViewController.SortOption) -> String {
+        switch option {
+        case .dateDesc: return "Сортировка: По дате (новые)"
+        case .dateAsc: return "Сортировка: По дате (старые)"
+        case .ratingDesc: return "Сортировка: По рейтингу (высокий)"
+        case .ratingAsc: return "Сортировка: По рейтингу (низкий)"
+        case .withPhotos: return "Сортировка: С фото"
+        case .withComments: return "Сортировка: С комментариями"
+        }
+    }
+    
+    @MainActor
+    static func sortAlertController(
+        currentOption: ReviewsViewController.SortOption,
+        completion: @escaping (ReviewsViewController.SortOption) -> Void
+    ) -> UIAlertController {
+        let alert = UIAlertController(title: "Сортировка отзывов", message: nil, preferredStyle: .actionSheet)
+        
+        let options: [ReviewsViewController.SortOption] = [.dateDesc, .dateAsc, .ratingDesc, .ratingAsc, .withPhotos, .withComments]
+        
+        options.forEach { option in
+            let action = UIAlertAction(title: title(for: option), style: .default) { _ in
+                completion(option)
+            }
+            action.setValue(option == currentOption, forKey: "checked")
+            alert.addAction(action)
+        }
+        
+        alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
+        return alert
+    }
+}
+
+// MARK: - Constants
+private enum Constants {
+    static let cornerRadius: CGFloat = 20
+    static let smallPadding: CGFloat = 8
+    static let mediumPadding: CGFloat = 16
+    static let buttonHeight: CGFloat = 44
+    static let photoCellSize = CGSize(width: 80, height: 80)
+    static let photosSectionHeight: CGFloat = 132
+    static let photoCollectionHeight: CGFloat = 100
+}
+
+// MARK: - ReviewsViewController
 class ReviewsViewController: UIViewController {
     
+    // MARK: - Properties
     private let recipeId: UUID
     private var averageRating: Double
     private var ratings: [Rating] = []
@@ -17,31 +79,18 @@ class ReviewsViewController: UIViewController {
     private var filteredRatings: [Rating] = []
     private var sortOption: SortOption = .dateDesc
     
-    enum SortOption {
-        case dateDesc
-        case dateAsc
-        case ratingDesc
-        case ratingAsc
-        case withPhotos
-        case withComments
-    }
-    
     // MARK: - UI Elements
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     private let ratingHeaderView = RatingHeaderView()
-    private let photosCollectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: 80, height: 80)
-        layout.minimumInteritemSpacing = 8
-        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.showsHorizontalScrollIndicator = false
-        cv.backgroundColor = .clear
-        return cv
-    }()
-    private let tableView = UITableView()
+    private let photosSectionView = UIView()
+    private let photosCollectionView = UICollectionView(
+        frame: .zero,
+        collectionViewLayout: UICollectionViewFlowLayout()
+    )
+    private let viewAllButton = UIButton(type: .system)
     private let sortButton = UIButton(type: .system)
+    private let tableView = UITableView()
     private let activityIndicator = UIActivityIndicatorView(style: .large)
     
     // MARK: - Init
@@ -58,54 +107,30 @@ class ReviewsViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupViews()
+        setupUI()
         loadData()
     }
-    
-    // MARK: - Setup
-    private func setupViews() {
-        view.backgroundColor = .systemBackground
+}
+
+// MARK: - Setup
+private extension ReviewsViewController {
+    func setupUI() {
+        view.backgroundColor = .neutral10
         title = "Отзывы и оценки"
-        
-        // Настройка индикатора загрузки
-        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(activityIndicator)
-        NSLayoutConstraint.activate([
-            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        ])
-        
-        // Настройка scrollView и contentView
+        setupScrollView()
+        setupRatingHeader()
+        setupPhotosSection()
+        setupSortButton()
+        setupTableView()
+        setupActivityIndicator()
+    }
+    
+    func setupScrollView() {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
-        // Настройка рейтинг хедера
-        ratingHeaderView.configure(rating: averageRating)
-        ratingHeaderView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(ratingHeaderView)
-        
-        // Настройка коллекции фото
-        setupPhotosCollectionView()
-        contentView.addSubview(photosCollectionView)
-        
-        // Кнопка "Просмотреть все"
-        let viewAllButton = UIButton(type: .system)
-        viewAllButton.setTitle("Просмотреть все", for: .normal)
-        viewAllButton.addTarget(self, action: #selector(viewAllPhotos), for: .touchUpInside)
-        viewAllButton.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(viewAllButton)
-        
-        // Настройка кнопки сортировки
-        setupSortButton()
-        contentView.addSubview(sortButton)
-        
-        // Настройка таблицы
-        setupTableView()
-        contentView.addSubview(tableView)
-        
-        // Констрейнты
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -116,75 +141,138 @@ class ReviewsViewController: UIViewController {
             contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            
-            ratingHeaderView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            ratingHeaderView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            ratingHeaderView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
-            photosCollectionView.topAnchor.constraint(equalTo: ratingHeaderView.bottomAnchor, constant: 16),
-            photosCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            photosCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            photosCollectionView.heightAnchor.constraint(equalToConstant: 100),
-            
-            viewAllButton.topAnchor.constraint(equalTo: photosCollectionView.bottomAnchor, constant: 8),
-            viewAllButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
-            sortButton.topAnchor.constraint(equalTo: viewAllButton.bottomAnchor, constant: 16),
-            sortButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            sortButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            sortButton.heightAnchor.constraint(equalToConstant: 44),
-            
-            tableView.topAnchor.constraint(equalTo: sortButton.bottomAnchor, constant: 16),
-            tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            tableView.heightAnchor.constraint(equalToConstant: 600) // Временное значение
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
         ])
     }
     
-    private func setupPhotosCollectionView() {
-        photosCollectionView.delegate = self
-        photosCollectionView.dataSource = self
+    func setupRatingHeader() {
+        ratingHeaderView.configure(rating: averageRating)
+        ratingHeaderView.backgroundColor = .systemBackground
+        ratingHeaderView.layer.cornerRadius = Constants.cornerRadius
+        ratingHeaderView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(ratingHeaderView)
+        
+        NSLayoutConstraint.activate([
+            ratingHeaderView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Constants.smallPadding),
+            ratingHeaderView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.mediumPadding),
+            ratingHeaderView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.mediumPadding)
+        ])
+    }
+    
+    func setupPhotosSection() {
+        // Section container
+        photosSectionView.backgroundColor = .systemBackground
+        photosSectionView.layer.cornerRadius = Constants.cornerRadius
+        photosSectionView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(photosSectionView)
+        
+        // Collection View
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.itemSize = Constants.photoCellSize
+        layout.minimumInteritemSpacing = Constants.smallPadding
+        layout.sectionInset = UIEdgeInsets(
+            top: 0,
+            left: Constants.mediumPadding,
+            bottom: 0,
+            right: Constants.mediumPadding
+        )
+        
+        photosCollectionView.collectionViewLayout = layout
+        photosCollectionView.showsHorizontalScrollIndicator = false
+        photosCollectionView.backgroundColor = .clear
         photosCollectionView.register(ReviewPhotoCell.self, forCellWithReuseIdentifier: ReviewPhotoCell.id)
+        photosCollectionView.dataSource = self
+        photosCollectionView.delegate = self
         photosCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        photosSectionView.addSubview(photosCollectionView)
+        
+        // View All Button
+        viewAllButton.setTitle("Просмотреть все", for: .normal)
+        viewAllButton.tintColor = .systemOrange
+        viewAllButton.titleLabel?.font = .systemFont(ofSize: 14)
+        viewAllButton.addTarget(self, action: #selector(viewAllPhotos), for: .touchUpInside)
+        viewAllButton.translatesAutoresizingMaskIntoConstraints = false
+        photosSectionView.addSubview(viewAllButton)
+        
+        // Constraints
+        NSLayoutConstraint.activate([
+            photosSectionView.topAnchor.constraint(equalTo: ratingHeaderView.bottomAnchor, constant: Constants.smallPadding),
+            photosSectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.mediumPadding),
+            photosSectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.mediumPadding),
+            photosSectionView.heightAnchor.constraint(equalToConstant: Constants.photosSectionHeight),
+            
+            photosCollectionView.topAnchor.constraint(equalTo: photosSectionView.topAnchor, constant: Constants.smallPadding),
+            photosCollectionView.leadingAnchor.constraint(equalTo: photosSectionView.leadingAnchor),
+            photosCollectionView.trailingAnchor.constraint(equalTo: photosSectionView.trailingAnchor),
+            photosCollectionView.heightAnchor.constraint(equalToConstant: Constants.photoCollectionHeight),
+            
+            viewAllButton.topAnchor.constraint(equalTo: photosCollectionView.bottomAnchor, constant: Constants.smallPadding),
+            viewAllButton.trailingAnchor.constraint(equalTo: photosSectionView.trailingAnchor, constant: -Constants.mediumPadding),
+            viewAllButton.bottomAnchor.constraint(equalTo: photosSectionView.bottomAnchor, constant: -Constants.smallPadding)
+        ])
     }
     
-    private func setupSortButton() {
+    func setupSortButton() {
         sortButton.setTitle("Сортировка: По дате (новые)", for: .normal)
+        sortButton.tintColor = .label
+        sortButton.backgroundColor = .systemBackground
+        sortButton.layer.cornerRadius = Constants.cornerRadius
+        sortButton.titleLabel?.font = .systemFont(ofSize: 16)
         sortButton.addTarget(self, action: #selector(showSortOptions), for: .touchUpInside)
-        sortButton.tintColor = .systemGray.withAlphaComponent(0.8)
-        sortButton.layer.borderWidth = 1
-        sortButton.layer.borderColor = UIColor.systemOrange.cgColor
-        sortButton.layer.cornerRadius = 8
         sortButton.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(sortButton)
+        
+        NSLayoutConstraint.activate([
+            sortButton.topAnchor.constraint(equalTo: photosSectionView.bottomAnchor, constant: Constants.smallPadding),
+            sortButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.mediumPadding),
+            sortButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.mediumPadding),
+            sortButton.heightAnchor.constraint(equalToConstant: Constants.buttonHeight)
+        ])
     }
     
-    private func setupTableView() {
-        tableView.delegate = self
+    func setupTableView() {
+        tableView.backgroundColor = .systemBackground
+        tableView.layer.cornerRadius = Constants.cornerRadius
+        tableView.separatorStyle = .singleLine
+        tableView.isScrollEnabled = false
         tableView.dataSource = self
+        tableView.delegate = self
         tableView.register(ReviewCell.self, forCellReuseIdentifier: ReviewCell.id)
-        tableView.separatorStyle = .none
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 200
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(tableView)
+        
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: sortButton.bottomAnchor, constant: Constants.smallPadding),
+            tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.mediumPadding),
+            tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.mediumPadding),
+            tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -Constants.mediumPadding),
+            tableView.heightAnchor.constraint(equalToConstant: 600)
+        ])
     }
     
-    // MARK: - Data Loading
-    private func loadData() {
+    func setupActivityIndicator() {
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(activityIndicator)
+        NSLayoutConstraint.activate([
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+}
+
+// MARK: - Data Loading
+private extension ReviewsViewController {
+    func loadData() {
         activityIndicator.startAnimating()
         
         Task {
             do {
-                // Загружаем оценки и фотографии параллельно
                 async let ratingsTask = loadRatings()
                 async let photosTask = loadReviewPhotos()
                 
                 let (ratings, photos) = await (try ratingsTask, try photosTask)
-                
-                // Загружаем профили пользователей
-                let userIds = ratings.map { $0.userId }
-                let profiles = try await loadUserProfiles(userIds: userIds)
+                let profiles = try await loadUserProfiles(userIds: ratings.map { $0.userId })
                 
                 DispatchQueue.main.async {
                     self.ratings = ratings
@@ -238,158 +326,103 @@ class ReviewsViewController: UIViewController {
         return profilesDict
     }
     
-    private func updateUI() {
-        // Обновляем коллекцию фото
+    func updateUI() {
         photosCollectionView.reloadData()
-        
-        // Обновляем таблицу
         tableView.reloadData()
-        
-        // Обновляем высоту таблицы
-        let tableHeight = tableView.contentSize.height
-        tableView.constraints.first { $0.firstAttribute == .height }?.constant = tableHeight
+        tableView.dynamicHeightForTableView()
+    }
+}
+
+// MARK: - Sorting Logic
+extension ReviewsViewController {
+    enum SortOption {
+        case dateDesc, dateAsc, ratingDesc, ratingAsc, withPhotos, withComments
     }
     
-    // MARK: - Sorting
     private func applySort() {
-        switch sortOption {
-        case .dateDesc:
-            filteredRatings = ratings.sorted { $0.createdAt > $1.createdAt }
-        case .dateAsc:
-            filteredRatings = ratings.sorted { $0.createdAt < $1.createdAt }
-        case .ratingDesc:
-            filteredRatings = ratings.sorted { $0.rating > $1.rating }
-        case .ratingAsc:
-            filteredRatings = ratings.sorted { $0.rating < $1.rating }
-        case .withPhotos:
-            let ratingsWithPhotos = Set(reviewPhotos.map { $0.userId })
-            filteredRatings = ratings.filter { ratingsWithPhotos.contains($0.userId) }
-        case .withComments:
-            filteredRatings = ratings.filter { $0.comment?.isEmpty == false }
-        }
+        filteredRatings = RatingsSorter.sorted(ratings: ratings, by: sortOption, photos: reviewPhotos)
     }
     
     private func updateSortButtonTitle() {
-        let title: String
-        switch sortOption {
-        case .dateDesc: title = "Сортировка: По дате (новые)"
-        case .dateAsc: title = "Сортировка: По дате (старые)"
-        case .ratingDesc: title = "Сортировка: По рейтингу (высокий)"
-        case .ratingAsc: title = "Сортировка: По рейтингу (низкий)"
-        case .withPhotos: title = "Сортировка: С фото"
-        case .withComments: title = "Сортировка: С комментариями"
-        }
-        sortButton.setTitle(title, for: .normal)
-    }
-    
-    // MARK: - Actions
-    @objc private func viewAllPhotos() {
-        let allPhotos = reviewPhotos.map { $0.photoPath }
-        guard !allPhotos.isEmpty else { return }
-        
-        let photoViewer = PhotoViewerController(photos: allPhotos)
-        present(photoViewer, animated: true)
+        sortButton.setTitle(RatingsSorter.title(for: sortOption), for: .normal)
     }
     
     @objc private func showSortOptions() {
-        let alert = UIAlertController(title: "Сортировка отзывов", message: nil, preferredStyle: .actionSheet)
-        
-        alert.addAction(UIAlertAction(title: "По дате (новые)", style: .default, handler: { _ in
-            self.sortOption = .dateDesc
-            self.updateSortButtonTitle()
-            self.applySort()
-            self.updateUI()
-        }))
-        
-        alert.addAction(UIAlertAction(title: "По дате (старые)", style: .default, handler: { _ in
-            self.sortOption = .dateAsc
-            self.updateSortButtonTitle()
-            self.applySort()
-            self.updateUI()
-        }))
-        
-        alert.addAction(UIAlertAction(title: "По рейтингу (высокий)", style: .default, handler: { _ in
-            self.sortOption = .ratingDesc
-            self.updateSortButtonTitle()
-            self.applySort()
-            self.updateUI()
-        }))
-        
-        alert.addAction(UIAlertAction(title: "По рейтингу (низкий)", style: .default, handler: { _ in
-            self.sortOption = .ratingAsc
-            self.updateSortButtonTitle()
-            self.applySort()
-            self.updateUI()
-        }))
-        
-        alert.addAction(UIAlertAction(title: "С фото", style: .default, handler: { _ in
-            self.sortOption = .withPhotos
-            self.updateSortButtonTitle()
-            self.applySort()
-            self.updateUI()
-        }))
-        
-        alert.addAction(UIAlertAction(title: "С комментариями", style: .default, handler: { _ in
-            self.sortOption = .withComments
-            self.updateSortButtonTitle()
-            self.applySort()
-            self.updateUI()
-        }))
-        
-        alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
-        
+        let alert = RatingsSorter.sortAlertController(currentOption: sortOption) { [weak self] option in
+            self?.sortOption = option
+            self?.updateSortButtonTitle()
+            self?.applySort()
+            self?.updateUI()
+        }
         present(alert, animated: true)
     }
+}
+
+// MARK: - Actions
+private extension ReviewsViewController {
+    @objc func viewAllPhotos() {
+        guard !reviewPhotos.isEmpty else { return }
+        let photoViewer = PhotoViewerController(photos: reviewPhotos.map { $0.photoPath })
+        present(photoViewer, animated: true)
+    }
     
-    private func showError(message: String) {
+    func showError(message: String) {
         let alert = UIAlertController(title: "Ошибка", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
 }
 
-// MARK: - UICollectionView DataSource & Delegate
+// MARK: - CollectionView DataSource & Delegate
 extension ReviewsViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return min(reviewPhotos.count, 10) // Показываем максимум 10 фото
+        min(reviewPhotos.count, 10)
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ReviewPhotoCell.id, for: indexPath) as! ReviewPhotoCell
-        let photo = reviewPhotos[indexPath.item]
-        cell.configure(with: photo.photoPath)
+        cell.configure(with: reviewPhotos[indexPath.item].photoPath)
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let allPhotos = reviewPhotos.map { $0.photoPath }
-        let photoViewer = PhotoViewerController(photos: allPhotos, initialIndex: indexPath.item)
+        let photoViewer = PhotoViewerController(
+            photos: reviewPhotos.map { $0.photoPath },
+            initialIndex: indexPath.item
+        )
         present(photoViewer, animated: true)
     }
 }
-
-// MARK: - UITableView DataSource & Delegate
+//
+// MARK: - TableView DataSource & Delegate
 extension ReviewsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filteredRatings.count
+        filteredRatings.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ReviewCell.id, for: indexPath) as! ReviewCell
         let rating = filteredRatings[indexPath.row]
         let userProfile = userProfiles[rating.userId]
-        let userPhotos = reviewPhotos.filter { $0.userId == rating.userId }
+        let photos = reviewPhotos.filter { $0.userId == rating.userId }.map { $0.photoPath }
         
         cell.configure(
             rating: rating,
             userProfile: userProfile,
-            photos: userPhotos.map { $0.photoPath }
+            photos: photos
         )
         
+        // Cell styling
+        cell.layer.cornerRadius = Constants.cornerRadius
+        cell.contentView.layer.masksToBounds = true
+        
         return cell
+        
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
     }
+
 }
+

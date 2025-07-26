@@ -407,7 +407,7 @@ class RecipeWatchController: UIViewController {
     }
    
     @objc private func rateButtonTapped() {
-        let rateVC = RateRecipeController()
+        let rateVC = RecipeRateController()
         rateVC.recipeId = recipeId
         rateVC.currentRating = userRating?.rating
         rateVC.comment = userRating?.comment
