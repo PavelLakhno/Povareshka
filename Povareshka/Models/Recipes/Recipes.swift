@@ -45,7 +45,7 @@ struct Ingredient: Codable {
 struct Instruction: Codable {
     var number: Int
     var image: Data?
-    var describe: String?
+    var describe: String
 }
 
 struct IngredientData: Codable {
@@ -62,3 +62,21 @@ struct IngredientData: Codable {
     }
 }
 
+// Вернуться обязательно!
+
+// Структура для ответа RPC
+struct RecipeDetailsResponse: Codable {
+    let recipe: RecipeSupabase
+    let ingredients: [IngredientSupabase]
+    let instructions: [InstructionSupabase]
+    let tags: [String]
+    let categories: [CategorySupabase]
+    let averageRating: Double
+    let userRating: Rating?
+    
+    enum CodingKeys: String, CodingKey {
+        case recipe, ingredients, instructions, tags, categories
+        case averageRating = "average_rating"
+        case userRating = "user_rating"
+    }
+}

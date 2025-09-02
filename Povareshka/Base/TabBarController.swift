@@ -45,10 +45,10 @@ class TabBarController: UITabBarController {
         let shopController = ShoppingListViewController()
         let profileController = ProfileViewController()
         
-        let mainviewNavigation = NavBarController(rootViewController: mainviewController)
-        let favoriteNavigation = NavBarController(rootViewController: favoriteController)
-        let shopNavigation = NavBarController(rootViewController: shopController)
-        let profileNavigation = NavBarController(rootViewController: profileController)
+        let mainviewNavigation =  UINavigationController(rootViewController: mainviewController)
+        let favoriteNavigation = UINavigationController(rootViewController: favoriteController)
+        let shopNavigation = UINavigationController(rootViewController: shopController)
+        let profileNavigation = UINavigationController(rootViewController: profileController)
         
         mainviewNavigation.tabBarItem = UITabBarItem(
             title: Resources.Strings.TabBar.mainview,

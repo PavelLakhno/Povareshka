@@ -12,11 +12,19 @@ import Storage
 class EditProfileController: UIViewController, UITextFieldDelegate {
     
     // MARK: - UI Components
-    private let avatarImageView = UIImageView()
+    private let avatarImageView = UIImageView(image: Resources.Images.Icons.profile,
+                                              cornerRadius: 40,
+                                              contentMode: .scaleAspectFill,
+                                              tintColor: .systemGray3,
+                                              backgroundColor: .systemGray6)
     private let usernameTextField = UITextField()
     private let ageTextField = UITextField()
     private let websiteTextField = UITextField()
-    private let updateButton = UIButton(type: .system)
+    private lazy var updateButton = UIButton(title: Resources.Strings.Buttons.save,
+                                             tintColor: .orange,
+                                             titleColor: Resources.Colors.orange,
+                                             target: self,
+                                             action: #selector(updateProfileTapped))
     private let activityIndicator = UIActivityIndicatorView(style: .medium)
     private let imagePicker = UIImagePickerController()
     
@@ -36,7 +44,7 @@ class EditProfileController: UIViewController, UITextFieldDelegate {
         title = "Редактировать профиль"
         
         // Настройка аватара
-        avatarImageView.configureProfileImage()
+//        avatarImageView.configureProfileImage()
         avatarImageView.isUserInteractionEnabled = true
         avatarImageView.addGestureRecognizer(
             UITapGestureRecognizer(target: self, action: #selector(changeAvatarTapped))
@@ -46,11 +54,7 @@ class EditProfileController: UIViewController, UITextFieldDelegate {
         usernameTextField.configure(placeholder: "Имя", delegate: self, autocapitalization: .none)
         ageTextField.configure(placeholder: "Возраст", delegate: self)
         websiteTextField.configure(placeholder: "Сайт", keyboardType: .URL, delegate: self, autocapitalization: .none)
-
-        // Настройка кнопки
-        updateButton.configure(title: "Сохранить", color: .systemOrange)
-        updateButton.addTarget(self, action: #selector(updateProfileTapped), for: .touchUpInside)
-        
+       
         setupConstraints()
     }
     

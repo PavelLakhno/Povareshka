@@ -10,51 +10,55 @@ import UIKit
 final class AddCategoryGridCell: UICollectionViewCell {
     static let id = "AddCategoryGridCell"
     
-    private let iconView = UIImageView()
-    private let titleLabel = UILabel()
+    private let iconView = UIImageView(
+        image: Resources.Images.Icons.addFill,
+        size: Constants.iconCellSizeBig,
+        contentMode: .scaleAspectFit,
+        tintColor: .systemGray2,
+        backgroundColor: .clear
+    )
+    
+    private let titleLabel = UILabel(
+        text: Resources.Strings.Buttons.add,
+        font: .helveticalRegular(withSize: 12),
+        textColor: .black,
+        textAlignment: .center
+    )
+    
+    private let stackView = UIStackView(
+        axis: .vertical,
+        alignment: .center,
+        spacing: Constants.spacingSmall
+    )
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
-    }
-    
-    private func setupViews() {
-        // Настройка иконки
-        iconView.image = UIImage(systemName: "plus.circle.fill")
-        iconView.tintColor = .systemGray
-        iconView.contentMode = .scaleAspectFit
-        
-        // Настройка текста
-        titleLabel.text = "Добавить"
-        titleLabel.font = .systemFont(ofSize: 12, weight: .medium)
-        titleLabel.textAlignment = .center
-        
-        // Вертикальный стек
-        let stack = UIStackView(arrangedSubviews: [iconView, titleLabel])
-        stack.axis = .vertical
-        stack.spacing = 4
-        stack.alignment = .center
-        contentView.addSubview(stack)
-        
-        // Констрейнты
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        iconView.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            iconView.widthAnchor.constraint(equalToConstant: 40),
-            iconView.heightAnchor.constraint(equalToConstant: 40),
-            
-            stack.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            stack.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            stack.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9)
-        ])
-        
-        // Стиль ячейки
-        backgroundColor = .systemGray5
-        layer.cornerRadius = 12
+        setupConstraints()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+   
+    private func setupViews() {
+        stackView.addArrangedSubview(iconView)
+        stackView.addArrangedSubview(titleLabel)
+        contentView.addSubview(stackView)
+        
+        backgroundColor = Resources.Colors.backgroundMedium
+        
+        // Настройка скругления углов
+        layer.cornerRadius = Constants.cornerRadiusMedium
+        contentView.layer.cornerRadius = Constants.cornerRadiusMedium
+        contentView.layer.masksToBounds = true
+    }
+    
+    private func setupConstraints() {
+        NSLayoutConstraint.activate([
+            stackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            stackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            stackView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9)
+        ])
     }
 }

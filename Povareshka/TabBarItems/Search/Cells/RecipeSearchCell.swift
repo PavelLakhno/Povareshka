@@ -8,6 +8,7 @@
 import UIKit
 
 class RecipeSearchCell: UICollectionViewCell {
+    static let id = "RecipeSearchCell"
     
     private let imageView: UIImageView = {
         let imageView = UIImageView()

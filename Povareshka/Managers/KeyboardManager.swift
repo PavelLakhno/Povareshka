@@ -7,7 +7,7 @@
 
 import UIKit
 
-class KeyboardManager {
+final class KeyboardManager {
     static func registerForKeyboardNotifications(observer: Any, showSelector: Selector, hideSelector: Selector) {
         NotificationCenter.default.addObserver(observer, selector: showSelector, name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(observer, selector: hideSelector, name: UIResponder.keyboardWillHideNotification, object: nil)

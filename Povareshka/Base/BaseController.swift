@@ -12,73 +12,187 @@ enum NavBarPosition {
     case right
 }
 
-class BaseController: UIViewController {
+enum NavBarButtonType {
+    case title(String)
+    case image(UIImage?)
+    case system(UIBarButtonItem.SystemItem)
+}
 
+class BaseController: UIViewController {
+    // MARK: - ScrollableController
+    var scrollView: UIScrollView? { nil } 
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupViews()
-        setupConstraintViews()
+        setupConstraints()
         configureAppearance()
-        navigationItem.rightBarButtonItem?.tintColor =  Resources.Colors.orange
-        navigationItem.leftBarButtonItem?.tintColor =  Resources.Colors.orange
+        configureNavigationBar()
     }
-
+    
+    // MARK: - Navigation Bar Configuration
+    func configureNavigationBar() {
+        let navigationBar = navigationController?.navigationBar
+        navigationBar?.tintColor = Resources.Colors.orange
+        
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .systemBackground
+        appearance.titleTextAttributes = [
+            .foregroundColor: Resources.Colors.titleGray,
+            .font: UIFont.helveticalRegular(withSize: 16)
+        ]
+        
+        navigationBar?.standardAppearance = appearance
+        navigationBar?.scrollEdgeAppearance = appearance
+        
+        navigationBar?.addBottomBorder(
+            with: Resources.Colors.separator,
+            height: 1
+        )
+    }
+    
+    deinit {
+        KeyboardManager.removeKeyboardNotifications(observer: self)
+    }
 }
 
+// MARK: - Base Methods
 @objc extension BaseController {
-    
-    func setupViews() {}
-    func setupConstraintViews() {}
+    func setupViews() {
+        hideKeyboardWhenTappedAround()
+        registerKeyboardNotifications()
+    }
+    func setupConstraints() {}
     func configureAppearance() {
         view.backgroundColor = Resources.Colors.background
     }
-    
-    func configure() {
-        view.backgroundColor = Resources.Colors.background
-    }
-    
-    func navBarLeftButtonHandler() {
-        print("NavBar left button tapped")
-    }
-
-    func navBarRightButtonHandler() {
-        print("NavBar right button tapped")
-    }
-   
 }
 
+// MARK: - Cofig Bar Buttons
 extension BaseController {
-    func addNavBarButton(at position: NavBarPosition, with title: String) {
-        let button = UIButton(type: .system)
-        button.setTitle(title, for: .normal)
-        button.setTitleColor(Resources.Colors.active, for: .normal)
-        button.setTitleColor(Resources.Colors.inactive, for: .disabled)
-        button.titleLabel?.font = Resources.Fonts.helvelticaRegular(with: 17)
-
+    func addNavBarButtons(at position: NavBarPosition,
+                         types: [NavBarButtonType],
+                         actions: [Selector?] = []) {
+        
+        var barButtonItems: [UIBarButtonItem] = []
+        
+        for (index, type) in types.enumerated() {
+            let action = actions.indices.contains(index) ? actions[index] : nil
+            let barButtonItem = createBarButtonItem(type: type, position: position, action: action)
+            barButtonItems.append(barButtonItem)
+        }
+        
         switch position {
         case .left:
-            button.addTarget(self, action: #selector(navBarLeftButtonHandler), for: .touchUpInside)
-            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
+            navigationItem.leftBarButtonItems = barButtonItems
         case .right:
-            button.addTarget(self, action: #selector(navBarRightButtonHandler), for: .touchUpInside)
-            navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
+            navigationItem.rightBarButtonItems = barButtonItems
         }
     }
     
-    func setTitleForNavBarButton(_ title: String, at position: NavBarPosition) {
-        switch position {
-        case .left:
-            (navigationItem.leftBarButtonItem?.customView as? UIButton)?.setTitle(title, for: .normal)
-        case .right:
-            (navigationItem.rightBarButtonItem?.customView as? UIButton)?.setTitle(title, for: .normal)
-        }
+    
+    private func createBarButtonItem(type: NavBarButtonType,
+                                   position: NavBarPosition,
+                                   action: Selector?) -> UIBarButtonItem {
         
-        view.layoutIfNeeded()
+        switch type {
+        case .title(let title):
+            let button = UIButton(type: .system)
+            button.setTitle(title, for: .normal)
+            button.setTitleColor(Resources.Colors.active, for: .normal)
+            button.setTitleColor(Resources.Colors.inactive, for: .disabled)
+            button.titleLabel?.font = .helveticalRegular(withSize: 16)
+            
+            if let action = action {
+                button.addTarget(self, action: action, for: .touchUpInside)
+            } else {
+                let defaultAction = position == .left ?
+                    #selector(navBarLeftButtonHandler) :
+                    #selector(navBarRightButtonHandler)
+                button.addTarget(self, action: defaultAction, for: .touchUpInside)
+            }
+            
+            return UIBarButtonItem(customView: button)
+            
+        case .image(let image):
+            let button = UIButton(type: .system)
+            button.setImage(image, for: .normal)
+            button.tintColor = Resources.Colors.orange
+            
+            if let action = action {
+                button.addTarget(self, action: action, for: .touchUpInside)
+            } else {
+                let defaultAction = position == .left ?
+                    #selector(navBarLeftButtonHandler) :
+                    #selector(navBarRightButtonHandler)
+                button.addTarget(self, action: defaultAction, for: .touchUpInside)
+            }
+            
+            return UIBarButtonItem(customView: button)
+            
+        case .system(let systemItem):
+            return UIBarButtonItem(
+                barButtonSystemItem: systemItem,
+                target: self,
+                action: action ?? (position == .left ?
+                    #selector(navBarLeftButtonHandler) :
+                    #selector(navBarRightButtonHandler))
+            )
+        }
+    }
+    
+    @objc func navBarLeftButtonHandler() {
+        print("NavBar left button tapped")
+    }
+    
+    @objc func navBarRightButtonHandler() {
+        print("NavBar right button tapped")
+    }
+}
+
+// MARK: - Utility Methods
+extension BaseController {
+    func adjustForKeyboard(_ keyboardHeight: CGFloat) {
+        scrollView?.contentInset.bottom = keyboardHeight
+        scrollView?.verticalScrollIndicatorInsets.bottom = keyboardHeight
+        
+        // Автопрокрутка к активному полю
+        if let activeField = view.findFirstResponder() {
+            let activeFieldFrame = activeField.convert(activeField.bounds, to: scrollView)
+            let visibleFrameHeight = (scrollView?.frame.height ?? 0) - keyboardHeight
+            let offsetY = max(0, activeFieldFrame.maxY - visibleFrameHeight + 50)
+            scrollView?.setContentOffset(CGPoint(x: 0, y: offsetY), animated: true)
+        }
+    }
+    
+    func resetKeyboardAdjustment() {
+        scrollView?.contentInset.bottom = 0
+        scrollView?.verticalScrollIndicatorInsets.bottom = 0
+    }
+    
+    private func registerKeyboardNotifications() {
+        KeyboardManager.registerForKeyboardNotifications(
+            observer: self,
+            showSelector: #selector(keyboardWillShow(_:)),
+            hideSelector: #selector(keyboardWillHide)
+        )
+    }
+    
+    @objc private func keyboardWillShow(_ notification: Notification) {
+        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
+            return
+        }
+        adjustForKeyboard(keyboardFrame.height)
+    }
+    
+    @objc private func keyboardWillHide() {
+        resetKeyboardAdjustment()
     }
     
     func hideKeyboardWhenTappedAround() {
-        let tap = UITapGestureRecognizer(target: self, action: #selector(BaseController.dismissKeyboard))
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
     }
@@ -86,4 +200,7 @@ extension BaseController {
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
+    
+
 }
+

@@ -7,15 +7,15 @@
 
 import UIKit
 
-// Добавим протокол делегата
+// For watch feedbacks
 protocol RecipeMetaStackViewDelegate: AnyObject {
     func didTapRatingView(recipeId: UUID)
 }
 
 final class RecipeMetaStackView: UIStackView {
-    private var averageRating: Double = 0
+    // MARK: - Properties
     private var recipeId: UUID?
-    weak var delegate: RecipeMetaStackViewDelegate? // Для перехода к экрану отзывов
+    weak var delegate: RecipeMetaStackViewDelegate?
     
     // MARK: - Init
     override init(frame: CGRect) {
@@ -30,89 +30,79 @@ final class RecipeMetaStackView: UIStackView {
     
     // MARK: - Public Methods
     func configure(with recipe: RecipeSupabase, averageRating: Double, recipeId: UUID?) {
-        self.averageRating = averageRating
         self.recipeId = recipeId
-        // Очищаем предыдущие вью
         arrangedSubviews.forEach { $0.removeFromSuperview() }
-        
-        // Время приготовления
-        if let time = recipe.readyInMinutes {
-            addMetaItem(iconName: "clock", text: "\(time) мин")
-        }
-        
-        // Количество порций
-        if let servings = recipe.servings {
-            addMetaItem(iconName: "fork.knife", text: "\(servings) чел")
-        }
-        
-        if let difficulty = recipe.difficulty {
-            addMetaItem(iconName: Resources.Images.Icons.level, text: "\(difficulty)")
-        }
-        
-        // Рейтинг с возможностью тапа
-        let ratingStack = createIconLabelStack(
-            iconName: "star.fill",
-            text: String(format: "%.1f", averageRating),
-            iconColor: .systemOrange
-        )
-        
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleRatingTap))
-        ratingStack.addGestureRecognizer(tapGesture)
-        ratingStack.isUserInteractionEnabled = true
-        
-        addArrangedSubview(ratingStack)
 
+        if let time = recipe.readyInMinutes {
+            addMetaItem(icon: Resources.Images.Icons.clockFill, text: "\(time) мин")
+        }
+
+        if let servings = recipe.servings {
+            addMetaItem(icon: Resources.Images.Icons.fork, text: "\(servings) чел")
+        }
+
+        if let difficulty = recipe.difficulty {
+            addMetaItem(icon: Resources.Images.Icons.level, text: "\(difficulty)")
+        }
+
+        addRatingItem(rating: averageRating)
     }
     
-    func addMetaItem(iconName: String, text: String, iconColor: UIColor = .systemOrange) {
-        let stack = createIconLabelStack(iconName: iconName, text: text, iconColor: iconColor)
-        addArrangedSubview(stack)
+    func updateRating(_ averageRating: Double) {
+        arrangedSubviews
+            .compactMap { $0 as? RatingView }
+            .forEach { $0.configure(with: Int(round(averageRating))) }
     }
     
     // MARK: - Private Methods
     private func setupView() {
         axis = .horizontal
         distribution = .equalSpacing
-        spacing = 8
+        spacing = Constants.spacingMedium
         alignment = .center
     }
     
-    func updateRating(_ averageRating: Double) {
-        // Добавляем или обновляем отображение рейтинга
-        if let ratingView = arrangedSubviews.first(where: { $0 is RatingView }) as? RatingView {
-            ratingView.configure(with: Int(round(averageRating)))
-        } else {
-            let ratingView = RatingView()
-            ratingView.configure(with: Int(round(averageRating)))
-            ratingView.isUserInteractionEnabled = false
-            insertArrangedSubview(ratingView, at: 0)
-        }
+    private func addMetaItem(icon: UIImage?, text: String) {
+        let stack = createIconLabelStack(icon: icon, text: text)
+        addArrangedSubview(stack)
     }
     
-    private func createIconLabelStack(iconName: String, text: String, iconColor: UIColor) -> UIStackView {
-        let stack = UIStackView()
-        stack.axis = .horizontal
-        stack.spacing = 4
-        stack.alignment = .center
+    private func addRatingItem(rating: Double) {
+        let stack = createIconLabelStack(
+            icon: Resources.Images.Icons.starFilled,
+            text: String(format: "%.1f", rating),
+            iconColor: .systemOrange
+        )
         
-        let icon = UIImage(systemName: iconName)?
-            .withTintColor(iconColor, renderingMode: .alwaysOriginal)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleRatingTap))
+        stack.addGestureRecognizer(tapGesture)
+        stack.isUserInteractionEnabled = true
         
-        let iconView = UIImageView(image: icon)
-        iconView.contentMode = .scaleAspectFit
-        iconView.widthAnchor.constraint(equalToConstant: 20).isActive = true
-        iconView.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        addArrangedSubview(stack)
+    }
+    
+    private func createIconLabelStack(icon: UIImage?,
+                                      text: String,
+                                      iconColor: UIColor = Resources.Colors.orange) -> UIStackView {
+        let stack = UIStackView(axis: .horizontal, alignment: .center, spacing: Constants.spacingSmall)
+        let iconView = UIImageView(image: icon?.withTintColor(iconColor, renderingMode: .alwaysOriginal),
+                                   cornerRadius: 0,
+                                   contentMode: .scaleAspectFit)
         
-        let label = UILabel()
-        label.text = text
-        label.font = .systemFont(ofSize: 14)
+        
+        let label = UILabel(
+            text: text, font: .helveticalLight(withSize: 14),
+            textColor: Resources.Colors.titleGray
+        )
         
         stack.addArrangedSubview(iconView)
         stack.addArrangedSubview(label)
         
         return stack
     }
-    
+}
+
+extension RecipeMetaStackView {
     @objc private func handleRatingTap() {
         guard let recipeId = recipeId else { return }
         delegate?.didTapRatingView(recipeId: recipeId)

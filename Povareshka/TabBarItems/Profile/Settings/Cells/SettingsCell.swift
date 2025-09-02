@@ -12,6 +12,7 @@ protocol SettingsCellDelegate: AnyObject {
 }
 
 class SettingsCell: UITableViewCell {
+    static let id = "SettingsCell"
     
     private let iconContainer: UIView = {
         let view = UIView()

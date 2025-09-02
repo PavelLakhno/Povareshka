@@ -7,22 +7,18 @@
 
 import UIKit
 
-class StepLabelCell: UITableViewCell {
-    
+final class StepLabelCell: UITableViewCell {
     static let id = "StepLabelCell"
     
-    let stepLabel: UILabel = {
-        let label = UILabel()
-        label.font = .helveticalRegular(withSize: 16)
-        label.textColor = .neutral100
-        label.numberOfLines = 0
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    private let stepLabel = UILabel(
+        font: .helveticalRegular(withSize: 16),
+        textColor: .black
+    )
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupViews()
+        setupConstraints()
     }
     
     required init?(coder: NSCoder) {
@@ -30,13 +26,17 @@ class StepLabelCell: UITableViewCell {
     }
     
     private func setupViews() {
+        backgroundColor = .white
+        layer.cornerRadius = Constants.cornerRadiusSmall
         contentView.addSubview(stepLabel)
-        
+    }
+    
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
-            stepLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            stepLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            stepLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            stepLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
+            stepLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Constants.paddingMedium),
+            stepLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.paddingMedium),
+            stepLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.paddingMedium),
+            stepLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -Constants.paddingMedium)
         ])
     }
     

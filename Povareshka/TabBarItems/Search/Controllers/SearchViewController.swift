@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SearchViewController: BaseController {
+final class SearchViewController: BaseController {
 
     // MARK: - UI Components
     private let searchBar: UISearchBar = {
@@ -121,7 +121,7 @@ class SearchViewController: BaseController {
     }
     
     private func setupCollectionView() {
-        collectionView.register(RecipeSearchCell.self, forCellWithReuseIdentifier: "RecipeSearchCell")
+        collectionView.register(RecipeSearchCell.self, forCellWithReuseIdentifier: RecipeSearchCell.id)
         collectionView.delegate = self
         collectionView.dataSource = self
     }
@@ -153,7 +153,9 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "RecipeSearchCell", for: indexPath) as! RecipeSearchCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeSearchCell.id, for: indexPath) as? RecipeSearchCell else {
+            return RecipeSearchCell()
+        }
         let recipe = isSearching ? filteredRecipes[indexPath.item] : recipes[indexPath.item]
         cell.configure(with: recipe)
         return cell

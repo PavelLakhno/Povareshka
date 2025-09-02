@@ -7,7 +7,7 @@
 
 import Foundation
 
-class ShoppingListManager {
+final class ShoppingListManager {
     @MainActor static let shared = ShoppingListManager()
     
     private var ingredients: [IngredientData] = []
@@ -37,8 +37,12 @@ class ShoppingListManager {
     func getIngredients() -> [IngredientData] {
         return ingredients
     }
+    
+    func contains(ingredient: IngredientData) -> Bool {
+        ingredients.contains { $0.name == ingredient.name && $0.amount == ingredient.amount }
+    }
 }
 
-extension Notification.Name {
-    static let shoppingListDidChange = Notification.Name("shoppingListDidChange")
-}
+//extension Notification.Name {
+//    static let shoppingListDidChange = Notification.Name("shoppingListDidChange")
+//}

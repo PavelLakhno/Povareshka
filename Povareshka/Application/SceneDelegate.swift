@@ -21,7 +21,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Создаем координатор
         guard let window = window else { return }
         appCoordinator = AppCoordinator(window: window)
-        
         // Обработка URL (если приложение запущено по ссылке)
         if let url = connectionOptions.urlContexts.first?.url {
             appCoordinator?.handleIncomingURL(url)

@@ -9,4 +9,5 @@ import UIKit
 
 extension Notification.Name {
     static let userDidLogout = Notification.Name("userDidLogout")
+    static let shoppingListDidChange = Notification.Name("shoppingListDidChange")
 }

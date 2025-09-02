@@ -8,96 +8,62 @@
 import UIKit
 import Auth
 
-class AuthViewController: UIViewController {
-    var onRegisterTapped: (() -> Void)?
-    var onResetPasswordTapped: (() -> Void)?
+final class AuthViewController: UIViewController {
     
     // MARK: - UI Elements
-    private let loginTextField: UITextField = {
-        let field = UITextField()
-        field.layer.cornerRadius = Resources.Sizes.cornerRadius
-        field.keyboardType = .emailAddress
-        field.textAlignment = .left
-        field.returnKeyType = .done
-        field.setLeftPaddingPoints(15)
-        field.clearButtonMode = .whileEditing
-        field.backgroundColor = .neutral10
-        field.translatesAutoresizingMaskIntoConstraints = false
-        
-        let attributes = [NSAttributedString.Key.foregroundColor: UIColor.lightGray,
-                          NSAttributedString.Key.font: UIFont.helveticalRegular(withSize: 16)]
+    private lazy var loginTextField = UITextField.configureTextField(
+        placeholder: Resources.Strings.Placeholders.login,
+        keyboardType: .emailAddress,
+        borderColor: .clear,
+        backgroundColor: Resources.Colors.backgroundLight
+    )
 
-        field.attributedPlaceholder = NSAttributedString(
-            string: Resources.Strings.Placeholders.login,
-            attributes: attributes as [NSAttributedString.Key : Any])
-        return field
-    }()
-    
-    private let passwordTextField: UITextField = {
-        let field = UITextField()
-        field.layer.cornerRadius = Resources.Sizes.cornerRadius
-        field.isSecureTextEntry = true
-        field.textAlignment = .left
-        field.returnKeyType = .done
-        field.setLeftPaddingPoints(15)
-        field.clearButtonMode = .whileEditing
-        field.backgroundColor = .neutral10
-        field.translatesAutoresizingMaskIntoConstraints = false
-        
-        let attributes = [NSAttributedString.Key.foregroundColor: UIColor.lightGray,
-                          NSAttributedString.Key.font: UIFont.helveticalRegular(withSize: 16)]
+    private lazy var passwordTextField = UITextField.configureTextField(
+        placeholder: Resources.Strings.Placeholders.password,
+        isSecureTextEntry: true,
+        borderColor: .clear,
+        backgroundColor: Resources.Colors.backgroundLight
+    )
 
-        field.attributedPlaceholder = NSAttributedString(
-            string: Resources.Strings.Placeholders.password,
-            attributes: attributes as [NSAttributedString.Key : Any])
-        return field
-    }()
+    private lazy var signInButton = UIButton(
+        title: Resources.Strings.Buttons.entrance,
+        backgroundColor: Resources.Colors.orange,
+        tintColor: .white,
+        cornerRadius: Constants.cornerRadiusSmall,
+        target: self,
+        action: #selector(signInTapped)
+    )
+
+    private lazy var signUpButton = UIButton(
+        title: Resources.Strings.Buttons.reg,
+        backgroundColor: Resources.Colors.orange,
+        tintColor: .white,
+        cornerRadius: Constants.cornerRadiusSmall,
+        target: self,
+        action: #selector(signUnTapped)
+    )
+
+    private lazy var forgotPasswordButton = UIButton(
+        title: Resources.Strings.Buttons.passwordForget,
+        backgroundColor: Resources.Colors.orange.withAlphaComponent(0.6),
+        tintColor: .white,
+        cornerRadius: Constants.cornerRadiusSmall,
+        target: self,
+        action: #selector(showPasswordReset)
+    )
     
-    private lazy var signInButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle(Resources.Strings.Buttons.entrance, for: .normal)
-        button.backgroundColor = Resources.Colors.orange
-        button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = Resources.Sizes.cornerRadius
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.addTarget(self, action: #selector(signInTapped), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
-    private lazy var signUpButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle(Resources.Strings.Buttons.reg, for: .normal)
-        button.backgroundColor = Resources.Colors.orange
-        button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = Resources.Sizes.cornerRadius
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.addTarget(self, action: #selector(signUnTapped), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
-    private lazy var forgotPasswordButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle(Resources.Strings.Buttons.forgetPassword, for: .normal)
-        button.backgroundColor = Resources.Colors.orange.withAlphaComponent(0.2)
-        button.setTitleColor(Resources.Colors.orange, for: .normal)
-        button.layer.cornerRadius = Resources.Sizes.cornerRadius
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        button.addTarget(self, action: #selector(showPasswordReset), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
+    var onRegisterTapped: (() -> Void)?
+    var onResetPasswordTapped: (() -> Void)?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
+        setupViews()
         setupConstraints()
     }
     
     // MARK: - UI Setup
-    private func setupUI() {
+    private func setupViews() {
         view.backgroundColor = .clear
 
         view.addSubview(loginTextField)
@@ -110,31 +76,31 @@ class AuthViewController: UIViewController {
     private func setupConstraints() {
         NSLayoutConstraint.activate([
             
-            loginTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
-            loginTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
-            loginTextField.bottomAnchor.constraint(equalTo: passwordTextField.topAnchor, constant: -Resources.Sizes.paddingHeight),
-            loginTextField.heightAnchor.constraint(equalToConstant: Resources.Sizes.textFieldHeight),
+            loginTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.paddingMedium),
+            loginTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.paddingMedium),
+            loginTextField.bottomAnchor.constraint(equalTo: passwordTextField.topAnchor, constant: -Constants.paddingMedium),
+            loginTextField.heightAnchor.constraint(equalToConstant: Constants.height),
             
-            passwordTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
-            passwordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
-            passwordTextField.bottomAnchor.constraint(equalTo: signInButton.topAnchor, constant: -Resources.Sizes.paddingHeight),
-            passwordTextField.heightAnchor.constraint(equalToConstant: Resources.Sizes.textFieldHeight),
+            passwordTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.paddingMedium),
+            passwordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.paddingMedium),
+            passwordTextField.bottomAnchor.constraint(equalTo: signInButton.topAnchor, constant: -Constants.paddingMedium),
+            passwordTextField.heightAnchor.constraint(equalToConstant: Constants.height),
 
-            signInButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
-            signInButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
+            signInButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.paddingMedium),
+            signInButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.paddingMedium),
             signInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             signInButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            signInButton.heightAnchor.constraint(equalToConstant: Resources.Sizes.buttonHeight),
+            signInButton.heightAnchor.constraint(equalToConstant: Constants.height),
 
-            signUpButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
-            signUpButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
-            signUpButton.topAnchor.constraint(equalTo: signInButton.bottomAnchor, constant: Resources.Sizes.paddingHeight),
-            signUpButton.heightAnchor.constraint(equalToConstant: Resources.Sizes.buttonHeight),
+            signUpButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.paddingMedium),
+            signUpButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.paddingMedium),
+            signUpButton.topAnchor.constraint(equalTo: signInButton.bottomAnchor, constant: Constants.paddingMedium),
+            signUpButton.heightAnchor.constraint(equalToConstant: Constants.height),
 
-            forgotPasswordButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
-            forgotPasswordButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
-            forgotPasswordButton.topAnchor.constraint(equalTo: signUpButton.bottomAnchor, constant: Resources.Sizes.paddingHeight),
-            forgotPasswordButton.heightAnchor.constraint(equalToConstant: Resources.Sizes.buttonHeight)
+            forgotPasswordButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.paddingMedium),
+            forgotPasswordButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.paddingMedium),
+            forgotPasswordButton.topAnchor.constraint(equalTo: signUpButton.bottomAnchor, constant: Constants.paddingMedium),
+            forgotPasswordButton.heightAnchor.constraint(equalToConstant: Constants.height)
         ])
     }
 
@@ -151,14 +117,17 @@ class AuthViewController: UIViewController {
             let email = loginTextField.text, !email.isEmpty,
             let password = passwordTextField.text, !password.isEmpty
         else {
-            print("Заполните все поля")
+            AlertManager.shared.show(on: self,
+                                     title: Resources.Strings.Alerts.errorTitle,
+                                     message: Resources.Strings.Messages.enterFields)
             return
         }
         
         Task {
             do {
-                let response = try await SupabaseManager.shared.client.auth.signIn(email: email, password: password)
-                print("✅ Login completed:", response.user.email ?? "No email")
+                try await SupabaseManager.shared.client.auth.signIn(email: email, password: password)
+//                AlertManager.shared.showSuccess(on: self, message: "✅ Login completed: \(response.user.email ?? "No email")")
+//                print("✅ Login completed:", response.user.email ?? "No email")
                 
                 (parent as? BaseAuthViewController)?.handleAuthSuccess()
             } catch {
@@ -176,7 +145,8 @@ class AuthViewController: UIViewController {
                         }
                        
                         // Логируем полную ошибку для разработчика
-                        print("🔴 Auth failed: \(authError.localizedDescription)")
+//                AlertManager.shared.showError(on: self, error: authError)
+//                        print("🔴 Auth failed: \(authError.localizedDescription)")
                         
                         // Передаем обработанную ошибку в контроллер
                 (parent as? BaseAuthViewController)?.handleAuthError(authError)
@@ -189,34 +159,28 @@ class AuthViewController: UIViewController {
             let email = loginTextField.text, !email.isEmpty,
             let password = passwordTextField.text, !password.isEmpty
         else {
-            print("Заполните все поля")
+            AlertManager.shared.show(on: self,
+                                     title: Resources.Strings.Alerts.errorTitle,
+                                     message: Resources.Strings.Messages.enterFields)
             return
         }
         
         Task {
             do {
-                let response = try await SupabaseManager.shared.client.auth.signUp(email: email, password: password)
-                print("✅ Login completed:", response.user.email ?? "No email")
+                try await SupabaseManager.shared.client.auth.signUp(email: email, password: password)
                 
                 (parent as? BaseAuthViewController)?.handleAuthSuccess()
             } catch {
                 let authError: Resources.AuthError
-                        
-                        if let supabaseError = error as? Resources.AuthError {
-                            // Ошибка от Supabase
-                            authError = supabaseError
-                        } else if let urlError = error as? URLError {
-                            // Ошибка сети
-                            authError = Resources.AuthError.networkError(urlError)
-                        } else {
-                            // Неизвестная ошибка
-                            authError = Resources.AuthError.unknown(error)
-                        }
-                       
-                        // Логируем полную ошибку для разработчика
-                        print("🔴 Auth failed: \(authError.localizedDescription)")
-                        
-                        // Передаем обработанную ошибку в контроллер
+                
+                if let supabaseError = error as? Resources.AuthError {
+                    // Supabase error
+                    authError = supabaseError
+                } else if let urlError = error as? URLError {
+                    authError = Resources.AuthError.networkError(urlError)
+                } else {
+                    authError = Resources.AuthError.unknown(error)
+                }
                 (parent as? BaseAuthViewController)?.handleAuthError(authError)
             }
         }

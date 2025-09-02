@@ -7,64 +7,56 @@
 
 import UIKit
 
-class NewStepController: UIViewController, UITextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    
+class NewStepController: BaseController {
     // MARK: - Properties
     private let stepNumber: Int
     private var stepImage: UIImage?
     private var stepDescription: String?
     
     private lazy var stepPhotoPickerView = UIImagePickerController(delegate: self)
+
+    private let customScrollView = UIScrollView(backgroundColor: Resources.Colors.backgroundLight)
+    override var scrollView: UIScrollView { customScrollView }
     
-    private let scrollView = UIScrollView(backgroundColor: .neutral10)
-    private let contentView = UIView(backgroundColor: .neutral10)
+    private let contentView = UIView(backgroundColor: Resources.Colors.backgroundLight)
     
-    private let imageBubleView = UIView(backgroundColor: .white, cornerRadius: 12)
+    private let imageBubbleView = UIView(backgroundColor: .white, cornerRadius: 12)
     private let stepImageView = UIImageView(
-        image: Resources.Images.Icons.cameraMain,
         cornerRadius: 12,
         contentMode: .scaleAspectFit,
         borderWidth: 1
     )
+   
+    private lazy var addPhotoButton = UIButton(title: Resources.Strings.Buttons.addPhoto,
+                                               titleColor: Resources.Colors.orange,
+                                               font: .helveticalRegular(withSize: 16),
+                                               target: self, action: #selector(addPhotoTapped))
+    private lazy var saveButton = UIButton(title: Resources.Strings.Buttons.save,
+                                           backgroundColor: Resources.Colors.orange,
+                                           titleColor: .white,
+                                           font: .helveticalRegular(withSize: 16),
+                                           cornerRadius: 10,
+                                           target: self, action: #selector(saveButtonTapped))
     
-    private let addPhotoButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Добавить фото", for: .normal)
-        button.tintColor = .orange
-        button.translatesAutoresizingMaskIntoConstraints = false
+    private lazy var removePhotoIconButton: UIButton = {
+        let button = UIButton(
+            image: Resources.Images.Icons.trash,
+            backgroundColor: .white.withAlphaComponent(0.6),
+            tintColor: .gray,
+            cornerRadius: 16,
+            size: CGSize(width: 32, height: 32),
+            target: self,
+            action: #selector(removePhotoTapped)
+        )
+        button.isHidden = true
         return button
     }()
     
-    private let descriptionLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Описание шага"
-        label.font = .helveticalBold(withSize: 16)
-        label.textColor = .neutral100
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private let descriptionTextView: UITextView = {
-        let textView = UITextView()
-        textView.font = .helveticalRegular(withSize: 16)
-        textView.layer.cornerRadius = 8
-        textView.layer.borderColor = UIColor.orange.cgColor
-        textView.layer.borderWidth = 1
-        textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        textView.translatesAutoresizingMaskIntoConstraints = false
-        return textView
-    }()
-    
-    private let saveButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Сохранить шаг", for: .normal)
-        button.backgroundColor = .orange.withAlphaComponent(0.6)
-        button.layer.cornerRadius = 10
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
-    // Callback для сохранения шага
+    private lazy var descriptionTextView = UITextView.configureTextView(
+        placeholder: Resources.Strings.Placeholders.enterDescription,
+        delegate: self
+    )
+
     var saveStepCallback: ((Instruction) -> Void)?
     
     // MARK: - Init
@@ -87,145 +79,34 @@ class NewStepController: UIViewController, UITextViewDelegate, UIImagePickerCont
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupView()
+        setupNavigationBar()
+        setupViews()
         setupConstraints()
-        setupActions()
+        configureWithData()
         updateUI()
-        registerKeyboardNotifications()
     }
 
-    deinit {
-        KeyboardManager.removeKeyboardNotifications(observer: self)
-    }
-    
     // MARK: - Setup
-    private func setupView() {
+    private func setupNavigationBar() {
+        navigationItem.title = "Шаг \(stepNumber)"
+        addNavBarButtons(at: .left, types: [.title(Resources.Strings.Buttons.cancel)])
+    }
+    
+    internal override func setupViews() {
+        super.setupViews()
         view.backgroundColor = .white
-        title = "Шаг \(stepNumber)"
-        
-        descriptionTextView.delegate = self
-        if stepDescription != nil {
-            descriptionTextView.text = stepDescription
-            DispatchQueue.main.async {
-                self.descriptionTextView.dynamicTextViewHeight(minHeight: 150)
-            }
-        } else {
-            descriptionTextView.placeholder = Resources.Strings.Placeholders.enterDescription
-        }
-
-        if let stepImage = stepImage {
-            stepImageView.image = stepImage
-            stepImageView.contentMode = .scaleAspectFill
-            stepImageView.layer.borderColor = UIColor.clear.cgColor
-        }
-    }
-    
-    private func setupActions() {
-        addPhotoButton.addTarget(self, action: #selector(addPhotoTapped), for: .touchUpInside)
-        saveButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
-    }
-    
-    private func updateUI() {
-        let hasImage = stepImage != nil
-        addPhotoButton.setTitle(hasImage ? "Изменить фото" : "Добавить фото", for: .normal)
-    }
-    
-    // MARK: - Actions
-    @objc private func addPhotoTapped() {
-        present(stepPhotoPickerView, animated: true)
-    }
-    
-    @objc private func saveButtonTapped() {
-        guard let description = descriptionTextView.text, !description.isEmpty else {
-            showAlert(title: "Ошибка", message: "Введите описание шага")
-            return
-        }
-        
-        let imageData = stepImage?.pngData()
-        let instruction = Instruction(number: stepNumber, image: imageData, describe: description)
-        saveStepCallback?(instruction)
-        navigationController?.popViewController(animated: true)
-    }
-    
-    // MARK: - Image Picker
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-        guard let chosenImage = info[.originalImage] as? UIImage else { return }
-        stepImage = chosenImage
-        stepImageView.image = chosenImage
-        stepImageView.contentMode = .scaleAspectFill
-        stepImageView.layer.borderColor = UIColor.clear.cgColor
-        updateUI()
-        dismiss(animated: true)
-    }
-    
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        dismiss(animated: true)
-    }
-    
-    // MARK: - TextView Delegate
-    
-    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-        if textView.textColor == UIColor.lightGray {
-            textView.textColor = UIColor.black
-        }
-        return true
-    }
-    
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        textView.clearButtonStatus = !textView.hasText
-    }
-    
-    func textViewDidEndEditing(_ textView: UITextView) {
-        textView.endEditing(true)
-        textView.resignFirstResponder()
-        textView.clearButtonStatus = true
-    }
-    
-    func textViewDidChange(_ textView: UITextView) {
-        textView.placeholder = textView.hasText ? nil : Resources.Strings.Placeholders.enterDescription
-        textView.clearButtonStatus = !textView.hasText
-        textView.dynamicTextViewHeight(minHeight: 150)
-        
-    }
-
-    
-    // MARK: - Keyboard Handling
-    private func registerKeyboardNotifications() {
-        KeyboardManager.registerForKeyboardNotifications(
-            observer: self,
-            showSelector: #selector(keyboardWillShow),
-            hideSelector: #selector(keyboardWillHide))
-    }
-    
-    @objc private func keyboardWillShow(_ notification: Notification) {
-        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
-        
-        scrollView.contentInset.bottom = keyboardFrame.height
-        scrollView.verticalScrollIndicatorInsets.bottom = keyboardFrame.height
-        
-        if descriptionTextView.isFirstResponder {
-            let textViewFrame = descriptionTextView.convert(descriptionTextView.bounds, to: scrollView)
-            scrollView.scrollRectToVisible(textViewFrame, animated: true)
-        }
-    }
-    
-    @objc private func keyboardWillHide() {
-        scrollView.contentInset.bottom = 0
-        scrollView.verticalScrollIndicatorInsets.bottom = 0
-    }
-    
-    // MARK: - Constraints
-    private func setupConstraints() {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
-
-        contentView.addSubview(imageBubleView)
-        imageBubleView.addSubview(stepImageView)
+        
+        contentView.addSubview(imageBubbleView)
+        imageBubbleView.addSubview(stepImageView)
+        imageBubbleView.addSubview(removePhotoIconButton)
         contentView.addSubview(addPhotoButton)
-        contentView.addSubview(descriptionLabel)
         contentView.addSubview(descriptionTextView)
         contentView.addSubview(saveButton)
-        
+    }
+    
+    internal override func setupConstraints() {
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -237,25 +118,24 @@ class NewStepController: UIViewController, UITextViewDelegate, UIImagePickerCont
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-
-            imageBubleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
-            imageBubleView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            imageBubleView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            imageBubleView.heightAnchor.constraint(equalTo: imageBubleView.widthAnchor, multiplier: 0.75),
             
-            stepImageView.topAnchor.constraint(equalTo: imageBubleView.topAnchor),
-            stepImageView.leadingAnchor.constraint(equalTo: imageBubleView.leadingAnchor),
-            stepImageView.trailingAnchor.constraint(equalTo: imageBubleView.trailingAnchor),
-            stepImageView.bottomAnchor.constraint(equalTo: imageBubleView.bottomAnchor),
+            imageBubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
+            imageBubbleView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            imageBubbleView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            imageBubbleView.heightAnchor.constraint(equalTo: imageBubbleView.widthAnchor, multiplier: 0.75),
             
-            addPhotoButton.topAnchor.constraint(equalTo: imageBubleView.bottomAnchor, constant: 10),
-            addPhotoButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            stepImageView.topAnchor.constraint(equalTo: imageBubbleView.topAnchor),
+            stepImageView.leadingAnchor.constraint(equalTo: imageBubbleView.leadingAnchor),
+            stepImageView.trailingAnchor.constraint(equalTo: imageBubbleView.trailingAnchor),
+            stepImageView.bottomAnchor.constraint(equalTo: imageBubbleView.bottomAnchor),
             
-            descriptionLabel.topAnchor.constraint(equalTo: addPhotoButton.bottomAnchor, constant: 20),
-            descriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            removePhotoIconButton.topAnchor.constraint(equalTo: imageBubbleView.topAnchor, constant: Constants.paddingSmall),
+            removePhotoIconButton.trailingAnchor.constraint(equalTo: imageBubbleView.trailingAnchor, constant: -Constants.paddingSmall),
             
-            descriptionTextView.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 10),
+            addPhotoButton.topAnchor.constraint(equalTo: imageBubbleView.bottomAnchor, constant: 10),
+            addPhotoButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            
+            descriptionTextView.topAnchor.constraint(equalTo: addPhotoButton.bottomAnchor, constant: 20),
             descriptionTextView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             descriptionTextView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             descriptionTextView.heightAnchor.constraint(greaterThanOrEqualToConstant: 150),
@@ -268,9 +148,124 @@ class NewStepController: UIViewController, UITextViewDelegate, UIImagePickerCont
         ])
     }
     
-    private func showAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
+    private func configureWithData() {
+        if let description = stepDescription, !description.isEmpty {
+            descriptionTextView.text = description
+            descriptionTextView.textColor = .black
+            descriptionTextView.placeholder = nil
+            DispatchQueue.main.async {
+                self.descriptionTextView.dynamicTextViewHeight(minHeight: 150)
+            }
+        } else {
+            descriptionTextView.placeholder = Resources.Strings.Placeholders.enterDescription
+            descriptionTextView.textColor = .lightGray
+        }
+        
+        if let image = stepImage {
+            stepImageView.image = image
+            stepImageView.contentMode = .scaleAspectFill
+            stepImageView.layer.borderColor = UIColor.clear.cgColor
+        }
+    }
+
+    private func updateUI() {
+        let hasImage = stepImage != nil
+        addPhotoButton.setTitle(
+            hasImage ?
+            Resources.Strings.Buttons.changePhoto : Resources.Strings.Buttons.addPhoto,
+            for: .normal
+        )
+        removePhotoIconButton.isHidden = !hasImage
     }
 }
+
+// MARK: - Actions
+extension NewStepController {
+   
+    internal override func navBarLeftButtonHandler() {
+        navigationController?.popViewController(animated: true)
+    }
+    
+    @objc private func addPhotoTapped() {
+        present(stepPhotoPickerView, animated: true)
+    }
+    
+    @objc private func removePhotoTapped() {
+        stepImage = nil
+        stepImageView.image = Resources.Images.Icons.cameraMain
+        stepImageView.contentMode = .scaleAspectFit
+        stepImageView.layer.borderColor = UIColor.black.cgColor
+        updateUI()
+    }
+    
+    @objc private func saveButtonTapped() {
+        guard let description = descriptionTextView.text?.trimmingCharacters(in: .whitespacesAndNewlines), !description.isEmpty else {
+            AlertManager.shared.show(
+                on: self,
+                title: Resources.Strings.Alerts.errorTitle,
+                message: Resources.Strings.Alerts.enterDescription
+            )
+            return
+        }
+        
+        let instruction = Instruction(
+            number: stepNumber,
+            image: stepImage?.pngData(),
+            describe: description
+        )
+        saveStepCallback?(instruction)
+        navigationController?.popViewController(animated: true)
+    }
+}
+
+// MARK: - UITextViewDelegate
+extension NewStepController: UITextViewDelegate {
+    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        if textView.textColor == .lightGray {
+            textView.text = nil
+            textView.textColor = .black
+        }
+        return true
+    }
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        textView.clearButtonStatus = !textView.hasText
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        textView.resignFirstResponder()
+        textView.clearButtonStatus = true
+        if textView.text.isEmpty {
+            textView.text = Resources.Strings.Placeholders.enterDescription
+            textView.textColor = .lightGray
+        }
+    }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        textView.placeholder = textView.hasText ? nil : Resources.Strings.Placeholders.enterDescription
+        textView.clearButtonStatus = !textView.hasText
+        textView.dynamicTextViewHeight(minHeight: 150)
+        scrollView.scrollRectToVisible(textView.frame, animated: true)
+    }
+}
+
+// MARK: - UIImagePickerControllerDelegate, UINavigationControllerDelegate
+extension NewStepController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+        guard let chosenImage = info[.originalImage] as? UIImage else {
+            dismiss(animated: true)
+            return
+        }
+        stepImage = chosenImage
+        stepImageView.image = chosenImage
+        stepImageView.contentMode = .scaleAspectFill
+        stepImageView.layer.borderColor = UIColor.clear.cgColor
+        updateUI()
+        dismiss(animated: true)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true)
+    }
+}
+

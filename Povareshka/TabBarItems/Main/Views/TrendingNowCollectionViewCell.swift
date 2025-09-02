@@ -8,13 +8,14 @@
 import UIKit
 //import Kingfisher
 
-class TrendingNowCollectionViewCell: UICollectionViewCell {
-    static let identifier = "TrendingNowCell"
-    
+final class TrendingNowCollectionViewCell: UICollectionViewCell {
+    static let id = "TrendingNowCell"
+     
     private var mainImageTask: Task<Void, Never>?
     private var avatarImageTask: Task<Void, Never>?
+    private let dataService = DataService.shared
     
-    private let activityIndicator = UIActivityIndicatorView(style: .medium)
+    private lazy var activityIndicator = UIActivityIndicatorView.createIndicator(style: .medium, centerIn: self)
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -24,37 +25,48 @@ class TrendingNowCollectionViewCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    
-    
-    lazy var photoDish: UIImageView = {
-        let image = UIImageView(cornerRadius: 16)
-        return image
-    }()
 
-    private var ratingContainerView = UIView(withBackgroundColor: Resources.Colors.titleBackground, cornerRadius: 8)
-    private var ratingImageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(systemName: "star.fill")?.withTintColor(.systemYellow, renderingMode: .alwaysOriginal))
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        return imageView
-    }()
-    private var ratingLabel = UILabel(text: "4,5",
-                                      font: .helveticalBold(withSize: 14),
-                                      textColor: .white,
-                                      numberOfLines: 1)
+    private lazy var photoDish = UIImageView(
+        cornerRadius: Constants.cornerRadiusMedium,
+        contentMode: .scaleToFill
+    )
+
+    private var ratingContainerView = UIView(
+        backgroundColor: Resources.Colors.titleBackground,
+        cornerRadius: Constants.cornerRadiusSmall
+    )
     
+    private var ratingImageView = UIImageView(
+        image: Resources.Images.Icons.starFilled?.withTintColor(.systemYellow,
+                                                                renderingMode: .alwaysOriginal)
+    )
     
+    private var ratingLabel = UILabel(
+        font: .helveticalBold(withSize: 14),
+        textColor: .white,
+        textAlignment: .center,
+        numberOfLines: 1
+    )
     
-    lazy var titleDishLabel = UILabel(font: .helveticalBold(withSize: 16),
-                                         textColor: .white,
-                                         numberOfLines: 0)
+    private lazy var titleDishLabel = UILabel(
+        font: .helveticalBold(withSize: 16),
+        textColor: .white,
+        numberOfLines: 0
+    )
     
-    private var creatorStackView = UIStackView(axis: .horizontal, aligment: .center, spacing: 8)
-    private var creatorImageView = UIImageView(cornerRadius: 16)
-    private var creatorLabel = UILabel(font: .helveticalRegular(withSize: 12),
-                                       textColor: Resources.Colors.secondary,
-                                       numberOfLines: 1)
+    private var creatorStackView = UIStackView(
+        axis: .horizontal,
+        alignment: .center,
+        spacing: Constants.cornerRadiusSmall
+    )
     
+    private var creatorImageView = UIImageView(cornerRadius: Constants.cornerRadiusMedium)
+    
+    private var creatorLabel = UILabel(
+        font: .helveticalRegular(withSize: 12),
+        textColor: Resources.Colors.secondary,
+        numberOfLines: 1
+    )
 
     //SB (optimizated)
     func configure(with recipe: RecipeShortInfo) {
@@ -65,7 +77,7 @@ class TrendingNowCollectionViewCell: UICollectionViewCell {
         loadAuthorAvatar(path: recipe.authorAvatarPath)
         Task {
             do {
-                let averageRating = try await RatingManager.shared.getAverageRating(for: recipe.id)
+                let averageRating = try await dataService.fetchAverageRating(recipeId: recipe.id)
                 ratingLabel.text = "\(averageRating)"
             } catch {
                 print("error")
@@ -74,10 +86,7 @@ class TrendingNowCollectionViewCell: UICollectionViewCell {
     }
     
     private func loadMainImage(path: String?) {
-        guard let path = path else {
-            photoDish.image = UIImage(named: "placeholder")
-            return
-        }
+        guard let path = path else { return }
         
         // Проверяем кэш
         if let cachedImage = ImageCache.shared.image(for: path) {
@@ -87,29 +96,22 @@ class TrendingNowCollectionViewCell: UICollectionViewCell {
         mainImageTask?.cancel()
         
         activityIndicator.startAnimating()
-        mainImageTask = Task {
-            do {
-                let data = try await SupabaseManager.shared.client
-                    .storage
-                    .from("recipes")
-                    .download(path: path)
-                
-                if !Task.isCancelled, let image = UIImage(data: data) {
-                    ImageCache.shared.setImage(image, for: path)
-                    photoDish.image = image
-                    activityIndicator.stopAnimating()
-                }
-            } catch {
-                if !Task.isCancelled {
-                    photoDish.image = UIImage(named: "placeholder")
-                }
-            }
+        mainImageTask = Task { [weak self] in
+            guard let self = self else { return }
+            
+            let image = await dataService.loadImage(from: path, bucket: Bucket.recipes)
+            
+            guard !Task.isCancelled, let image = image else { return }
+            
+            ImageCache.shared.setImage(image, for: path)
+            photoDish.image = image
+            self.activityIndicator.stopAnimating()
         }
     }
     
     private func loadAuthorAvatar(path: String?) {
         guard let path = path else {
-            creatorImageView.image = UIImage(systemName: "person.circle.fill")
+            creatorImageView.image = Resources.Images.Icons.profile
             return
         }
         
@@ -120,22 +122,15 @@ class TrendingNowCollectionViewCell: UICollectionViewCell {
         }
         
         avatarImageTask?.cancel()
-        avatarImageTask = Task {
-            do {
-                let data = try await SupabaseManager.shared.client
-                    .storage
-                    .from("avatars")
-                    .download(path: path)
-                
-                if !Task.isCancelled, let image = UIImage(data: data) {
-                    ImageCache.shared.setImage(image, for: path)
-                    creatorImageView.image = image
-                }
-            } catch {
-                if !Task.isCancelled {
-                    creatorImageView.image = UIImage(systemName: "person.circle.fill")
-                }
-            }
+        avatarImageTask = Task { [weak self] in
+            guard let self = self else { return }
+            
+            let image = await dataService.loadImage(from: path, bucket: Bucket.avatars)
+            
+            guard !Task.isCancelled, let image = image else { return }
+            
+            ImageCache.shared.setImage(image, for: path)
+            creatorImageView.image = image
         }
     }
     
@@ -149,11 +144,14 @@ class TrendingNowCollectionViewCell: UICollectionViewCell {
     }
 
     private func setupUI() {
-        addSubviews(photoDish, creatorStackView)
+        addSubview(photoDish)
+        addSubview(creatorStackView)
         setupGradientLayer()
-        photoDish.addSubviews(ratingContainerView, titleDishLabel)
+        photoDish.addSubview(ratingContainerView)
+        photoDish.addSubview(titleDishLabel)
         
-        ratingContainerView.addSubviews(ratingImageView, ratingLabel)
+        ratingContainerView.addSubview(ratingImageView)
+        ratingContainerView.addSubview(ratingLabel)
         creatorStackView.addArrangedSubview(creatorImageView)
         creatorStackView.addArrangedSubview(creatorLabel)
         
@@ -167,23 +165,23 @@ class TrendingNowCollectionViewCell: UICollectionViewCell {
             photoDish.trailingAnchor.constraint(equalTo: trailingAnchor),
             photoDish.heightAnchor.constraint(equalToConstant: 180),
             
-            ratingContainerView.topAnchor.constraint(equalTo: photoDish.topAnchor, constant: 8),
-            ratingContainerView.leadingAnchor.constraint(equalTo: photoDish.leadingAnchor, constant: 8),
+            ratingContainerView.topAnchor.constraint(equalTo: photoDish.topAnchor, constant: Constants.paddingSmall),
+            ratingContainerView.leadingAnchor.constraint(equalTo: photoDish.leadingAnchor, constant: Constants.paddingSmall),
             
             
-            ratingImageView.leadingAnchor.constraint(equalTo: ratingContainerView.leadingAnchor, constant: 8),
-            ratingImageView.topAnchor.constraint(equalTo: ratingContainerView.topAnchor, constant: 6),
-            ratingImageView.bottomAnchor.constraint(equalTo: ratingContainerView.bottomAnchor, constant: -6),
+            ratingImageView.leadingAnchor.constraint(equalTo: ratingContainerView.leadingAnchor, constant: Constants.paddingSmall),
+            ratingImageView.centerYAnchor.constraint(equalTo: ratingContainerView.centerYAnchor),
 
-            ratingLabel.leadingAnchor.constraint(equalTo: ratingImageView.trailingAnchor, constant: 8),
+            ratingLabel.leadingAnchor.constraint(equalTo: ratingImageView.trailingAnchor, constant: Constants.paddingSmall),
             ratingLabel.centerYAnchor.constraint(equalTo: ratingImageView.centerYAnchor),
-            ratingLabel.trailingAnchor.constraint(equalTo: ratingContainerView.trailingAnchor, constant: -8),
+            ratingLabel.trailingAnchor.constraint(equalTo: ratingContainerView.trailingAnchor, constant: -Constants.paddingSmall),
 
-            titleDishLabel.bottomAnchor.constraint(equalTo: photoDish.bottomAnchor, constant: -6),
-            titleDishLabel.leadingAnchor.constraint(equalTo: photoDish.leadingAnchor, constant: 8),
+            titleDishLabel.bottomAnchor.constraint(equalTo: photoDish.bottomAnchor, constant: -Constants.paddingSmall),
+            titleDishLabel.leadingAnchor.constraint(equalTo: photoDish.leadingAnchor, constant: Constants.paddingSmall),
+            titleDishLabel.trailingAnchor.constraint(equalTo: photoDish.trailingAnchor, constant: -Constants.paddingSmall),
 
-            creatorStackView.topAnchor.constraint(equalTo: photoDish.bottomAnchor, constant: 8),
-            creatorStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
+            creatorStackView.topAnchor.constraint(equalTo: photoDish.bottomAnchor, constant: Constants.paddingSmall),
+            creatorStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.paddingSmall),
             
             creatorImageView.heightAnchor.constraint(equalToConstant: 32),
             creatorImageView.widthAnchor.constraint(equalTo: creatorImageView.heightAnchor),
@@ -191,7 +189,6 @@ class TrendingNowCollectionViewCell: UICollectionViewCell {
     }
     
     override func prepareForReuse() {
-        super.prepareForReuse()
         super.prepareForReuse()
         mainImageTask?.cancel()
         avatarImageTask?.cancel()
@@ -206,16 +203,3 @@ class TrendingNowCollectionViewCell: UICollectionViewCell {
     }
 }
 
-@MainActor
-class ImageCache {
-    static let shared = ImageCache()
-    private let cache = NSCache<NSString, UIImage>()
-    
-    func image(for key: String) -> UIImage? {
-        return cache.object(forKey: key as NSString)
-    }
-    
-    func setImage(_ image: UIImage, for key: String) {
-        cache.setObject(image, forKey: key as NSString)
-    }
-}

@@ -5,65 +5,70 @@
 //  Created by user on 26.06.2025.
 //
 
+
 import UIKit
 
 final class CategoryGridCell: UICollectionViewCell {
     static let id = "CategoryGridCell"
     
-    private let iconView = UIImageView()
-    private let titleLabel = UILabel()
+    private let iconView = UIImageView(
+        size: Constants.iconCellSizeBig,
+        contentMode: .scaleAspectFit,
+        tintColor: Resources.Colors.orange,
+        backgroundColor: .clear
+    )
+    
+    private let titleLabel = UILabel(
+        font: .helveticalRegular(withSize: 12),
+        textColor: .black,
+        textAlignment: .center,
+        numberOfLines: 2
+    )
+    
+    private let stackView = UIStackView(
+        axis: .vertical,
+        alignment: .center,
+        spacing: Constants.spacingSmall
+    )
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
+        setupConstraints()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        iconView.image = nil
+        titleLabel.text = nil
     }
     
     private func setupViews() {
-        // Настройка иконки
-        iconView.contentMode = .scaleAspectFit
-        iconView.tintColor = .systemOrange
+        stackView.addArrangedSubview(iconView)
+        stackView.addArrangedSubview(titleLabel)
+        contentView.addSubview(stackView)
         
-        // Настройка текста
-        titleLabel.font = .systemFont(ofSize: 12, weight: .medium)
-        titleLabel.textAlignment = .center
-        titleLabel.numberOfLines = 2
-        
-        // Вертикальный стек
-        let stack = UIStackView(arrangedSubviews: [iconView, titleLabel])
-        stack.axis = .vertical
-        stack.spacing = 4
-        stack.alignment = .center
-        contentView.addSubview(stack)
-        
-        // Констрейнты
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        iconView.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            iconView.widthAnchor.constraint(equalToConstant: 40),
-            iconView.heightAnchor.constraint(equalToConstant: 40),
-
-            stack.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            stack.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            stack.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9)
-        ])
-        
-        // Стиль ячейки
-        backgroundColor = .systemGray6
         layer.cornerRadius = 12
+        layer.masksToBounds = true
+    }
+    
+    private func setupConstraints() {
+        NSLayoutConstraint.activate([
+            stackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            stackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            stackView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9)
+        ])
     }
     
     func configure(with category: String, iconName: String, isSelected: Bool) {
         titleLabel.text = category
         iconView.image = UIImage(named: iconName)?.withRenderingMode(.alwaysTemplate)
-        
-        // Стиль для выбранного состояния
-        backgroundColor = isSelected ? .systemOrange.withAlphaComponent(0.2) : .systemGray6
+        backgroundColor = isSelected ? Resources.Colors.orange.withAlphaComponent(0.2) : Resources.Colors.backgroundLight
         layer.borderWidth = isSelected ? 1 : 0
-        layer.borderColor = isSelected ? UIColor.systemOrange.cgColor : UIColor.clear.cgColor
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        layer.borderColor = isSelected ? Resources.Colors.orange.cgColor : UIColor.clear.cgColor
     }
 }

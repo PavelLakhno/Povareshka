@@ -8,6 +8,7 @@
 import UIKit
 
 class MenuItemCell: UITableViewCell {
+    static let id = "MenuItemCell"
     
     private let containerView: UIView = {
         let view = UIView()

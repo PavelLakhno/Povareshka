@@ -7,41 +7,40 @@
 
 import UIKit
 
-class StepPhotoCell: UITableViewCell {
+final class StepPhotoCell: UITableViewCell {
+    static let id = "StepPhotoCell"
     
-    static let id = "stepPhoto"
-    
-    lazy var recipeImage : UIImageView = {
-        let img = UIImageView()
-        img.clipsToBounds = true
-        img.contentMode = .scaleToFill
-        img.layer.cornerRadius = 12
-        img.layer.borderColor = UIColor.clear.cgColor
-        img.layer.borderWidth = 1
-        img.translatesAutoresizingMaskIntoConstraints = false
-        return img
-    }()
+    private let recipeImage = UIImageView(
+        cornerRadius: Constants.cornerRadiusMedium,
+        contentMode: .scaleToFill
+    )
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupCell()
+        setupViews()
+        setupConstraints()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
   
-    private func setupCell() {
+    private func setupViews() {
         selectionStyle = .none
-        backgroundColor = .neutral10
+        backgroundColor = Resources.Colors.backgroundLight
         contentView.addSubview(recipeImage)
-        
+    }
+    
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
-            recipeImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
+            recipeImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Constants.paddingSmall),
             recipeImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             recipeImage.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            recipeImage.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5),
-
+            recipeImage.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -Constants.paddingSmall),
         ])
+    }
+    
+    func configure(with image: Data?) {
+        recipeImage.image = UIImage(data: image ?? Data())
     }
 }

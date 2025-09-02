@@ -8,6 +8,7 @@
 import UIKit
 
 class FilterCategoryCell: UICollectionViewCell {
+    static let id = "FilterCategoryCell"
     
     private let titleLabel: UILabel = {
         let label = UILabel()

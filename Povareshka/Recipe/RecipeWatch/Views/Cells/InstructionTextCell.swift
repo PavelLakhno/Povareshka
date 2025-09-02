@@ -10,23 +10,13 @@ import UIKit
 class InstructionTextCell: UITableViewCell {
     static let id = "InstructionTextCell"
     
-    private let stepLabel: UILabel = {
-        let label = UILabel()
-        label.font = .helveticalBold(withSize: 18)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private let descriptionLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 0
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    private let stepLabel = UILabel(font: .helveticalBold(withSize: 18), textColor: .black)
+    private let descriptionLabel = UILabel(font: .helveticalRegular(withSize: 16), textColor: .black, numberOfLines: 0)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupViews()
+        setupConstraints()
     }
     
     required init?(coder: NSCoder) {
@@ -36,16 +26,18 @@ class InstructionTextCell: UITableViewCell {
     private func setupViews() {
         contentView.addSubview(stepLabel)
         contentView.addSubview(descriptionLabel)
-        
+    }
+    
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
-            stepLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
-            stepLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
-            stepLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5),
+            stepLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Constants.paddingMedium),
+            stepLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.paddingSmall),
+            stepLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.paddingSmall),
             
-            descriptionLabel.topAnchor.constraint(equalTo: stepLabel.bottomAnchor, constant: 5),
-            descriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
-            descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5),
-            descriptionLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
+            descriptionLabel.topAnchor.constraint(equalTo: stepLabel.bottomAnchor, constant: Constants.paddingMedium),
+            descriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.paddingSmall),
+            descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.paddingSmall),
+            descriptionLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -Constants.paddingMedium)
         ])
     }
     

@@ -199,7 +199,9 @@ extension FilterViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FilterCategoryCell", for: indexPath) as! FilterCategoryCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FilterCategoryCell.id, for: indexPath) as? FilterCategoryCell else {
+            return FilterCategoryCell()
+        }
         let category = CategoryItem.mockCategories[indexPath.item]
         cell.configure(with: category.title, isSelected: selectedCategories.contains(category.title))
         return cell
