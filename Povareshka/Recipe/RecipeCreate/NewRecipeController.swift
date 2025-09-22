@@ -156,6 +156,13 @@ class NewRecipeController: BaseController {
         return collectionView
     }()
     
+    private lazy var loadingIndicator = UIActivityIndicatorView.createIndicator(
+        style: .large,
+        centerIn: view
+    )
+    
+    private var isSaving = false
+    
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -459,6 +466,17 @@ extension NewRecipeController {
     }
     
     internal override func navBarRightButtonHandler() {
+        guard !isSaving else { return }
+        
+        // Проверяем валидность полей
+        guard validateFields() else { return }
+        
+        isSaving = true
+        loadingIndicator.startAnimating()
+            
+        // Блокируем кнопку сохранения
+        navigationItem.rightBarButtonItem?.isEnabled = false
+        
         Task {
             do {
                 try await dataService.saveRecipe(
@@ -475,14 +493,101 @@ extension NewRecipeController {
                     categories: selectedCategories
                 )
                 DispatchQueue.main.async {
+                    self.loadingIndicator.stopAnimating()
+                    self.isSaving = false
+                    self.navigationItem.rightBarButtonItem?.isEnabled = true
                     self.navigationController?.popViewController(animated: true)
                 }
             } catch {
                 DispatchQueue.main.async {
+                    self.loadingIndicator.stopAnimating()
+                    self.isSaving = false
+                    self.navigationItem.rightBarButtonItem?.isEnabled = true
                     AlertManager.shared.showError(on: self, error: error)
                 }
             }
         }
+    }
+}
+
+// MARK: - Validation Methods
+extension NewRecipeController {
+    // MARK: - Validation Methods
+    private func validateFields() -> Bool {
+        var isValid = true
+        var errorMessages: [String] = []
+        
+        // Проверка главного фото
+        if recipeImage.image == nil || recipeImage.image == Resources.Images.Icons.cameraMain {
+            isValid = false
+            errorMessages.append(Resources.Strings.Alerts.mainPhoto)
+            recipeImage.layer.borderColor = UIColor.red.cgColor
+        } else {
+            recipeImage.layer.borderColor = UIColor.orange.cgColor
+        }
+        
+        // Проверка названия
+        if let title = recipeNameTextField.text, title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            isValid = false
+            errorMessages.append(Resources.Strings.Alerts.mainTitle)
+            recipeNameTextField.layer.borderColor = UIColor.red.cgColor
+        } else {
+            recipeNameTextField.layer.borderColor = UIColor.orange.cgColor
+        }
+
+        
+        // Проверка описания
+        if recipeDescriptionTextView.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+           recipeDescriptionTextView.textColor == UIColor.lightGray {
+            isValid = false
+            errorMessages.append(Resources.Strings.Alerts.mainDescription)
+            recipeDescriptionTextView.layer.borderColor = UIColor.red.cgColor
+        } else {
+            recipeDescriptionTextView.layer.borderColor = UIColor.orange.cgColor
+        }
+        
+        // Проверка категорий
+        if selectedCategories.isEmpty {
+            isValid = false
+            errorMessages.append(Resources.Strings.Alerts.emptyCategory)
+            categoryTitleLabel.textColor = .red
+        } else {
+            categoryTitleLabel.textColor = .black
+        }
+        
+        // Проверка ингредиентов
+        if ingredients.isEmpty {
+            isValid = false
+            errorMessages.append(Resources.Strings.Alerts.emptyIngredient)
+            ingredientsTitleLabel.textColor = .red
+        } else {
+            ingredientsTitleLabel.textColor = .black
+        }
+        
+        // Проверка шагов
+        if steps.isEmpty {
+            isValid = false
+            errorMessages.append(Resources.Strings.Alerts.emptyStep)
+            stepsTitleLabel.textColor = .red
+        } else {
+            stepsTitleLabel.textColor = .black
+        }
+        
+        // Показываем ошибки, если есть
+        if !errorMessages.isEmpty {
+            showValidationError(messages: errorMessages)
+        }
+        
+        return isValid
+    }
+
+    private func showValidationError(messages: [String]) {
+        let errorMessage = messages.joined(separator: "\n• ")
+        AlertManager.shared.show(
+            on: self,
+            title: Resources.Strings.Alerts.emptyData,
+            message: "• \(errorMessage)"
+        )
     }
 }
 

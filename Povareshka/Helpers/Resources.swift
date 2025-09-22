@@ -179,6 +179,15 @@ enum Resources {
             static let deleteStepTitle = "Удалить шаг?"
             static let deleteStepMessage = "Вы уверены, что хотите удалить этот шаг?"
             static let errorTitle = "Ошибка"
+            static let emptyData = "Отсутствуют данные"
+            static let mainPhoto = "Нет основного фото"
+            static let mainTitle = "Нет названия"
+            static let mainDescription = "Нет описания"
+            static let emptyCategory = "Не добавлено ни одной категории"
+            static let emptyIngredient = "Не добавлено ни одного ингридиента"
+            static let emptyStep = "Нет инструкций"
+            
+            
             static let successTitle = "Успех"
             static let enterDescription = "Введите описание шага"
             static let minimumStepsError = "Должен остаться хотя бы один шаг"

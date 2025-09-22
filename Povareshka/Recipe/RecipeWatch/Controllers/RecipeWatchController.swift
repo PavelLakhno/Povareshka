@@ -381,6 +381,10 @@ extension RecipeWatchController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
     }
+    
+    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        tableView != stepsTableView
+    }
 }
 
 // MARK: UICollectionViewDataSource

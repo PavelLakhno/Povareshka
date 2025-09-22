@@ -25,7 +25,7 @@ func createTableView(
     delegate: UITableViewDelegate? = nil,
     dataSource: UITableViewDataSource? = nil,
     backgroundColor: UIColor = .clear,
-    isScrollEnabled: Bool = true,
+    isScrollEnabled: Bool = false,
     separatorStyle: UITableViewCell.SeparatorStyle = .none,
     sectionHeaderTopPadding: CGFloat = 0,
     cornerRadius: CGFloat = 0
