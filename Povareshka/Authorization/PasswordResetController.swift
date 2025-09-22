@@ -8,60 +8,43 @@
 import UIKit
 //import FirebaseAuth
 
-class PasswordResetController: UIViewController {
+final class PasswordResetController: UIViewController {
     var onBackTapped: (() -> Void)?
     // MARK: - UI Elements
-    private let emailTextField: UITextField = {
-        let field = UITextField()
-        field.layer.cornerRadius = Resources.Sizes.cornerRadius
-        field.keyboardType = .emailAddress
-        field.textAlignment = .left
-        field.returnKeyType = .done
-        field.setLeftPaddingPoints(15)
-        field.clearButtonMode = .whileEditing
-        field.backgroundColor = .neutral10
-        field.translatesAutoresizingMaskIntoConstraints = false
-        
-        let attributes = [NSAttributedString.Key.foregroundColor: UIColor.lightGray,
-                          NSAttributedString.Key.font: UIFont.helveticalRegular(withSize: 16)]
-        
-        field.attributedPlaceholder = NSAttributedString(
-            string: "Введите ваш email",
-            attributes: attributes as [NSAttributedString.Key : Any])
-        return field
-    }()
-    
-    private lazy var resetButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Сбросить пароль", for: .normal)
-        button.backgroundColor = Resources.Colors.orange
-        button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = Resources.Sizes.cornerRadius
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.addTarget(self, action: #selector(handleReset), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
-    private lazy var backButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(Resources.Images.Icons.back, for: .normal)
-        button.setTitle(Resources.Strings.Buttons.back, for: .normal)
-        button.tintColor = Resources.Colors.orange
-        button.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
+    private lazy var emailTextField = UITextField.configureTextField(
+        placeholder: Resources.Strings.Placeholders.enterEmail,
+        keyboardType: .emailAddress,
+        borderColor: .clear,
+        backgroundColor: Resources.Colors.backgroundLight
+    )
+
+    private lazy var resetButton = UIButton(
+        title: Resources.Strings.Buttons.passwordReset,
+        backgroundColor: Resources.Colors.orange,
+        tintColor: .white,
+        cornerRadius: Constants.cornerRadiusSmall,
+        target: self,
+        action: #selector(handleReset)
+    )
+
+    private lazy var backButton = UIButton(
+        title: Resources.Strings.Buttons.back,
+        image: Resources.Images.Icons.back,
+        tintColor: Resources.Colors.orange,
+        titleColor: Resources.Colors.orange,
+        target: self,
+        action: #selector(backTapped)
+    )
+
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
+        setupViews()
         setupConstraints()
     }
     
     // MARK: - UI Setup
-    private func setupUI() {
+    private func setupViews() {
         view.backgroundColor = .clear
         
         view.addSubview(backButton)
@@ -71,47 +54,56 @@ class PasswordResetController: UIViewController {
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
-            backButton.topAnchor.constraint(equalTo: view.topAnchor, constant: Resources.Sizes.paddingWidth*4),
+            backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.paddingMedium),
+            backButton.topAnchor.constraint(equalTo: view.topAnchor, constant: Constants.paddingMedium*4),
             
             emailTextField.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -50),
-            emailTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
-            emailTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
-            emailTextField.heightAnchor.constraint(equalToConstant: Resources.Sizes.textFieldHeight),
+            emailTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.paddingMedium),
+            emailTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.paddingMedium),
+            emailTextField.heightAnchor.constraint(equalToConstant: Constants.height),
             
-            resetButton.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: Resources.Sizes.paddingHeight),
-            resetButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
-            resetButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
-            resetButton.heightAnchor.constraint(equalToConstant: Resources.Sizes.buttonHeight)
+            resetButton.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: Constants.paddingMedium),
+            resetButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.paddingMedium),
+            resetButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.paddingMedium),
+            resetButton.heightAnchor.constraint(equalToConstant: Constants.height)
         ])
     }
     
     // MARK: - Actions
     @objc private func handleReset() {
         guard let email = emailTextField.text, !email.isEmpty else {
-            showAlert(title: Resources.Strings.Tittles.error,
-                      message: Resources.Strings.Messages.enterEmail)
+//            showAlert(title: Resources.Strings.Titles.error,
+//                      message: Resources.Strings.Messages.enterEmail)
+            AlertManager.shared.show(on: self,
+                                          title: Resources.Strings.Titles.error,
+                                          message: Resources.Strings.Messages.enterEmail)
             return
         }
         
         Task {
             do {
                 try await SupabaseManager.shared.client.auth.resetPasswordForEmail(
-                    email, redirectTo: URL(string: "povareshka-supabase://reset-password")!
+                    email, redirectTo: URL(string: Resources.Auth.supabaseRedirect)!
                 )
                 
                 DispatchQueue.main.async {
-                    self.showAlert(
-                        title: Resources.Strings.Tittles.success,
+                    AlertManager.shared.show(
+                        on: self,
+                        title: Resources.Strings.Titles.success,
                         message: "Password reset link sent to \(email)"
                     )
+//                    self.showAlert(
+//                        title: Resources.Strings.Titles.success,
+//                        message: "Password reset link sent to \(email)"
+//                    )
                 }
             } catch {
                 DispatchQueue.main.async {
-                    self.showAlert(
-                        title: Resources.Strings.Tittles.error,
-                        message: error.localizedDescription
-                    )
+                    AlertManager.shared.showError(on: self, error: error)
+//                    self.showAlert(
+//                        title: Resources.Strings.Titles.error,
+//                        message: error.localizedDescription
+//                    )
                 }
             }
         }

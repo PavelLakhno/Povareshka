@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TagsManager {
+final class TagsManager {
     private(set) var tags: [String]
     var onChange: (([String]) -> Void)?
     

@@ -10,63 +10,63 @@ import UIKit
 final class RecipeImageWithFavoriteView: UIView {
     
     // MARK: - Properties
-    private let imageView = UIImageView()
-    private let favoriteButton = UIButton()
+    private let dataService = DataService.shared
+    private let imageView = UIImageView(cornerRadius: Constants.cornerRadiusBig, contentMode: .scaleAspectFill)
+    private lazy var favoriteButton = UIButton(image: Resources.Images.Icons.heart,
+                                               backgroundColor: .black.withAlphaComponent(0.3),
+                                               cornerRadius: Constants.cornerRadiusMedium,
+                                               size: Constants.iconCellSizeMedium,
+                                               target: self,
+                                               action: #selector(favoriteButtonTapped))
     private var isFavorite = false
     private var isCreator = false
     private var recipeId: UUID?
+    private weak var parentViewController: UIViewController?
+    
     var favoriteStatusChanged: ((Bool) -> Void)?
     
     // MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
+        setupConstraints()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupView()
+        setupConstraints()
     }
     
     // MARK: - Public Methods
-    func configure(with image: UIImage?, isFavorite: Bool, isCreator: Bool, recipeId: UUID?) {
+    func configure(with image: UIImage? = Resources.Images.Icons.cameraMain,
+                   isFavorite: Bool,
+                   isCreator: Bool,
+                   recipeId: UUID?,
+                   parentViewController: UIViewController?) {
         imageView.image = image
         self.isFavorite = isFavorite
         self.isCreator = isCreator
         self.recipeId = recipeId
+        self.parentViewController = parentViewController
         updateFavoriteButton()
     }
     
     // MARK: - Private Methods
     private func setupView() {
-        // Настройка imageView
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 25
         addSubview(imageView)
-        
-        // Настройка кнопки
-        favoriteButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-        favoriteButton.addTarget(self, action: #selector(favoriteButtonTapped), for: .touchUpInside)
-        favoriteButton.tintColor = .white
-        favoriteButton.backgroundColor = UIColor.black.withAlphaComponent(0.3)
-        favoriteButton.layer.cornerRadius = 15
         addSubview(favoriteButton)
-        
-        // Констрейнты
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        favoriteButton.translatesAutoresizingMaskIntoConstraints = false
-        
+    }
+    
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: topAnchor),
             imageView.leadingAnchor.constraint(equalTo: leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: trailingAnchor),
             imageView.bottomAnchor.constraint(equalTo: bottomAnchor),
             
-            favoriteButton.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-            favoriteButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            favoriteButton.widthAnchor.constraint(equalToConstant: 30),
-            favoriteButton.heightAnchor.constraint(equalToConstant: 30)
+            favoriteButton.topAnchor.constraint(equalTo: topAnchor, constant: Constants.paddingMedium),
+            favoriteButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Constants.paddingMedium),
         ])
     }
     
@@ -82,13 +82,11 @@ final class RecipeImageWithFavoriteView: UIView {
     @objc private func favoriteButtonTapped() {
         guard let recipeId = recipeId else { return }
         
+        guard let parentVC = parentViewController else { return }
+        
         Task {
             do {
-                if isFavorite {
-                    try await FavoriteRecipeManager.shared.removeFromFavorites(recipeId: recipeId)
-                } else {
-                    try await FavoriteRecipeManager.shared.addToFavorites(recipeId: recipeId)
-                }
+                try await dataService.toggleFavorite(recipeId: recipeId, isCurrentlyFavorite: isFavorite)
                 
                 DispatchQueue.main.async {
                     self.isFavorite.toggle()
@@ -98,6 +96,7 @@ final class RecipeImageWithFavoriteView: UIView {
                 }
             } catch {
                 DispatchQueue.main.async {
+                    AlertManager.shared.showError(on: parentVC, error: error)
                     print("Ошибка изменения статуса избранного: \(error)")
                 }
             }

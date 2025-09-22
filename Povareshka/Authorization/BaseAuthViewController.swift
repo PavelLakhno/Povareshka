@@ -28,14 +28,17 @@ class BaseAuthViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
+        setupViews()
+        setupConstraints()
         showLoginForm()
     }
 
-    private func setupUI() {
+    private func setupViews() {
         view.addSubview(backgroundImage)
         view.addSubview(containerView)
-
+    }
+    
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
             backgroundImage.topAnchor.constraint(equalTo: view.topAnchor),
             backgroundImage.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -43,8 +46,8 @@ class BaseAuthViewController: UIViewController {
             backgroundImage.bottomAnchor.constraint(equalTo: view.bottomAnchor),
 
             containerView.topAnchor.constraint(equalTo: view.topAnchor),
-            containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
-            containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
+            containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.paddingWidth),
+            containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.paddingWidth),
             containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
     }
@@ -108,7 +111,7 @@ class BaseAuthViewController: UIViewController {
         }
         
         embedChild(updateVC, in: containerView)
-        containerView.alpha = 1.0 // Уже видимый
+        containerView.alpha = 1.0
     }
     
     func showPasswordUpdateForm() {
@@ -150,13 +153,7 @@ class BaseAuthViewController: UIViewController {
     
     func handleAuthError(_ error: Error) {
         DispatchQueue.main.async {
-            let alert = UIAlertController(
-                title: "Ошибка",
-                message: error.localizedDescription,
-                preferredStyle: .alert
-            )
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            self.present(alert, animated: true)
+            AlertManager.shared.showError(on: self, error: error)
         }
     }
 }

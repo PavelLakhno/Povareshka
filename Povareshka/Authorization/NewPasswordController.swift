@@ -8,89 +8,51 @@
 import UIKit
 import Auth
 
-class NewPasswordController: UIViewController {
-//    var onRegisterTapped: (() -> Void)?
+final class NewPasswordController: UIViewController {
     var onPasswordUpdateTapped: (() -> Void)?
     
     // MARK: - UI Elements
-    private let loginLabel: UILabel = {
-        let lbl = UILabel()
-        lbl.layer.cornerRadius = Resources.Sizes.cornerRadius
-        lbl.layer.masksToBounds = true
-        lbl.textAlignment = .left
-        lbl.backgroundColor = .neutral10
-        lbl.translatesAutoresizingMaskIntoConstraints = false
-        return lbl
-    }()
     
-    private let newPasswordTextField: UITextField = {
-        let field = UITextField()
-        field.layer.cornerRadius = Resources.Sizes.cornerRadius
-        field.isSecureTextEntry = true
-        field.textAlignment = .left
-        field.returnKeyType = .done
-        field.setLeftPaddingPoints(15)
-        field.clearButtonMode = .whileEditing
-        field.backgroundColor = .neutral10
-        field.translatesAutoresizingMaskIntoConstraints = false
-        
-        let attributes = [NSAttributedString.Key.foregroundColor: UIColor.lightGray,
-                          NSAttributedString.Key.font: UIFont.helveticalRegular(withSize: 16)]
+    private let loginLabel = UILabel(textAlignment: .center)
 
-        field.attributedPlaceholder = NSAttributedString(
-            string: "Новый пароль",
-            attributes: attributes as [NSAttributedString.Key : Any])
-        return field
-    }()
-    
-    private let confirmPasswordTextField: UITextField = {
-        let field = UITextField()
-        field.layer.cornerRadius = Resources.Sizes.cornerRadius
-        field.isSecureTextEntry = true
-        field.textAlignment = .left
-        field.returnKeyType = .done
-        field.setLeftPaddingPoints(15)
-        field.clearButtonMode = .whileEditing
-        field.backgroundColor = .neutral10
-        field.translatesAutoresizingMaskIntoConstraints = false
-        
-        let attributes = [NSAttributedString.Key.foregroundColor: UIColor.lightGray,
-                          NSAttributedString.Key.font: UIFont.helveticalRegular(withSize: 16)]
+    private let newPasswordTextField = UITextField.configureTextField(
+        placeholder: Resources.Strings.Placeholders.passwordNew,
+        isSecureTextEntry: true,
+        borderColor: .clear,
+        backgroundColor: Resources.Colors.backgroundLight
+    )
 
-        field.attributedPlaceholder = NSAttributedString(
-            string: "Повторите новый пароль",
-            attributes: attributes as [NSAttributedString.Key : Any])
-        return field
-    }()
-    
-    private lazy var confirmPasswordButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle(Resources.Strings.Buttons.done, for: .normal)
-        button.backgroundColor = Resources.Colors.orange
-        button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = Resources.Sizes.cornerRadius
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.addTarget(self, action: #selector(updatePasswordTapped), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
+    private let confirmPasswordTextField = UITextField.configureTextField(
+        placeholder: Resources.Strings.Placeholders.passwordRepeat,
+        isSecureTextEntry: true,
+        borderColor: .clear,
+        backgroundColor: Resources.Colors.backgroundLight
+    )
+
+    private lazy var confirmPasswordButton = UIButton(
+        title: Resources.Strings.Buttons.done,
+        backgroundColor: Resources.Colors.orange,
+        tintColor: .white,
+        cornerRadius: Constants.cornerRadiusSmall,
+        target: self,
+        action: #selector(updatePasswordTapped)
+    )
+
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
+        setupViews()
         setupConstraints()
         getSession()
     }
     
     // MARK: - UI Setup
-    private func setupUI() {
+    private func setupViews() {
         view.backgroundColor = .clear
         view.addSubview(loginLabel)
         view.addSubview(newPasswordTextField)
         view.addSubview(confirmPasswordTextField)
         view.addSubview(confirmPasswordButton)
-     
     }
     
     private func getSession() {
@@ -103,7 +65,7 @@ class NewPasswordController: UIViewController {
                 
             } catch {
                 // Если стандартная обработка не сработала, пробуем кастомный парсинг
-                print("❌ Error Deep Link:", error)
+                AlertManager.shared.showError(on: self, error: error)
             }
         }
     }
@@ -111,26 +73,26 @@ class NewPasswordController: UIViewController {
     private func setupConstraints() {
         NSLayoutConstraint.activate([
             
-            loginLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
-            loginLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
-            loginLabel.bottomAnchor.constraint(equalTo: newPasswordTextField.topAnchor, constant: -Resources.Sizes.paddingHeight),
-            loginLabel.heightAnchor.constraint(equalToConstant: Resources.Sizes.textFieldHeight),
+            loginLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.paddingMedium),
+            loginLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.paddingMedium),
+            loginLabel.bottomAnchor.constraint(equalTo: newPasswordTextField.topAnchor, constant: -Constants.paddingMedium),
+            loginLabel.heightAnchor.constraint(equalToConstant: Constants.height),
             
-            newPasswordTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
-            newPasswordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
-            newPasswordTextField.bottomAnchor.constraint(equalTo: confirmPasswordTextField.topAnchor, constant: -Resources.Sizes.paddingHeight),
-            newPasswordTextField.heightAnchor.constraint(equalToConstant: Resources.Sizes.textFieldHeight),
+            newPasswordTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.paddingMedium),
+            newPasswordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.paddingMedium),
+            newPasswordTextField.bottomAnchor.constraint(equalTo: confirmPasswordTextField.topAnchor, constant: -Constants.paddingMedium),
+            newPasswordTextField.heightAnchor.constraint(equalToConstant: Constants.height),
 
-            confirmPasswordTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
-            confirmPasswordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
+            confirmPasswordTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.paddingMedium),
+            confirmPasswordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.paddingMedium),
             confirmPasswordTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             confirmPasswordTextField.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            confirmPasswordTextField.heightAnchor.constraint(equalToConstant: Resources.Sizes.buttonHeight),
+            confirmPasswordTextField.heightAnchor.constraint(equalToConstant: Constants.height),
 
-            confirmPasswordButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.Sizes.paddingWidth),
-            confirmPasswordButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.Sizes.paddingWidth),
-            confirmPasswordButton.topAnchor.constraint(equalTo: confirmPasswordTextField.bottomAnchor, constant: Resources.Sizes.paddingHeight),
-            confirmPasswordButton.heightAnchor.constraint(equalToConstant: Resources.Sizes.buttonHeight),
+            confirmPasswordButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.paddingMedium),
+            confirmPasswordButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.paddingMedium),
+            confirmPasswordButton.topAnchor.constraint(equalTo: confirmPasswordTextField.bottomAnchor, constant: Constants.paddingMedium),
+            confirmPasswordButton.heightAnchor.constraint(equalToConstant: Constants.height),
         ])
     }
     
@@ -141,17 +103,23 @@ class NewPasswordController: UIViewController {
     @objc private func updatePasswordTapped() {
         guard let newPassword = newPasswordTextField.text, !newPassword.isEmpty,
               let confirmPassword = confirmPasswordTextField.text, !confirmPassword.isEmpty else {
-            showAlert(title: "Ошибка", message: "Заполните все поля")
+            AlertManager.shared.show(on: self,
+                                     title: Resources.Strings.Alerts.errorTitle,
+                                     message: Resources.Strings.Messages.enterFields)
             return
         }
         
         guard newPassword == confirmPassword else {
-            showAlert(title: "Ошибка", message: "Пароли не совпадают")
+            AlertManager.shared.show(on: self,
+                                     title: Resources.Strings.Alerts.errorTitle,
+                                     message: Resources.Strings.Messages.passwordMismatch)
             return
         }
         
         guard newPassword.count >= 6 else {
-            showAlert(title: "Ошибка", message: "Пароль должен содержать минимум 6 символов")
+            AlertManager.shared.show(on: self,
+                                     title: Resources.Strings.Alerts.errorTitle,
+                                     message: Resources.Strings.Messages.passwordSixSigns)
             return
         }
         
@@ -190,15 +158,7 @@ class NewPasswordController: UIViewController {
         }
  
     }
-    
-    private func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-            completion?()
-        })
-        present(alert, animated: true)
-    }
-    
+
     private func handlePasswordUpdateError(_ error: Error) async {
         let errorMessage: String
         

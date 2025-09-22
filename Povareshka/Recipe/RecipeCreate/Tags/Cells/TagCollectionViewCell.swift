@@ -7,61 +7,56 @@
 
 import UIKit
 
-// MARK: - TagCollectionViewCell
-
-class TagCollectionViewCell: UICollectionViewCell {
+final class TagCollectionViewCell: UICollectionViewCell {
     static let id = "TagCollectionViewCell"
     
-    private let tagLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 14)
-        label.textColor = .white
-        label.textAlignment = .center
-        return label
-    }()
+    private let tagLabel = UILabel(
+        font: .helveticalRegular(withSize: 16),
+        textColor: .white,
+        textAlignment: .center,
+        numberOfLines: 1
+    )
     
-    private let deleteButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(systemName: "xmark"), for: .normal)
-        button.tintColor = .white
-        button.imageView?.contentMode = .scaleAspectFit
-        return button
-    }()
-    
+    private lazy var deleteButton = UIButton(
+        image: Resources.Images.Icons.deleteX,
+        size: Constants.iconCellSizeSmall,
+        target: self, action: #selector(deleteTapped)
+    )
     var deleteAction: (() -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
+        setupConstraints()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        tagLabel.text = nil
+    }
+    
     private func setupViews() {
-        backgroundColor = .neutral40 // Серый цвет для тегов
-        layer.cornerRadius = 15
-        clipsToBounds = true
+        backgroundColor = .systemGray2
+        layer.cornerRadius = Constants.cornerRadiusMedium
+        layer.masksToBounds = true
         
-        addSubview(tagLabel)
-        addSubview(deleteButton)
-        
-        tagLabel.translatesAutoresizingMaskIntoConstraints = false
-        deleteButton.translatesAutoresizingMaskIntoConstraints = false
-        
+        contentView.addSubview(tagLabel)
+        contentView.addSubview(deleteButton)
+    }
+    
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
-            tagLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
-            tagLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
-            tagLabel.trailingAnchor.constraint(equalTo: deleteButton.leadingAnchor, constant: -4),
+            tagLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.paddingMedium),
+            tagLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            tagLabel.trailingAnchor.constraint(equalTo: deleteButton.leadingAnchor, constant: -Constants.paddingSmall),
             
-            deleteButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
-            deleteButton.centerYAnchor.constraint(equalTo: centerYAnchor),
-            deleteButton.widthAnchor.constraint(equalToConstant: 16),
-            deleteButton.heightAnchor.constraint(equalToConstant: 16)
+            deleteButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.paddingSmall),
+            deleteButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
         ])
-        
-        deleteButton.addTarget(self, action: #selector(deleteTapped), for: .touchUpInside)
     }
     
     @objc private func deleteTapped() {
@@ -71,28 +66,6 @@ class TagCollectionViewCell: UICollectionViewCell {
     func configure(with tag: String, showDelete: Bool = true) {
         tagLabel.text = tag
         deleteButton.isHidden = !showDelete
-    }
-}
-
-// MARK: - LeftAlignedCollectionViewFlowLayout
-class LeftAlignedCollectionViewFlowLayout: UICollectionViewFlowLayout {
-    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        let attributes = super.layoutAttributesForElements(in: rect)
-        
-        var leftMargin = sectionInset.left
-        var maxY: CGFloat = -1.0
-        attributes?.forEach { layoutAttribute in
-            if layoutAttribute.frame.origin.y >= maxY {
-                leftMargin = sectionInset.left
-            }
-            
-            layoutAttribute.frame.origin.x = leftMargin
-            
-            leftMargin += layoutAttribute.frame.width + minimumInteritemSpacing
-            maxY = max(layoutAttribute.frame.maxY, maxY)
-        }
-        
-        return attributes
     }
 }
 

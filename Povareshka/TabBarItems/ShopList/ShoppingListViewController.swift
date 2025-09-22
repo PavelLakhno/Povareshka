@@ -41,16 +41,6 @@ class ShoppingListViewController: BaseController {
         return table
     }()
     
-    private let addButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(barButtonSystemItem: .add, target: nil, action: nil)
-        return button
-    }()
-    
-    private let clearButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(barButtonSystemItem: .trash, target: nil, action: nil)
-        return button
-    }()
-    
     private var ingredients: [IngredientData] = []
     
     override func viewDidLoad() {
@@ -59,7 +49,6 @@ class ShoppingListViewController: BaseController {
         setupNavigationBar()
         setupNotifications()
         loadIngredients()
-        title = Resources.Strings.TabBar.shop
     }
     
     private func setupUI() {
@@ -96,11 +85,12 @@ class ShoppingListViewController: BaseController {
     }
     
     private func setupNavigationBar() {
-        navigationItem.rightBarButtonItems = [addButton, clearButton]
-        addButton.target = self
-        addButton.action = #selector(addButtonTapped)
-        clearButton.target = self
-        clearButton.action = #selector(clearButtonTapped)
+        navigationItem.title = Resources.Strings.TabBar.shop
+        addNavBarButtons(
+            at: .right,
+            types: [.system(.add), .system(.trash)],
+            actions: [#selector(addButtonTapped), #selector(clearButtonTapped)]
+        )
     }
     
     private func setupNotifications() {
@@ -131,7 +121,7 @@ class ShoppingListViewController: BaseController {
         let alert = UIAlertController(title: Resources.Strings.Buttons.add, message: nil, preferredStyle: .alert)
         
         alert.addTextField { textField in
-            textField.placeholder = Resources.Strings.Placeholders.enterTittle
+            textField.placeholder = Resources.Strings.Placeholders.enterTitle
         }
         
         alert.addTextField { textField in
@@ -157,7 +147,7 @@ class ShoppingListViewController: BaseController {
     
     @objc private func clearButtonTapped() {
         let alert = UIAlertController(
-            title: Resources.Strings.Tittles.deleteList,
+            title: Resources.Strings.Titles.deleteList,
             message: Resources.Strings.Messages.delete,
             preferredStyle: .alert
         )
@@ -201,11 +191,11 @@ extension ShoppingListViewController: UITableViewDelegate, UITableViewDataSource
         tableView.deselectRow(at: indexPath, animated: true)
         
         let ingredient = ingredients[indexPath.row]
-        let alert = UIAlertController(title: Resources.Strings.Tittles.correctIngredient, message: nil, preferredStyle: .alert)
+        let alert = UIAlertController(title: Resources.Strings.Titles.correctIngredient, message: nil, preferredStyle: .alert)
         
         alert.addTextField { textField in
             textField.text = ingredient.name
-            textField.placeholder = Resources.Strings.Placeholders.enterTittle
+            textField.placeholder = Resources.Strings.Placeholders.enterTitle
         }
         
         alert.addTextField { textField in

@@ -8,8 +8,8 @@
 import UIKit
 import Storage
 
-class ProfileViewController: UIViewController {
-    
+class ProfileViewController: BaseController {
+    private let dataService = DataService.shared
     // MARK: - UI Components
 
     private let profileHeaderView: UIView = {
@@ -19,18 +19,12 @@ class ProfileViewController: UIViewController {
         return view
     }()
     
-    private let profileImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        imageView.backgroundColor = .systemGray6
-        imageView.layer.cornerRadius = 40
-        imageView.image = UIImage(systemName: "person.circle.fill")
-        imageView.tintColor = .systemGray3
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        return imageView
-    }()
-    
+    private let profileImageView = UIImageView(image: Resources.Images.Icons.profile,
+                                            cornerRadius: 40,
+                                            contentMode: .scaleAspectFill,
+                                            tintColor: .systemGray3,
+                                            backgroundColor: .systemGray6)
+
     private let nameLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20, weight: .semibold)
@@ -46,14 +40,11 @@ class ProfileViewController: UIViewController {
         return label
     }()
     
-    private let editProfileButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Редактировать профиль", for: .normal)
-        button.setTitleColor(.systemOrange, for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
+    private lazy var editProfileButton = UIButton(title: "Редактировать профиль",
+                                                  titleColor: Resources.Colors.orange,
+                                                  target: self,
+                                                  action: #selector(editProfileTapped))
+ 
     private let menuTableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .grouped)
         tableView.backgroundColor = .clear
@@ -82,15 +73,16 @@ class ProfileViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
+        setupViews()
+        setupConstraints()
         setupTableView()
         configureUser()
     }
     
     // MARK: - Setup
-    private func setupUI() {
+    internal override func setupViews() {
         view.backgroundColor = .systemGray6
-        title = "Профиль"
+        navigationItem.title = Resources.Strings.Titles.profile
         
         view.addSubview(profileHeaderView)
         profileHeaderView.addSubview(profileImageView)
@@ -98,24 +90,10 @@ class ProfileViewController: UIViewController {
         profileHeaderView.addSubview(emailLabel)
         profileHeaderView.addSubview(editProfileButton)
         view.addSubview(menuTableView)
-        
-        // Настройка avatarImageView
-        profileImageView.configureProfileImage()
-
-        
-        // Настройка остальных UI-элементов
-        nameLabel.configure(font: .systemFont(ofSize: 20, weight: .semibold))
-        emailLabel.configure(font: .systemFont(ofSize: 14), textColor: .gray)
-        editProfileButton.configure(title: "Редактировать профиль", color: .systemOrange)
-        editProfileButton.addTarget(self, action: #selector(editProfileTapped), for: .touchUpInside)
-        
-        setupConstraints()
-
+   
     }
     
-    private func setupConstraints() {
-        
-        
+    internal override func setupConstraints() {
         NSLayoutConstraint.activate([
             profileHeaderView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             profileHeaderView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -144,7 +122,7 @@ class ProfileViewController: UIViewController {
     }
     
     private func setupTableView() {
-        menuTableView.register(MenuItemCell.self, forCellReuseIdentifier: "MenuItemCell")
+        menuTableView.register(MenuItemCell.self, forCellReuseIdentifier: MenuItemCell.id)
         menuTableView.delegate = self
         menuTableView.dataSource = self
     }
@@ -165,7 +143,7 @@ class ProfileViewController: UIViewController {
         Task {
             do {
                 let session = try await SupabaseManager.shared.client.auth.session
-                let profile = try await fetchUserProfile(userId: session.user.id)
+                let profile = try await dataService.fetchUserProfile(userId: session.user.id)
                 
                 DispatchQueue.main.async {
                     self.updateUI(with: session.user.email ?? "Email", profile: profile)
@@ -176,16 +154,7 @@ class ProfileViewController: UIViewController {
         }
     }
     
-    private func fetchUserProfile(userId: UUID) async throws -> Profile {
-        return try await SupabaseManager.shared.client
-            .from("profiles")
-            .select()
-            .eq("id", value: userId)
-            .single()
-            .execute()
-            .value
-    }
-    
+  
     private func updateUI(with email: String, profile: Profile) {
         emailLabel.text = email
         nameLabel.text = profile.username ?? "Пользователь"
@@ -224,7 +193,9 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "MenuItemCell", for: indexPath) as! MenuItemCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: MenuItemCell.id, for: indexPath) as? MenuItemCell else {
+            return MenuItemCell()
+        }
         let menuItem = menuItems[indexPath.section][indexPath.row]
         cell.configure(with: menuItem)
         return cell

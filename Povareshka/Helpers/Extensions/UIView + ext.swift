@@ -11,97 +11,24 @@ extension UIView {
     func addBottomBorder(with color: UIColor, height: CGFloat) {
         let separator = UIView()
         separator.backgroundColor = color
-        separator.autoresizingMask = [.flexibleHeight, .flexibleWidth]
-        separator.frame = CGRect(
-            x: 0,
-            y: frame.height - height,
-            width: frame.width,
-            height: height
-        )
-        
+        separator.translatesAutoresizingMaskIntoConstraints = false
         addSubview(separator)
-    }
-}
-
-extension UIView {
-    convenience init(withBackgroundColor backgroundColor: UIColor, cornerRadius: CGFloat) {
-        self.init()
-        self.backgroundColor = backgroundColor
-        self.layer.cornerRadius = cornerRadius
-        self.layer.cornerCurve = .continuous
-        self.translatesAutoresizingMaskIntoConstraints = false
-    }
-}
-
-extension UIView {
-    func addSubviews(_ views: UIView...) {
-        for view in views {
-            addSubview(view)
-        }
-    }
-    
-    func setupView(_ view: UIView) {
-        addSubview(view)
-        view.translatesAutoresizingMaskIntoConstraints = false
-    }
-    
-    func roundCorners(_ corners: UIRectCorner, radius: CGFloat) {
-        let path = UIBezierPath(roundedRect: bounds,
-                                byRoundingCorners: corners,
-                                cornerRadii: CGSize(width: radius, height: radius))
         
-        let maskLayer = CAShapeLayer()
-        maskLayer.frame = bounds
-        maskLayer.path = path.cgPath
-        
-        let borderLayer = CAShapeLayer()
-        borderLayer.frame = bounds
-        borderLayer.path = path.cgPath
-        borderLayer.strokeColor = Resources.Colors.separator.cgColor
-        borderLayer.fillColor = UIColor.clear.cgColor
-        borderLayer.lineWidth = 1
-        
-        layer.mask = maskLayer
-        layer.addSublayer(borderLayer)
-        
-    }
-}
-
-extension UITableView {
-    func dynamicTextViewHeight() {
-
-        let fixedWidth = self.frame.size.width
-        let newHeight = self.sizeThatFits(CGSize(width: fixedWidth,
-                                                     height: CGFloat.greatestFiniteMagnitude)).height
-        self.translatesAutoresizingMaskIntoConstraints = true
-        var newFrame = self.frame
-        newFrame.size = CGSize(width: fixedWidth, height: newHeight)
-        self.frame = newFrame
-    }
-}
-
-
-extension UIView {
-    func dynamicViewHeight() {
-
-        let fixedWidth = self.frame.size.width
-        let newHeight = self.sizeThatFits(CGSize(width: fixedWidth,
-                                                     height: CGFloat.greatestFiniteMagnitude)).height
-
-        print(newHeight)
-        self.translatesAutoresizingMaskIntoConstraints = true
-        var newFrame = self.frame
-        newFrame.size = CGSize(width: fixedWidth, height: newHeight)
-        self.frame = newFrame
+        NSLayoutConstraint.activate([
+            separator.leadingAnchor.constraint(equalTo: leadingAnchor),
+            separator.trailingAnchor.constraint(equalTo: trailingAnchor),
+            separator.bottomAnchor.constraint(equalTo: bottomAnchor),
+            separator.heightAnchor.constraint(equalToConstant: height)
+        ])
     }
 }
 
 extension UIView {
     func findFirstResponder() -> UIView? {
-        if self.isFirstResponder {
+        if isFirstResponder {
             return self
         }
-        for subview in self.subviews {
+        for subview in subviews where subview is UITextField || subview is UITextView {
             if let firstResponder = subview.findFirstResponder() {
                 return firstResponder
             }
@@ -110,65 +37,99 @@ extension UIView {
     }
 }
 
-extension UIImageView {
-    convenience init(image: UIImage? = UIImage(named: "camera_main"), cornerRadius: CGFloat, contentMode: ContentMode = .scaleToFill, borderWidth: CGFloat = 0  ) {
+extension UIView {
+    convenience init(size: CGSize? = nil,
+                     backgroundColor: UIColor,
+                     cornerRadius: CGFloat = 0) {
         self.init()
+        self.backgroundColor = backgroundColor
+        self.layer.cornerRadius = cornerRadius
+        self.layer.cornerCurve = .continuous
+        self.translatesAutoresizingMaskIntoConstraints = false
+        
+        if let size = size {
+            NSLayoutConstraint.activate([
+                self.widthAnchor.constraint(equalToConstant: size.width),
+                self.heightAnchor.constraint(equalToConstant: size.height)
+            ])
+        }
+    }
+}
+
+extension UIImageView {
+    convenience init(image: UIImage? = Resources.Images.Icons.cameraMain,
+                     size: CGSize? = nil,
+                     cornerRadius: CGFloat = 0,
+                     contentMode: ContentMode = .scaleAspectFill,
+                     borderWidth: CGFloat = 0,
+                     tintColor: UIColor = Resources.Colors.orange,
+                     borderColor: UIColor = Resources.Colors.orange,
+                     backgroundColor: UIColor = .white) {
+        self.init()
+        self.backgroundColor = backgroundColor
         self.contentMode = contentMode
+        self.tintColor = tintColor
         self.layer.masksToBounds = true
-        self.layer.borderColor = UIColor.orange.cgColor
+        self.layer.borderColor = borderColor.cgColor
         self.layer.borderWidth = borderWidth
         self.layer.cornerRadius = cornerRadius
         if let image = image {
             self.image = image
         }
+        
         self.translatesAutoresizingMaskIntoConstraints = false
-    }
-}
-
-extension UIImageView {
-    func configureProfileImage() {
-        contentMode = .scaleAspectFill
-        clipsToBounds = true
-        backgroundColor = .systemGray6
-        layer.cornerRadius = 40
-        image = UIImage(systemName: "person.circle.fill")
-        tintColor = .systemGray3
-        translatesAutoresizingMaskIntoConstraints = false
+        
+        // Если задан size, устанавливаем констрейнты
+        if let size = size {
+            NSLayoutConstraint.activate([
+                self.widthAnchor.constraint(equalToConstant: size.width),
+                self.heightAnchor.constraint(equalToConstant: size.height)
+            ])
+        }
     }
 }
 
 extension UIImage {
-    func imageResized(to size: CGSize) -> UIImage {
-        return UIGraphicsImageRenderer(size: size).image { _ in
-            draw(in: CGRect(origin: .zero, size: size))
+    func imageResized(to size: CGSize, contentMode: UIView.ContentMode = .scaleAspectFit) -> UIImage {
+        let renderer = UIGraphicsImageRenderer(size: size)
+        return renderer.image { context in
+            let rect = CGRect(origin: .zero, size: size)
+            if contentMode == .scaleAspectFit {
+                let scale = min(size.width / size.width, size.height / size.height)
+                let scaledSize = CGSize(width: size.width * scale, height: size.height * scale)
+                let origin = CGPoint(x: (size.width - scaledSize.width) / 2, y: (size.height - scaledSize.height) / 2)
+                draw(in: CGRect(origin: origin, size: scaledSize))
+            } else {
+                draw(in: rect)
+            }
         }
     }
 }
 
 extension UILabel {
-    
-    convenience init(text: String = "", font: UIFont?, textColor: UIColor, textAligment: NSTextAlignment? = .center, numberOfLines: Int) {
+    convenience init(text: String = "", font: UIFont? = .helveticalBold(withSize: 20),backgroundColor: UIColor = .clear, textColor: UIColor = .gray, textAlignment: NSTextAlignment = .left, numberOfLines: Int = 0, height: CGFloat? = nil, layer: Bool? = nil) {
         self.init()
         self.text = text
         self.font = font
         self.textColor = textColor
-        self.adjustsFontSizeToFitWidth = true
         self.textAlignment = textAlignment
+        self.backgroundColor = backgroundColor
         self.numberOfLines = numberOfLines
+
+//        self.adjustsFontSizeToFitWidth = true
         self.translatesAutoresizingMaskIntoConstraints = false
-    }
-    
-    static func configureTitleLabel(text: String, fontSize: CGFloat = 20, height: CGFloat = 28) -> UILabel {
-        let label = UILabel()
-        label.heightAnchor.constraint(equalToConstant: height).isActive = true
-        label.font = .helveticalBold(withSize: fontSize)
-        label.textColor = .gray
-        label.textAlignment = .left
-        label.text = text
-        return label
+        if let height = height {
+            heightAnchor.constraint(equalToConstant: height).isActive = true
+        }
+        if let layer = layer {
+            self.layer.borderColor = Resources.Colors.orange.cgColor
+            self.layer.borderWidth = 1
+            self.layer.cornerRadius = Constants.cornerRadiusSmall
+            self.layer.masksToBounds = layer
+        }
     }
 
-    func addLeftPadding(padding: CGFloat) {
+    func addLeftPadding(_ padding: CGFloat) {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.firstLineHeadIndent = padding
 
@@ -179,60 +140,42 @@ extension UILabel {
 
         self.attributedText = attributedString
     }
-    
-    func configure(font: UIFont, textColor: UIColor = .black) {
-        self.font = font
-        self.textColor = textColor
-        translatesAutoresizingMaskIntoConstraints = false
-    }
-     
+ 
 }
 
 extension UITextField {
-
-    func setLeftPaddingPoints(_ amount:CGFloat){
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.size.height))
-        self.leftView = paddingView
-        self.leftViewMode = .always
+    func setPadding(_ amount: CGFloat, for side: UIRectEdge) {
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: bounds.height))
+        if side.contains(.left) {
+            leftView = paddingView
+            leftViewMode = .always
+        }
+        if side.contains(.right) {
+            rightView = paddingView
+            rightViewMode = .always
+        }
     }
-    
-    func setRightPaddingPoints(_ amount:CGFloat) {
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.size.height))
-        self.rightView = paddingView
-        self.rightViewMode = .always
-    }
-    
 }
 
 extension UIStackView {
-    convenience init(axis: NSLayoutConstraint.Axis, aligment: UIStackView.Alignment, spacing: CGFloat) {
+    convenience init(axis: NSLayoutConstraint.Axis,
+                     alignment: UIStackView.Alignment,
+                     distribution: UIStackView.Distribution = .fill,
+                     spacing: CGFloat) {
         self.init()
         self.axis = axis
-//        self.distribution = .fill
-        self.alignment = aligment
+        self.alignment = alignment
+        self.distribution = distribution
         self.spacing = spacing
         self.translatesAutoresizingMaskIntoConstraints = false
     }
 }
 
-extension UICollectionView {
-    convenience init(itemWidth: Int, itemHeight: Int, delegate: UICollectionViewDelegate? = nil, dataSource: UICollectionViewDataSource? = nil ) {
-        let flow = UICollectionViewFlowLayout()
-        flow.itemSize = CGSize(width: itemWidth, height: itemHeight)
-        flow.scrollDirection = .horizontal
-        flow.sectionInset.right = 15
-        flow.sectionInset.left = 15
-        self.init(frame: .zero, collectionViewLayout: flow)
-        self.showsHorizontalScrollIndicator = false
-        self.translatesAutoresizingMaskIntoConstraints = false
-        self.delegate = delegate
-        self.dataSource = dataSource
-    }
-}
+
 
 extension UICollectionView {
     func dynamicHeightForCollectionView() {
-        self.invalidateIntrinsicContentSize()
+//        self.invalidateIntrinsicContentSize()
         self.layoutIfNeeded()
         self.constraints.filter { $0.firstAttribute == .height }.forEach { $0.constant = self.contentSize.height }
     }
@@ -240,7 +183,7 @@ extension UICollectionView {
 
 extension UITableView {
     func dynamicHeightForTableView() {
-        self.invalidateIntrinsicContentSize()
+//        self.invalidateIntrinsicContentSize()
         self.layoutIfNeeded()
         self.constraints.filter { $0.firstAttribute == .height }.forEach { $0.constant = self.contentSize.height }
     }
@@ -270,116 +213,108 @@ extension UITableView {
     }
 }
 
-extension UITableView {
-    func configure(cellClass: AnyClass, cellIdentifier: String, delegate: UITableViewDelegate, dataSource: UITableViewDataSource) {
-        self.backgroundColor = .neutral10
-        self.isScrollEnabled = false
-        self.separatorStyle = .none
-        self.sectionHeaderTopPadding = 0
-        self.delegate = delegate
-        self.dataSource = dataSource
-
-        self.register(cellClass, forCellReuseIdentifier: cellIdentifier)
-    }
-}
-
 extension UIButton {
-    convenience init(title: String? = nil,
-                     image: UIImage? = nil,
-                     backgroundColor: UIColor = .white,
-                     tintColor: UIColor,
-                     cornerRadius: CGFloat,
-                     size: CGSize,
-                     target: Any?,
-                     action: Selector) {
+    convenience init(
+        title: String? = nil,
+        image: UIImage? = nil,
+        backgroundColor: UIColor = .clear,
+        tintColor: UIColor = .white,
+        titleColor: UIColor = .white,
+        font: UIFont? = .helveticalRegular(withSize: 16),
+        cornerRadius: CGFloat = 0,
+        size: CGSize? = nil,
+        target: Any?,
+        action: Selector
+    ) {
         self.init()
         self.layer.cornerRadius = cornerRadius
         self.backgroundColor = backgroundColor
+        self.tintColor = tintColor // Устанавливаем tintColor для кнопки
+
         if let title = title {
             self.setTitle(title, for: .normal)
-            self.setTitleColor(.white, for: .normal)
-            self.titleLabel?.font = .helveticalRegular(withSize: 20)
+            self.setTitleColor(titleColor, for: .normal)
+            self.titleLabel?.font = font
         }
+
         if let image = image {
-            let resizedImage = image.imageResized(to: size)
-            let tintedImage = resizedImage.withTintColor(tintColor, renderingMode: .alwaysOriginal)
-            self.setImage(tintedImage, for: .normal)
+            // Используем renderingMode: .alwaysTemplate, чтобы tintColor работал динамически
+            let templateImage = image.withRenderingMode(.alwaysTemplate)
+            self.setImage(templateImage, for: .normal)
         }
+
         if let target = target {
             self.addTarget(target, action: action, for: .touchUpInside)
         }
+
         self.translatesAutoresizingMaskIntoConstraints = false
-    }
-    
-    func configure(title: String, color: UIColor) {
-        setTitle(title, for: .normal)
-        setTitleColor(color, for: .normal)
-        translatesAutoresizingMaskIntoConstraints = false
+
+        // Если задан size, устанавливаем констрейнты
+        if let size = size {
+            NSLayoutConstraint.activate([
+                self.widthAnchor.constraint(equalToConstant: size.width),
+                self.heightAnchor.constraint(equalToConstant: size.height)
+            ])
+        }
     }
 }
 
 extension UITextField {
-    static func configureTextField(placeholder: String, delegate: UITextFieldDelegate? = nil) -> UITextField {
+    static func configureTextField(placeholder: String,
+                                   delegate: UITextFieldDelegate? = nil,
+                                   keyboardType: UIKeyboardType = .default,
+                                   isSecureTextEntry: Bool = false,
+                                   borderColor: UIColor = Resources.Colors.orange,
+                                   cornerRadius: CGFloat = Constants.cornerRadiusSmall,
+                                   backgroundColor: UIColor = .white,
+                                   fontSize: CGFloat = 16) -> UITextField {
         let textField = UITextField()
-        textField.layer.cornerRadius = 8
-        textField.layer.borderColor = UIColor.orange.cgColor
+        textField.layer.cornerRadius = cornerRadius
+        textField.layer.borderColor = borderColor.cgColor
         textField.layer.borderWidth = 1
+        textField.keyboardType = keyboardType
         textField.textAlignment = .left
         textField.returnKeyType = .done
-        textField.setLeftPaddingPoints(15)
+        textField.setPadding(15, for: .left)
         textField.clearButtonMode = .whileEditing
-        textField.backgroundColor = .white
+        textField.backgroundColor = backgroundColor
+        textField.isSecureTextEntry = isSecureTextEntry
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.delegate = delegate
-
         let attributes = [NSAttributedString.Key.foregroundColor: UIColor.lightGray,
-                          NSAttributedString.Key.font: UIFont.helveticalRegular(withSize: 16)]
+                          NSAttributedString.Key.font: UIFont.helveticalRegular(withSize: fontSize)]
         textField.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: attributes as [NSAttributedString.Key : Any])
         return textField
     }
 }
 
-extension UITextView {
-    static func configureTextView(placeholder: String,
-                                   delegate: UITextViewDelegate? = nil ) -> UITextView {
-        let textView = UITextView()
-        textView.layer.cornerRadius = 8
-        textView.layer.borderColor = UIColor.orange.cgColor
-        textView.layer.borderWidth = 1
-        textView.textAlignment = .left
-        textView.textColor = .lightGray
-        textView.returnKeyType = .done
-        textView.isScrollEnabled = false
-        textView.leftSpace(10)
-        textView.font = .helveticalRegular(withSize: 16)
-        textView.placeholder = placeholder
-        textView.delegate = delegate //
-        textView.translatesAutoresizingMaskIntoConstraints = false
-        return textView
-    }
-}
 extension UIImagePickerController {
-    convenience init(delegate: UIImagePickerControllerDelegate &
-                     UINavigationControllerDelegate) {
+    convenience init(delegate: UIImagePickerControllerDelegate & UINavigationControllerDelegate, sourceType: SourceType = .photoLibrary, allowsEditing: Bool = true) {
         self.init()
         self.delegate = delegate
-        self.sourceType = .photoLibrary
-        self.allowsEditing = true
+        self.sourceType = sourceType
+        self.allowsEditing = allowsEditing
     }
 }
 
-extension UIPickerView {
-    func configure(dataSource: UIPickerViewDataSource, delegate: UIPickerViewDelegate) {
-        self.dataSource = dataSource
-        self.delegate = delegate
-    }
-}
-
-extension UIView {
-    convenience init(backgroundColor: UIColor, cornerRadius: CGFloat = 0) {
-        self.init()
-        self.backgroundColor = backgroundColor
-        self.layer.cornerRadius = cornerRadius
-        self.translatesAutoresizingMaskIntoConstraints = false
-    }
+extension UIActivityIndicatorView {
+    static func createIndicator(
+        style: UIActivityIndicatorView.Style,
+        color: UIColor = .gray,
+        centerIn view: UIView? = nil) -> UIActivityIndicatorView {
+            let indicator = UIActivityIndicatorView(style: style)
+            indicator.color = color
+            indicator.hidesWhenStopped = true
+            indicator.translatesAutoresizingMaskIntoConstraints = false
+            
+            if let view = view {
+                view.addSubview(indicator)
+                NSLayoutConstraint.activate([
+                    indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                    indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+                ])
+            }
+            
+            return indicator
+        }
 }

@@ -7,137 +7,88 @@
 
 import UIKit
 
-class AddTagViewController: UIViewController {
-
+final class AddTagViewController: BaseController {
+    
     private var newTags: [String] = []
-    var originalTags: [String] = []
-    var saveTagsCallback: (([String]) -> Void)?
-
-    private let tagTextField: UITextField = {
-        let field = UITextField()
-        field.layer.cornerRadius = 8
-        field.layer.borderColor = UIColor.orange.cgColor
-        field.layer.borderWidth = 1
-        field.textAlignment = .left
-        field.returnKeyType = .done
-        field.setLeftPaddingPoints(15)
-        field.clearButtonMode = .whileEditing
-        field.backgroundColor = .white
-        field.translatesAutoresizingMaskIntoConstraints = false
-        
-        let attributes = [NSAttributedString.Key.foregroundColor: UIColor.lightGray,
-                          NSAttributedString.Key.font: UIFont.helveticalRegular(withSize: 16)]
-
-        field.attributedPlaceholder = NSAttributedString(
-            string: "Введите тег",
-            attributes: attributes as [NSAttributedString.Key : Any])
-        return field
-    }()
+    private let tagTextField = UITextField.configureTextField(placeholder: Resources.Strings.Placeholders.enterTag)
     
-    private let addButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Добавить", for: .normal)
-        button.backgroundColor = .orange.withAlphaComponent(0.6)
-        button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 8
-        return button
-    }()
+    private lazy var addButton = UIButton(
+        title: Resources.Strings.Buttons.add,
+        backgroundColor: Resources.Colors.orange,
+        cornerRadius: Constants.cornerRadiusSmall,
+        size: Constants.tagSizeButton,
+        target: self, action: #selector(addTagTapped)
+    )
     
-    private var tagsCollectionView: UICollectionView = {
-        let layout = LeftAlignedCollectionViewFlowLayout()
-        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-        layout.minimumInteritemSpacing = 8
-        layout.minimumLineSpacing = 8
-        
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .clear
-        collectionView.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: TagCollectionViewCell.id)
+    private lazy var tagsCollectionView: UICollectionView = {
+        let collectionView = createCollectionView(
+            type: .dynamicSize(useLeftAlignedLayout: true, scrollDirection: .vertical),
+            cellConfigs: [
+                CollectionViewCellConfig(cellClass: TagCollectionViewCell.self, identifier: TagCollectionViewCell.id),
+            ],
+            delegate: self,
+            dataSource: self,
+            isScrollEnabled: false
+        )
         return collectionView
     }()
     
-    private let doneButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(title: "Готово", style: .done, target: nil, action: nil)
-        return button
-    }()
+    var originalTags: [String] = []
+    
+    var saveTagsCallback: (([String]) -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         newTags = originalTags
         
         setupViews()
+        setupNavigationBar()
         setupConstraints()
-        setupActions()
     }
     
-    private func setupViews() {
-        view.backgroundColor = .neutral10
-        title = "Добавить теги"
-        
-        navigationItem.rightBarButtonItem = doneButton
-        
-        tagsCollectionView.dataSource = self
-        tagsCollectionView.delegate = self
+    private func setupNavigationBar() {
+        navigationItem.title = Resources.Strings.Titles.addTags
+        addNavBarButtons(at: .left, types: [.title(Resources.Strings.Buttons.cancel)])
+        addNavBarButtons(at: .right, types: [.title(Resources.Strings.Buttons.done)])
+    }
+
+    internal override func setupViews() {
+        super.setupViews()
+        view.backgroundColor = Resources.Colors.backgroundLight
 
         view.addSubview(tagTextField)
         view.addSubview(addButton)
         view.addSubview(tagsCollectionView)
-
     }
     
-    private func setupConstraints() {
-        tagTextField.translatesAutoresizingMaskIntoConstraints = false
-        addButton.translatesAutoresizingMaskIntoConstraints = false
-        tagsCollectionView.translatesAutoresizingMaskIntoConstraints = false
-        
+    internal override func setupConstraints() {
         NSLayoutConstraint.activate([
-            tagTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            tagTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            tagTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Constants.paddingMedium),
+            tagTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.paddingMedium),
             tagTextField.trailingAnchor.constraint(equalTo: addButton.leadingAnchor, constant: -10),
             tagTextField.heightAnchor.constraint(equalToConstant: 40),
             
             addButton.centerYAnchor.constraint(equalTo: tagTextField.centerYAnchor),
-            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            addButton.widthAnchor.constraint(equalToConstant: 100),
-            addButton.heightAnchor.constraint(equalToConstant: 40),
-            
-            tagsCollectionView.topAnchor.constraint(equalTo: tagTextField.bottomAnchor, constant: 20),
-            tagsCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            tagsCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            tagsCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
+            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.paddingMedium),
+           
+            tagsCollectionView.topAnchor.constraint(equalTo: tagTextField.bottomAnchor, constant: Constants.paddingMedium),
+            tagsCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.paddingMedium),
+            tagsCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.paddingMedium),
+            tagsCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Constants.paddingMedium)
         ])
-    }
-    
-    private func setupActions() {
-        addButton.addTarget(self, action: #selector(addTagTapped), for: .touchUpInside)
-        doneButton.target = self
-        doneButton.action = #selector(doneTapped)
-    }
-    
-    @objc private func addTagTapped() {
-        guard let tag = tagTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-              !tag.isEmpty else { return }
-        
-        if !newTags.contains(tag) {
-            newTags.append(tag)
-            tagsCollectionView.reloadData()
-        }
-        tagTextField.text = ""
-    }
-    
-    @objc private func doneTapped() {
-        saveTagsCallback?(newTags)
-        navigationController?.popViewController(animated: true)
     }
 }
 
+// MARK: - UICollectionViewDataSource, UICollectionViewDelegate
 extension AddTagViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         newTags.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagCollectionViewCell.id, for: indexPath) as! TagCollectionViewCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagCollectionViewCell.id, for: indexPath) as? TagCollectionViewCell else {
+            return TagCollectionViewCell()
+        }
         cell.configure(with: newTags[indexPath.item])
         cell.deleteAction = { [weak self] in
             self?.newTags.remove(at: indexPath.item)
@@ -145,5 +96,63 @@ extension AddTagViewController: UICollectionViewDataSource, UICollectionViewDele
         }
         return cell
     }
+}
 
+
+// MARK: - Help Methods
+extension AddTagViewController {
+    @objc private func addTagTapped() {
+        guard let tag = tagTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !tag.isEmpty else {
+            AlertManager.shared.show(
+                on: self,
+                title: Resources.Strings.Alerts.errorTitle,
+                message: Resources.Strings.Alerts.enterTag
+            )
+            return
+        }
+        
+        if newTags.contains(tag) {
+            AlertManager.shared.show(
+                on: self,
+                title: Resources.Strings.Alerts.errorTitle,
+                message: Resources.Strings.Alerts.tagExists
+            )
+            return
+        }
+        
+        if tag.count > 20 {
+            AlertManager.shared.show(
+                on: self,
+                title: Resources.Strings.Alerts.errorTitle,
+                message: Resources.Strings.Alerts.tagTooLong
+            )
+            return
+        }
+        
+        if newTags.count >= 10 {
+            AlertManager.shared.show(
+                on: self,
+                title: Resources.Strings.Alerts.errorTitle,
+                message: Resources.Strings.Alerts.maxTags
+            )
+            return
+        }
+        
+        newTags.append(tag)
+        tagsCollectionView.reloadData()
+        tagTextField.text = ""
+        tagTextField.resignFirstResponder()
+    }
+}
+
+// MARK: - NavBar Methods
+extension AddTagViewController {
+    internal override func navBarLeftButtonHandler() {
+        navigationController?.popViewController(animated: true)
+    }
+    
+    internal override func navBarRightButtonHandler() {
+        saveTagsCallback?(newTags)
+        navigationController?.popViewController(animated: true)
+    }
 }

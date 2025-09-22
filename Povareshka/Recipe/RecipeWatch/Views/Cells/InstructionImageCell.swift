@@ -7,18 +7,11 @@
 
 import UIKit
 
-class InstructionImageCell: UITableViewCell {
+final class InstructionImageCell: UITableViewCell {
     static let id = "InstructionImageCell"
     
     private var imageTask: Task<Void, Never>?
-    private let stepImageView: UIImageView = {
-        let iv = UIImageView()
-        iv.contentMode = .scaleAspectFill
-        iv.clipsToBounds = true
-        iv.layer.cornerRadius = 8
-        iv.translatesAutoresizingMaskIntoConstraints = false
-        return iv
-    }()
+    private lazy var stepImageView = UIImageView(cornerRadius: Constants.cornerRadiusSmall)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -39,40 +32,27 @@ class InstructionImageCell: UITableViewCell {
         contentView.addSubview(stepImageView)
         
         NSLayoutConstraint.activate([
-            stepImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
-            stepImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
-            stepImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5),
-            stepImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0),
+            stepImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            stepImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.paddingSmall),
+            stepImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.paddingSmall),
+            stepImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             stepImageView.heightAnchor.constraint(equalTo: stepImageView.widthAnchor, multiplier: 0.6)
         ])
     }
     
     func configure(with imagePath: String) {
-        loadImage(path: imagePath)
-    }
-    
-    private func loadImage(path: String) {
         imageTask?.cancel()
-        
-        if let cachedImage = ImageCache.shared.image(for: path) {
+
+        if let cachedImage = ImageCache.shared.image(for: imagePath) {
             stepImageView.image = cachedImage
             return
         }
-        
+
         imageTask = Task {
             do {
-                let data = try await SupabaseManager.shared.client
-                    .storage
-                    .from("recipes")
-                    .download(path: path)
-                
-                if !Task.isCancelled, let image = UIImage(data: data) {
-                    ImageCache.shared.setImage(image, for: path)
-                    stepImageView.image = image
-                }
-            } catch {
+                let image = await DataService.shared.loadImage(from: imagePath, bucket: Bucket.recipes)
                 if !Task.isCancelled {
-                    stepImageView.image = UIImage(named: "recipe_placeholder")
+                    stepImageView.image = image
                 }
             }
         }

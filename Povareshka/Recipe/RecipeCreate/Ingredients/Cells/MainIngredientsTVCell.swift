@@ -7,54 +7,30 @@
 
 import UIKit
 
-class MainIngredientsTableViewCell: UITableViewCell {
+final class MainIngredientsTableViewCell: UITableViewCell {
+    static let id = "MainIngredientsTableViewCell"
     
-    static let id = "ingredients"
+    private let contentStackView = UIStackView(
+        axis: .horizontal,
+        alignment: .center,
+        spacing: 12
+    )
     
-    private lazy var contentStackView : UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .horizontal
-        stack.distribution = .fill
-        stack.spacing = 12
-        stack.alignment = .center
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        return stack
-    }()
-    
-    let ingredientName : UILabel = {
-        let label = UILabel()
-        label.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        label.layer.borderColor = UIColor.orange.cgColor
-        label.layer.borderWidth = 1
-        label.layer.cornerRadius = 12
-        label.font = .helveticalBold(withSize: 16)
-        label.backgroundColor = .white
-        label.textColor = .black
-        label.layer.masksToBounds = true
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-
-    
-    let weightName : UILabel = {
-        let label = UILabel()
-        label.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        label.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        label.font = .helveticalBold(withSize: 16)
-        label.backgroundColor = .white
-        label.textColor = .gray
-        label.textAlignment = .center
-        label.layer.borderColor = UIColor.orange.cgColor
-        label.layer.borderWidth = 1
-        label.layer.cornerRadius = 12
-        label.layer.masksToBounds = true
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    private let ingredientName = UILabel(font: .helveticalRegular(withSize: 16),
+                                         backgroundColor: .white,
+                                         textColor: .black,
+                                         textAlignment: .center,
+                                         layer: true)
+    private let weightName = UILabel(font: .helveticalRegular(withSize: 16),
+                                     backgroundColor: .white,
+                                     textColor: .black,
+                                     textAlignment: .center,
+                                     layer: true)
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupCell()
+        setupViews()
+        setupConstraints()
     }
     
     required init?(coder: NSCoder) {
@@ -67,20 +43,31 @@ class MainIngredientsTableViewCell: UITableViewCell {
         self.weightName.text = ""
     }
     
-    private func setupCell() {
+    private func setupViews() {
         selectionStyle = .none
-        backgroundColor = .neutral10
+        backgroundColor = Resources.Colors.backgroundLight
         contentView.addSubview(contentStackView)
         contentStackView.addArrangedSubview(ingredientName)
         contentStackView.addArrangedSubview(weightName)
-        
+    }
+    
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
-            contentStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
+            contentStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Constants.paddingSmall),
             contentStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             contentStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            contentStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5),
+            contentStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -Constants.paddingSmall),
+
+            ingredientName.heightAnchor.constraint(equalToConstant:  Constants.height),
+            weightName.heightAnchor.constraint(equalToConstant:  Constants.height),
+            weightName.widthAnchor.constraint(equalToConstant:  Constants.heightStandart)
         ])
     }
     
+    func configure(with ingredient: Ingredient) {
+        ingredientName.text = ingredient.name
+        ingredientName.addLeftPadding(20)
+        weightName.text = "\(ingredient.amount) \(ingredient.measure)"
+    }
 
 }

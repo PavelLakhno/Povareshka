@@ -7,13 +7,6 @@
 
 import UIKit
 
-extension UITextView {
-    func leftSpace(_ amount:CGFloat) {
-        self.textContainerInset = UIEdgeInsets(top: 4, left: amount, bottom: 4, right: 4)
-    }
-}
-
-//extension UITextView: @retroactive UIScrollViewDelegate {}
 extension UITextView: @retroactive UITextViewDelegate {
 
     var placeholder: String? {
@@ -62,7 +55,6 @@ extension UITextView: @retroactive UITextViewDelegate {
 
     }
 
-    
     private func addPlaceholderLabel(placeholderText: String) {
 
         let placeholderLabel = UILabel()
@@ -82,7 +74,7 @@ extension UITextView: @retroactive UITextViewDelegate {
         
         let button = UIButton()
         button.layer.cornerRadius = 15
-        button.setImage(UIImage(systemName: "multiply.circle.fill"), for: .normal)
+        button.setImage(Resources.Images.Icons.cancel, for: .normal)
         button.setTitle(nil, for: .normal)
         button.tintColor = .lightGray.withAlphaComponent(0.5)
         button.frame = CGRect(
@@ -115,7 +107,7 @@ extension UITextView: @retroactive UITextViewDelegate {
         ])
     }
     
-    func dynamicTextViewHeight(_ constHeight: CGFloat) {
+    func dynamicTextViewHeight(minHeight: CGFloat) {
 
         let fixedWidth = self.frame.size.width
         let newHeight = self.sizeThatFits(CGSize(width: fixedWidth,
@@ -123,37 +115,37 @@ extension UITextView: @retroactive UITextViewDelegate {
         self.translatesAutoresizingMaskIntoConstraints = true
         var newFrame = self.frame
         
-        if constHeight < newHeight {
+        if minHeight < newHeight {
             newFrame.size = CGSize(width: fixedWidth, height: newHeight)
         } else {
-            newFrame.size = CGSize(width: fixedWidth, height: constHeight)
+            newFrame.size = CGSize(width: fixedWidth, height: minHeight)
         }
         self.frame = newFrame
     }
 
 }
+
 extension UITextView {
-    func dynamicTextViewHeight(minHeight: CGFloat) {
-        guard minHeight > 0 else { return }
-        
-        let fixedWidth = self.frame.size.width
-        let newSize = self.sizeThatFits(CGSize(width: fixedWidth,
-                                              height: CGFloat.greatestFiniteMagnitude))
-        
-        // Находим height constraint (если есть)
-        let heightConstraint = self.constraints.first { $0.firstAttribute == .height }
-        
-        // Устанавливаем новую высоту (не меньше minHeight)
-        let newHeight = max(newSize.height, minHeight)
-        
-        // Обновляем constraint или frame
-        if let heightConstraint = heightConstraint {
-            heightConstraint.constant = newHeight
-        } else {
-            self.frame.size.height = newHeight
-        }
-        
-        self.layoutIfNeeded()
+    static func configureTextView(placeholder: String,
+                                  delegate: UITextViewDelegate? = nil,
+                                  borderColor: UIColor = Resources.Colors.orange,
+                                  cornerRadius: CGFloat = 8,
+                                  fontSize: CGFloat = 16,
+                                  isScroll: Bool = false,
+                                  textContainerInset: UIEdgeInsets = UIEdgeInsets(top: 4, left: 10, bottom: 4, right: 30)) -> UITextView {
+        let textView = UITextView()
+        textView.layer.cornerRadius = cornerRadius
+        textView.layer.borderColor = borderColor.cgColor
+        textView.layer.borderWidth = 1
+        textView.textAlignment = .left
+        textView.textColor = .lightGray
+        textView.returnKeyType = .done
+        textView.isScrollEnabled = isScroll
+        textView.textContainerInset = textContainerInset
+        textView.font = .helveticalRegular(withSize: fontSize)
+        textView.placeholder = placeholder
+        textView.delegate = delegate
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        return textView
     }
 }
-

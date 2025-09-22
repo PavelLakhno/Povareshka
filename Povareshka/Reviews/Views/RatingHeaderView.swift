@@ -7,76 +7,68 @@
 
 import UIKit
 
-class RatingHeaderView: UIView {
-    private let ratingLabel = UILabel()
-    private let starsView = UIStackView()
-    private let titleLabel = UILabel()
-    private let horizontalStack = UIStackView()
+final class RatingHeaderView: UIView {
+    private let ratingLabel = UILabel(font: .helveticalBold(withSize: 30),
+                                      textColor: .black,
+                                      textAlignment: .left)
+    private let titleLabel = UILabel(text: Resources.Strings.Titles.opinionUsers,
+                                     font: .helveticalRegular(withSize: 14),
+                                     textColor: .secondaryLabel,
+                                     textAlignment: .left, numberOfLines: 1)
+    private let starsView = UIStackView(axis: .horizontal,
+                                        alignment: .leading,
+                                        spacing: Constants.spacingSmall)
+    private let verticalStack = UIStackView(axis: .vertical,
+                                            alignment: .leading,
+                                            spacing: Constants.spacingSmall)
+    private let mainStack = UIStackView(axis: .horizontal,
+                                        alignment: .leading,
+                                        spacing: Constants.spacingMedium)
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
+        setupConstraints()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupView()
+        setupConstraints()
     }
     
     func configure(rating: Double) {
         ratingLabel.text = String(format: "%.1f", rating)
         
-        // Очищаем предыдущие звезды
         starsView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
-        // Добавляем звезды (5 штук)
         for i in 1...5 {
-            let star = UIImageView(image: UIImage(systemName: i <= Int(rating) ? "star.fill" : "star"))
-            star.tintColor = .systemOrange
-            star.contentMode = .scaleAspectFit
-            star.widthAnchor.constraint(equalToConstant: 16).isActive = true
-            star.heightAnchor.constraint(equalToConstant: 16).isActive = true
+            let star = UIImageView(
+                image: i <= Int(rating) ? Resources.Images.Icons.starFilled : Resources.Images.Icons.starEmpty,
+                size: Constants.iconCellSizeSmall,
+                contentMode: .scaleAspectFit,
+                tintColor: Resources.Colors.orange
+            )
             starsView.addArrangedSubview(star)
         }
     }
     
     private func setupView() {
-        // Настройка ratingLabel
-        ratingLabel.font = .boldSystemFont(ofSize: 30)
-        ratingLabel.textAlignment = .left
+        verticalStack.addArrangedSubview(starsView)
+        verticalStack.addArrangedSubview(titleLabel)
         
-        // Настройка starsView
-        starsView.axis = .horizontal
-        starsView.spacing = 4
-        starsView.alignment = .leading
+        mainStack.addArrangedSubview(ratingLabel)
+        mainStack.addArrangedSubview(verticalStack)
         
-        // Настройка titleLabel
-        titleLabel.text = "Мнение пользователей"
-        titleLabel.font = .systemFont(ofSize: 14)
-        titleLabel.textColor = .secondaryLabel
-        titleLabel.textAlignment = .left
-        
-        // Вертикальный стек для звезд и заголовка
-        let rightStack = UIStackView(arrangedSubviews: [starsView, titleLabel])
-        rightStack.axis = .vertical
-        rightStack.spacing = 2
-        rightStack.alignment = .leading
-        
-        // Горизонтальный стек для оценки и правой части
-        horizontalStack.axis = .horizontal
-        horizontalStack.spacing = 8
-        horizontalStack.alignment = .center
-        horizontalStack.addArrangedSubview(ratingLabel)
-        horizontalStack.addArrangedSubview(rightStack)
-        
-        addSubview(horizontalStack)
-        
-        horizontalStack.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(mainStack)
+    }
+    
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
-            horizontalStack.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-            horizontalStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            horizontalStack.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -16),
-            horizontalStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
+            mainStack.topAnchor.constraint(equalTo: topAnchor, constant: Constants.paddingMedium),
+            mainStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.paddingMedium),
+            mainStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Constants.paddingMedium),
+            mainStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -Constants.paddingMedium)
         ])
     }
 }
