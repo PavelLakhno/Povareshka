@@ -17,7 +17,7 @@ class ShoppingListViewController: BaseController {
     
         private let emptyStateImageView: UIImageView = {
             let imageView = UIImageView()
-            imageView.image = Resources.Images.Icons.cart
+            imageView.image = AppImages.Icons.cart
             imageView.tintColor = .gray.withAlphaComponent(0.6)
             imageView.contentMode = .scaleAspectFit
             imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -26,7 +26,7 @@ class ShoppingListViewController: BaseController {
     
         private let emptyStateLabel: UILabel = {
             let label = UILabel()
-            label.text = Resources.Strings.Messages.shopListEmpty
+            label.text = AppStrings.Messages.shopListEmpty
             label.textAlignment = .center
             label.font = .systemFont(ofSize: 16)
             label.textColor = .gray
@@ -85,7 +85,7 @@ class ShoppingListViewController: BaseController {
     }
     
     private func setupNavigationBar() {
-        navigationItem.title = Resources.Strings.TabBar.shop
+        navigationItem.title = AppStrings.TabBar.shop
         addNavBarButtons(
             at: .right,
             types: [.system(.add), .system(.trash)],
@@ -118,17 +118,17 @@ class ShoppingListViewController: BaseController {
     }
     
     @objc private func addButtonTapped() {
-        let alert = UIAlertController(title: Resources.Strings.Buttons.add, message: nil, preferredStyle: .alert)
+        let alert = UIAlertController(title: AppStrings.Buttons.add, message: nil, preferredStyle: .alert)
         
         alert.addTextField { textField in
-            textField.placeholder = Resources.Strings.Placeholders.enterTitle
+            textField.placeholder = AppStrings.Placeholders.enterTitle
         }
         
         alert.addTextField { textField in
-            textField.placeholder = Resources.Strings.Placeholders.enterCount
+            textField.placeholder = AppStrings.Placeholders.enterCount
         }
         
-        let addAction = UIAlertAction(title: Resources.Strings.Buttons.done, style: .default) { _ in
+        let addAction = UIAlertAction(title: AppStrings.Buttons.done, style: .default) { _ in
             guard let name = alert.textFields?[0].text,
                   let quantity = alert.textFields?[1].text,
                   !name.isEmpty else { return }
@@ -137,7 +137,7 @@ class ShoppingListViewController: BaseController {
             ShoppingListManager.shared.addIngredient(ingredient)
         }
         
-        let cancelAction = UIAlertAction(title: Resources.Strings.Buttons.cancel, style: .cancel)
+        let cancelAction = UIAlertAction(title: AppStrings.Buttons.cancel, style: .cancel)
         
         alert.addAction(addAction)
         alert.addAction(cancelAction)
@@ -147,16 +147,16 @@ class ShoppingListViewController: BaseController {
     
     @objc private func clearButtonTapped() {
         let alert = UIAlertController(
-            title: Resources.Strings.Titles.deleteList,
-            message: Resources.Strings.Messages.delete,
+            title: AppStrings.Titles.deleteList,
+            message: AppStrings.Messages.delete,
             preferredStyle: .alert
         )
         
-        let clearAction = UIAlertAction(title: Resources.Strings.Buttons.delete, style: .destructive) { _ in
+        let clearAction = UIAlertAction(title: AppStrings.Buttons.delete, style: .destructive) { _ in
             ShoppingListManager.shared.clearList()
         }
         
-        let cancelAction = UIAlertAction(title: Resources.Strings.Buttons.cancel, style: .cancel)
+        let cancelAction = UIAlertAction(title: AppStrings.Buttons.cancel, style: .cancel)
         
         alert.addAction(clearAction)
         alert.addAction(cancelAction)
@@ -191,19 +191,19 @@ extension ShoppingListViewController: UITableViewDelegate, UITableViewDataSource
         tableView.deselectRow(at: indexPath, animated: true)
         
         let ingredient = ingredients[indexPath.row]
-        let alert = UIAlertController(title: Resources.Strings.Titles.correctIngredient, message: nil, preferredStyle: .alert)
+        let alert = UIAlertController(title: AppStrings.Titles.correctIngredient, message: nil, preferredStyle: .alert)
         
         alert.addTextField { textField in
             textField.text = ingredient.name
-            textField.placeholder = Resources.Strings.Placeholders.enterTitle
+            textField.placeholder = AppStrings.Placeholders.enterTitle
         }
         
         alert.addTextField { textField in
             textField.text = ingredient.amount
-            textField.placeholder = Resources.Strings.Placeholders.enterCount
+            textField.placeholder = AppStrings.Placeholders.enterCount
         }
         
-        let saveAction = UIAlertAction(title: Resources.Strings.Buttons.save, style: .default) { _ in
+        let saveAction = UIAlertAction(title: AppStrings.Buttons.save, style: .default) { _ in
             guard let name = alert.textFields?[0].text,
                   let quantity = alert.textFields?[1].text,
                   !name.isEmpty else { return }
@@ -212,7 +212,7 @@ extension ShoppingListViewController: UITableViewDelegate, UITableViewDataSource
             ShoppingListManager.shared.updateIngredient(updatedIngredient, at: indexPath.row)
         }
         
-        let cancelAction = UIAlertAction(title: Resources.Strings.Buttons.cancel, style: .cancel)
+        let cancelAction = UIAlertAction(title: AppStrings.Buttons.cancel, style: .cancel)
         
         alert.addAction(saveAction)
         alert.addAction(cancelAction)

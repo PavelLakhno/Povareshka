@@ -12,11 +12,11 @@ final class IngredientCell: UITableViewCell {
     
     // MARK: - UI Elements
     private let titleLabel = UILabel(font: .helveticalRegular(withSize: 16),
-                                     textColor: Resources.Colors.titleGray,
+                                     textColor: .black,
                                      textAlignment: .left)
     
-    private lazy var addButton = UIButton(image: Resources.Images.Icons.addFill,
-                                          tintColor: Resources.Colors.orange,
+    private lazy var addButton = UIButton(image: AppImages.Icons.addFill,
+                                          tintColor: AppColors.primaryOrange,
                                           size: Constants.iconCellSizeMedium,
                                           target: self,
                                           action: #selector(addButtonTapped))
@@ -39,8 +39,8 @@ final class IngredientCell: UITableViewCell {
     // MARK: - Private Methods
     private func setupViews() {
         selectionStyle = .none
-        backgroundColor = Resources.Colors.backgroundLight
-        tintColor = Resources.Colors.orange
+        backgroundColor = AppColors.gray100
+        tintColor = AppColors.primaryOrange
 
         contentView.addSubview(titleLabel)
         contentView.addSubview(addButton)
@@ -60,7 +60,7 @@ final class IngredientCell: UITableViewCell {
     @objc private func addButtonTapped() {
         guard let ingredient = ingredient else { return }
         addActionHandler?(ingredient)
-        addButton.setImage(Resources.Images.Icons.okFill, for: .normal)
+        addButton.setImage(AppImages.Icons.okFill, for: .normal)
         addButton.isEnabled = false
         
         let feedback = UINotificationFeedbackGenerator()
@@ -72,7 +72,7 @@ final class IngredientCell: UITableViewCell {
         self.ingredient = ingredient
         titleLabel.text = "\(ingredient.name)  \(ingredient.amount)"
         
-        let image = isAdded ? Resources.Images.Icons.okFill : Resources.Images.Icons.addFill
+        let image = isAdded ? AppImages.Icons.okFill : AppImages.Icons.addFill
         addButton.setImage(image, for: .normal)
         addButton.isEnabled = !isAdded
     }

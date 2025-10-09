@@ -19,8 +19,8 @@ class MenuItemCell: UITableViewCell {
     
     private let iconContainer: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemGray6
-        view.layer.cornerRadius = 16
+        view.backgroundColor = AppColors.gray100
+        view.layer.cornerRadius = Constants.cornerRadiusMedium
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()

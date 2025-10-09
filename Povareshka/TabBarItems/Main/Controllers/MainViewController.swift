@@ -21,9 +21,9 @@ final class MainViewController: BaseController {
         return sv
     }()
 
-    let trendingCategoryLabel = UILabel(text: Resources.Strings.Titles.popular,
+    let trendingCategoryLabel = UILabel(text: AppStrings.Titles.popular,
                                         font: UIFont.helveticalLight(withSize: 16),
-                                        textColor: Resources.Colors.secondary ,
+                                        textColor: AppColors.gray600,
                                         numberOfLines: 1)
     
 
@@ -54,7 +54,7 @@ final class MainViewController: BaseController {
     }
 
     private func setupNavigationBar() {
-        navigationItem.title = Resources.Strings.Titles.main
+        navigationItem.title = AppStrings.Titles.main
         addNavBarButtons(at: .right, types: [.system(.add)])
     }
     
@@ -102,7 +102,7 @@ final class MainViewController: BaseController {
         activityIndicator.startAnimating()
         Task {
             do {
-                let response = try await DataService.shared.loadShortRecipesInfo()
+                let response = try await DataService.shared.fetchRecipesShortInfo()
                 
                 DispatchQueue.main.async {
                     self.recipesSupabase = response

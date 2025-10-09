@@ -31,14 +31,15 @@ final class TrendingNowCollectionViewCell: UICollectionViewCell {
         contentMode: .scaleToFill
     )
 
+    //MARK: !!!!!!!!
     private var ratingContainerView = UIView(
-        backgroundColor: Resources.Colors.titleBackground,
+        backgroundColor: .black.withAlphaComponent(0.3),
         cornerRadius: Constants.cornerRadiusSmall
     )
     
     private var ratingImageView = UIImageView(
-        image: Resources.Images.Icons.starFilled?.withTintColor(.systemYellow,
-                                                                renderingMode: .alwaysOriginal)
+        image: AppImages.Icons.starFilled?.withTintColor(.systemYellow,
+                                                         renderingMode: .alwaysOriginal)
     )
     
     private var ratingLabel = UILabel(
@@ -64,7 +65,7 @@ final class TrendingNowCollectionViewCell: UICollectionViewCell {
     
     private var creatorLabel = UILabel(
         font: .helveticalRegular(withSize: 12),
-        textColor: Resources.Colors.secondary,
+        textColor: AppColors.gray600,
         numberOfLines: 1
     )
 
@@ -80,7 +81,7 @@ final class TrendingNowCollectionViewCell: UICollectionViewCell {
                 let averageRating = try await dataService.fetchAverageRating(recipeId: recipe.id)
                 ratingLabel.text = "\(averageRating)"
             } catch {
-                print("error")
+                print("Ошибка загрузки: \(error)")
             }
         }
     }
@@ -99,19 +100,24 @@ final class TrendingNowCollectionViewCell: UICollectionViewCell {
         mainImageTask = Task { [weak self] in
             guard let self = self else { return }
             
-            let image = await dataService.loadImage(from: path, bucket: Bucket.recipes)
+            do {
+                let image = try await dataService.loadImage(from: path, bucket: Bucket.recipes)
+                
+                guard !Task.isCancelled else { return }
+                
+                ImageCache.shared.setImage(image, for: path)
+                photoDish.image = image
+                self.activityIndicator.stopAnimating()
+            } catch {
+                print("Ошибка загрузки: \(error)")
+            }
             
-            guard !Task.isCancelled, let image = image else { return }
-            
-            ImageCache.shared.setImage(image, for: path)
-            photoDish.image = image
-            self.activityIndicator.stopAnimating()
         }
     }
     
     private func loadAuthorAvatar(path: String?) {
         guard let path = path else {
-            creatorImageView.image = Resources.Images.Icons.profile
+            creatorImageView.image = AppImages.Icons.profile
             return
         }
         
@@ -125,12 +131,17 @@ final class TrendingNowCollectionViewCell: UICollectionViewCell {
         avatarImageTask = Task { [weak self] in
             guard let self = self else { return }
             
-            let image = await dataService.loadImage(from: path, bucket: Bucket.avatars)
-            
-            guard !Task.isCancelled, let image = image else { return }
-            
-            ImageCache.shared.setImage(image, for: path)
-            creatorImageView.image = image
+            do {
+                let image = try await dataService.loadImage(from: path, bucket: Bucket.avatars)
+                
+                guard !Task.isCancelled else { return }
+                
+                ImageCache.shared.setImage(image, for: path)
+                creatorImageView.image = image
+            } catch {
+                print("Ошибка загрузки: \(error)")
+            }
+           
         }
     }
     

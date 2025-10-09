@@ -74,7 +74,7 @@ extension UITextView: @retroactive UITextViewDelegate {
         
         let button = UIButton()
         button.layer.cornerRadius = 15
-        button.setImage(Resources.Images.Icons.cancel, for: .normal)
+        button.setImage(AppImages.Icons.cancel, for: .normal)
         button.setTitle(nil, for: .normal)
         button.tintColor = .lightGray.withAlphaComponent(0.5)
         button.frame = CGRect(
@@ -128,7 +128,7 @@ extension UITextView: @retroactive UITextViewDelegate {
 extension UITextView {
     static func configureTextView(placeholder: String,
                                   delegate: UITextViewDelegate? = nil,
-                                  borderColor: UIColor = Resources.Colors.orange,
+                                  borderColor: UIColor = AppColors.primaryOrange,
                                   cornerRadius: CGFloat = 8,
                                   fontSize: CGFloat = 16,
                                   isScroll: Bool = false,

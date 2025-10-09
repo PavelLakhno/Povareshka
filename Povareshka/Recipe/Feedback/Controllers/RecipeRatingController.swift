@@ -32,19 +32,19 @@ final class RecipeRatingController: BaseController {
     )
     private let photosContainer = UIView(backgroundColor: .systemBackground)
     
-    private let starsTitleLabel = UILabel(text: Resources.Strings.Titles.rating,
+    private let starsTitleLabel = UILabel(text: AppStrings.Titles.rating,
                                           font: .helveticalBold(withSize: 18),
                                           textColor: .black)
     private let starsView = RatingView()
     
-    private let commentTitleLabel = UILabel(text: Resources.Strings.Titles.commentOptional,
+    private let commentTitleLabel = UILabel(text: AppStrings.Titles.commentOptional,
                                             font: .helveticalBold(withSize: 18),
                                             textColor: .black)
     private lazy var commentTextView = UITextView.configureTextView(
-        placeholder: Resources.Strings.Placeholders.enterText, delegate: self
+        placeholder: AppStrings.Placeholders.enterText, delegate: self
     )
     
-    private let photosTitleLabel = UILabel(text: Resources.Strings.Titles.photosOptional,
+    private let photosTitleLabel = UILabel(text: AppStrings.Titles.photosOptional,
                                            font: .helveticalBold(withSize: 18),
                                            textColor: .black)
     private lazy var photosCollectionView: UICollectionView = {
@@ -91,12 +91,12 @@ final class RecipeRatingController: BaseController {
     // MARK: - Setup Methods
 
     private func setupNavigationBar() {
-        navigationItem.title = Resources.Strings.Titles.rateRecipe
-        addNavBarButtons(at: .left, types: [.title(Resources.Strings.Buttons.cancel)])
+        navigationItem.title = AppStrings.Titles.rateRecipe
+        addNavBarButtons(at: .left, types: [.title(AppStrings.Buttons.cancel)])
         addNavBarButtons(at: .right,
                          types: [.title(
                             currentRating == nil ?
-                            Resources.Strings.Buttons.rate : Resources.Strings.Buttons.update)]
+                            AppStrings.Buttons.rate : AppStrings.Buttons.update)]
         )
     }
 
@@ -123,7 +123,7 @@ final class RecipeRatingController: BaseController {
                     } else {
                         self.commentTextView.text = nil
                         self.commentTextView.textColor = .lightGray
-                        self.commentTextView.placeholder = Resources.Strings.Placeholders.enterText
+                        self.commentTextView.placeholder = AppStrings.Placeholders.enterText
                     }
                     self.setupNavigationBar()
                 }
@@ -141,11 +141,11 @@ final class RecipeRatingController: BaseController {
         Task {
             do {
                 guard let userId = try await SupabaseManager.shared.getCurrentUserId() else {
-                    throw RatingError.userNotAuthenticated
+                    throw NSError(domain: "Auth", code: 401, userInfo: [NSLocalizedDescriptionKey: "User not authenticated"])
                 }
-                let photosInfo = try await dataService.getReviewPhotosInfo(recipeId: recipeId, userId: userId)
+                let photosInfo = try await dataService.fetchUserReviewPhotos(recipeId: recipeId, userId: userId)
                 self.serverPhotoPaths = photosInfo.map { $0.photoPath }
-                self.photos = try await dataService.loadReviewPhotos(recipeId: recipeId, userId: userId)
+                self.photos = try await dataService.loadReviewImages(recipeId: recipeId, userId: userId)
                 
                 DispatchQueue.main.async {
                     self.hidePhotoLoadingState()
@@ -171,8 +171,8 @@ final class RecipeRatingController: BaseController {
         guard let rating = currentRating else {
             AlertManager.shared.show(
                 on: self,
-                title: Resources.Strings.Alerts.errorTitle,
-                message: Resources.Strings.Messages.failedSaveData
+                title: AppStrings.Alerts.errorTitle,
+                message: AppStrings.Messages.failedSaveData
             )
             return
         }
@@ -188,11 +188,11 @@ final class RecipeRatingController: BaseController {
                 )
                 
                 if !photosToDelete.isEmpty {
-                    try await dataService.deletePhotos(paths: photosToDelete)
+                    try await dataService.removeReviewPhotos(paths: photosToDelete)
                 }
                 
                 if !newPhotos.isEmpty {
-                    let _ = try await dataService.uploadPhotos(recipeId: recipeId, photos: newPhotos)
+                    let _ = try await dataService.uploadReviewPhotos(recipeId: recipeId, photos: newPhotos)
                 }
                 
                 DispatchQueue.main.async {
@@ -205,7 +205,6 @@ final class RecipeRatingController: BaseController {
             }
         }
     }
-
     
     @objc private func addPhotoTapped() {
         present(photoPickerView, animated: true)
@@ -314,7 +313,7 @@ extension RecipeRatingController: UITextViewDelegate {
     }
     
     func textViewDidChange(_ textView: UITextView) {
-        textView.placeholder = textView.hasText ? nil : Resources.Strings.Placeholders.enterText
+        textView.placeholder = textView.hasText ? nil : AppStrings.Placeholders.enterText
         textView.clearButtonStatus = !textView.hasText
     }
 }
@@ -323,7 +322,7 @@ extension RecipeRatingController: UITextViewDelegate {
 extension RecipeRatingController {
     internal override func setupViews() {
         super.setupViews()
-        view.backgroundColor = Resources.Colors.backgroundLight
+        view.backgroundColor = AppColors.gray100
         scrollView.contentInsetAdjustmentBehavior = .never
         
         view.addSubview(scrollView)

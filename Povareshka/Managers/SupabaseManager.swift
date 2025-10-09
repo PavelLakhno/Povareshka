@@ -14,15 +14,24 @@ enum Bucket {
     static let reviews = "reviews"
 }
 
+@MainActor
 final class SupabaseManager: Sendable {
     static let shared = SupabaseManager()
     let client: SupabaseClient
     
     private init() {
-        client = SupabaseClient(
-            supabaseURL: URL(string: Resources.Auth.supabaseUrl)!,
-            supabaseKey: Resources.Auth.supabaseKey
+        // Проверяем, что URL валидный
+        
+        guard let url = URL(string: Config.supabaseUrl) else {
+            fatalError("❌ Invalid Supabase URL: \(Config.supabaseUrl)")
+        }
+        
+        self.client = SupabaseClient(
+            supabaseURL: url,
+            supabaseKey: Config.supabaseKey
         )
+        
+        print("✅ SupabaseManager initialized with URL: \(Config.supabaseUrl)")
     }
     
     func getCurrentUserId() async throws -> UUID? {

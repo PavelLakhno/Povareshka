@@ -28,8 +28,8 @@ class FilterCategoryCell: UICollectionViewCell {
     }
     
     private func setupUI() {
-        backgroundColor = .systemGray6
-        layer.cornerRadius = 20
+        backgroundColor = AppColors.gray100
+        layer.cornerRadius = Constants.cornerRadiusBig
         
         contentView.addSubview(titleLabel)
         
@@ -42,10 +42,10 @@ class FilterCategoryCell: UICollectionViewCell {
     func configure(with title: String, isSelected: Bool) {
         titleLabel.text = title
         if isSelected {
-            backgroundColor = .systemOrange.withAlphaComponent(0.2)
-            titleLabel.textColor = .systemOrange
+            backgroundColor = AppColors.primaryOrange.withAlphaComponent(0.2)
+            titleLabel.textColor = AppColors.primaryOrange
         } else {
-            backgroundColor = .systemGray6
+            backgroundColor = AppColors.gray100
             titleLabel.textColor = .black
         }
     }

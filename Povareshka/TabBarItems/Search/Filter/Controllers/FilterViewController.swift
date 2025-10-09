@@ -38,7 +38,7 @@ class FilterViewController: UIViewController {
         let slider = UISlider()
         slider.minimumValue = 0
         slider.maximumValue = 180
-        slider.tintColor = .systemOrange
+        slider.tintColor = AppColors.primaryOrange
         slider.translatesAutoresizingMaskIntoConstraints = false
         return slider
     }()
@@ -73,7 +73,7 @@ class FilterViewController: UIViewController {
     private let applyButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Применить", for: .normal)
-        button.backgroundColor = .systemOrange
+        button.backgroundColor = AppColors.primaryOrange
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 12
         button.translatesAutoresizingMaskIntoConstraints = false

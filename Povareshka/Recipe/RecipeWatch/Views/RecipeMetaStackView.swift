@@ -34,15 +34,15 @@ final class RecipeMetaStackView: UIStackView {
         arrangedSubviews.forEach { $0.removeFromSuperview() }
 
         if let time = recipe.readyInMinutes {
-            addMetaItem(icon: Resources.Images.Icons.clockFill, text: "\(time) мин")
+            addMetaItem(icon: AppImages.Icons.clockFill, text: "\(time) мин")
         }
 
         if let servings = recipe.servings {
-            addMetaItem(icon: Resources.Images.Icons.fork, text: "\(servings) чел")
+            addMetaItem(icon: AppImages.Icons.fork, text: "\(servings) чел")
         }
 
         if let difficulty = recipe.difficulty {
-            addMetaItem(icon: Resources.Images.Icons.level, text: "\(difficulty)")
+            addMetaItem(icon: AppImages.Icons.level, text: "\(difficulty)")
         }
 
         addRatingItem(rating: averageRating)
@@ -69,9 +69,9 @@ final class RecipeMetaStackView: UIStackView {
     
     private func addRatingItem(rating: Double) {
         let stack = createIconLabelStack(
-            icon: Resources.Images.Icons.starFilled,
+            icon: AppImages.Icons.starFilled,
             text: String(format: "%.1f", rating),
-            iconColor: .systemOrange
+            iconColor: AppColors.primaryOrange
         )
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleRatingTap))
@@ -83,7 +83,7 @@ final class RecipeMetaStackView: UIStackView {
     
     private func createIconLabelStack(icon: UIImage?,
                                       text: String,
-                                      iconColor: UIColor = Resources.Colors.orange) -> UIStackView {
+                                      iconColor: UIColor = AppColors.primaryOrange) -> UIStackView {
         let stack = UIStackView(axis: .horizontal, alignment: .center, spacing: Constants.spacingSmall)
         let iconView = UIImageView(image: icon?.withTintColor(iconColor, renderingMode: .alwaysOriginal),
                                    cornerRadius: 0,
@@ -92,7 +92,7 @@ final class RecipeMetaStackView: UIStackView {
         
         let label = UILabel(
             text: text, font: .helveticalLight(withSize: 14),
-            textColor: Resources.Colors.titleGray
+            textColor: .black
         )
         
         stack.addArrangedSubview(iconView)

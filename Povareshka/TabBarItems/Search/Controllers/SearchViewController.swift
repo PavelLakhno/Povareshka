@@ -21,7 +21,7 @@ final class SearchViewController: BaseController {
     private let filterButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "slider.horizontal.3"), for: .normal)
-        button.tintColor = .systemOrange
+        button.tintColor = AppColors.primaryOrange
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -46,7 +46,7 @@ final class SearchViewController: BaseController {
     private let emptyStateImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "magnifyingglass")
-        imageView.tintColor = .systemGray3
+        imageView.tintColor = AppColors.gray600
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
@@ -184,8 +184,6 @@ extension SearchViewController: UISearchBarDelegate {
 
 extension SearchViewController: @preconcurrency FilterViewControllerDelegate {
     func filterViewController(_ viewController: FilterViewController, didApplyFilters filters: RecipeFilters) {
-        // Apply filters to search results
-//        applyFilters(filters)
         collectionView.reloadData()
     }
 }

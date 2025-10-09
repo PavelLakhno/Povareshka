@@ -12,15 +12,15 @@ final class PasswordResetController: UIViewController {
     var onBackTapped: (() -> Void)?
     // MARK: - UI Elements
     private lazy var emailTextField = UITextField.configureTextField(
-        placeholder: Resources.Strings.Placeholders.enterEmail,
+        placeholder: AppStrings.Placeholders.enterEmail,
         keyboardType: .emailAddress,
         borderColor: .clear,
-        backgroundColor: Resources.Colors.backgroundLight
+        backgroundColor: AppColors.gray100
     )
 
     private lazy var resetButton = UIButton(
-        title: Resources.Strings.Buttons.passwordReset,
-        backgroundColor: Resources.Colors.orange,
+        title: AppStrings.Buttons.passwordReset,
+        backgroundColor: AppColors.primaryOrange,
         tintColor: .white,
         cornerRadius: Constants.cornerRadiusSmall,
         target: self,
@@ -28,10 +28,10 @@ final class PasswordResetController: UIViewController {
     )
 
     private lazy var backButton = UIButton(
-        title: Resources.Strings.Buttons.back,
-        image: Resources.Images.Icons.back,
-        tintColor: Resources.Colors.orange,
-        titleColor: Resources.Colors.orange,
+        title: AppStrings.Buttons.back,
+        image: AppImages.Icons.back,
+        tintColor: AppColors.primaryOrange,
+        titleColor: AppColors.primaryOrange,
         target: self,
         action: #selector(backTapped)
     )
@@ -75,35 +75,27 @@ final class PasswordResetController: UIViewController {
 //            showAlert(title: Resources.Strings.Titles.error,
 //                      message: Resources.Strings.Messages.enterEmail)
             AlertManager.shared.show(on: self,
-                                          title: Resources.Strings.Titles.error,
-                                          message: Resources.Strings.Messages.enterEmail)
+                                          title: AppStrings.Titles.error,
+                                          message: AppStrings.Messages.enterEmail)
             return
         }
         
         Task {
             do {
                 try await SupabaseManager.shared.client.auth.resetPasswordForEmail(
-                    email, redirectTo: URL(string: Resources.Auth.supabaseRedirect)!
+                    email, redirectTo: URL(string: Config.supabaseRedirect)!
                 )
                 
                 DispatchQueue.main.async {
                     AlertManager.shared.show(
                         on: self,
-                        title: Resources.Strings.Titles.success,
+                        title: AppStrings.Titles.success,
                         message: "Password reset link sent to \(email)"
                     )
-//                    self.showAlert(
-//                        title: Resources.Strings.Titles.success,
-//                        message: "Password reset link sent to \(email)"
-//                    )
                 }
             } catch {
                 DispatchQueue.main.async {
                     AlertManager.shared.showError(on: self, error: error)
-//                    self.showAlert(
-//                        title: Resources.Strings.Titles.error,
-//                        message: error.localizedDescription
-//                    )
                 }
             }
         }

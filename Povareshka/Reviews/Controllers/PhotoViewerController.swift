@@ -27,7 +27,7 @@ final class PhotoViewerController: BaseController {
         return collectionView
     }()
     
-    private lazy var closeButton = UIButton(image: Resources.Images.Icons.deleteX,
+    private lazy var closeButton = UIButton(image: AppImages.Icons.deleteX,
                                             backgroundColor: .black.withAlphaComponent(0.3),
                                             cornerRadius: Constants.cornerRadiusMedium,
                                             size: Constants.iconCellSizeMedium,

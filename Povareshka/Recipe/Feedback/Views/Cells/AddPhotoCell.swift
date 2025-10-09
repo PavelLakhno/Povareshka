@@ -10,12 +10,12 @@ import UIKit
 final class AddPhotoCell: UICollectionViewCell {
     static let id = "AddPhotoCell"
     
-    private let iconView = UIImageView(image: Resources.Images.Icons.addFill,
+    private let iconView = UIImageView(image: AppImages.Icons.addFill,
                                        size: Constants.iconCellSizeMedium,
                                        contentMode: .scaleAspectFit,
-                                       tintColor: .systemGray,
+                                       tintColor: AppColors.gray600,
                                        backgroundColor: .clear)
-    private let titleLabel = UILabel(text: Resources.Strings.Buttons.add,
+    private let titleLabel = UILabel(text: AppStrings.Buttons.add,
                                      font: .helveticalRegular(withSize: 12),
                                      textColor: .black,
                                      textAlignment: .center)
@@ -35,7 +35,7 @@ final class AddPhotoCell: UICollectionViewCell {
         stackView.addArrangedSubview(iconView)
         stackView.addArrangedSubview(titleLabel)
         contentView.addSubview(stackView)
-        backgroundColor = Resources.Colors.backgroundLight
+        backgroundColor = AppColors.gray100
         layer.cornerRadius = Constants.cornerRadiusSmall
     }
     

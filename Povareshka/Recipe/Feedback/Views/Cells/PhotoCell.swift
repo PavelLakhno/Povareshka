@@ -12,7 +12,7 @@ final class PhotoCell: UICollectionViewCell {
     static let id = "PhotoCell"
     
     private let imageView = UIImageView(cornerRadius: Constants.cornerRadiusSmall)
-    private lazy var deleteButton = UIButton(image: Resources.Images.Icons.deleteFill,
+    private lazy var deleteButton = UIButton(image: AppImages.Icons.deleteFill,
                                              backgroundColor: .white,
                                              tintColor: .systemRed,
                                              cornerRadius: Constants.cornerRadiusSmall,
@@ -62,7 +62,7 @@ final class PhotoCell: UICollectionViewCell {
     func configure(with url: URL, showDelete: Bool = true) {
         imageView.kf.setImage(
             with: url,
-            placeholder: Resources.Images.Icons.cameraMain,
+            placeholder: AppImages.Icons.cameraMain,
             options: [
                 .transition(.fade(0.2)),
                 .cacheOriginalImage

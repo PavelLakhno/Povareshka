@@ -32,8 +32,8 @@ final class RatingView: UIView {
         for i in 1...5 {
             let button = UIButton()
             button.tag = i
-            button.tintColor = .systemOrange
-            button.setImage(Resources.Images.Icons.starEmpty, for: .normal)
+            button.tintColor = AppColors.primaryOrange
+            button.setImage(AppImages.Icons.starEmpty, for: .normal)
             button.addTarget(self, action: #selector(starTapped(_:)), for: .touchUpInside)
             stars.append(button)
             stackView.addArrangedSubview(button)
@@ -53,8 +53,8 @@ final class RatingView: UIView {
     func configure(with rating: Int) {
         for (index, star) in stars.enumerated() {
             let image = index < rating ?
-            Resources.Images.Icons.starFilled :
-            Resources.Images.Icons.starEmpty
+            AppImages.Icons.starFilled :
+            AppImages.Icons.starEmpty
             star.setImage(image, for: .normal)
         }
     }

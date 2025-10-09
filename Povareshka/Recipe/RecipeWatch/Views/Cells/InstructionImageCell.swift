@@ -50,10 +50,12 @@ final class InstructionImageCell: UITableViewCell {
 
         imageTask = Task {
             do {
-                let image = await DataService.shared.loadImage(from: imagePath, bucket: Bucket.recipes)
+                let image = try await DataService.shared.loadImage(from: imagePath, bucket: Bucket.recipes)
                 if !Task.isCancelled {
                     stepImageView.image = image
                 }
+            } catch {
+                print("Ошибка загрузки: \(error)")
             }
         }
     }

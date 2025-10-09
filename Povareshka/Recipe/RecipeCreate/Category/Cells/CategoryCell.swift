@@ -18,14 +18,14 @@ final class CategoryCell: UITableViewCell {
     private let iconView = UIImageView(
         size: Constants.iconCellSizeMedium,
         contentMode: .scaleAspectFit,
-        tintColor: Resources.Colors.orange
+        tintColor: AppColors.primaryOrange
     )
  
     private let checkmarkView = UIImageView(
-        image: Resources.Images.Icons.okFill,
+        image: AppImages.Icons.okFill,
         size: Constants.iconCellSizeMedium,
         contentMode: .scaleAspectFit,
-        tintColor: Resources.Colors.orange
+        tintColor: AppColors.primaryOrange
     )
     
     private let stackView = UIStackView(

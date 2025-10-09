@@ -13,7 +13,7 @@ final class ReviewCell: UITableViewCell {
     private let dataService = DataService.shared
     
     // MARK: - UI Elements
-    private let avatarImageView = UIImageView(image: Resources.Images.Icons.avatar,
+    private let avatarImageView = UIImageView(image: AppImages.Icons.avatar,
                                               size: Constants.iconCellSizeBig,
                                               cornerRadius: Constants.cornerRadiusBig,
                                               contentMode: .scaleAspectFill)
@@ -22,7 +22,7 @@ final class ReviewCell: UITableViewCell {
                                        textAlignment: .left)
     private let ratingView = RatingView()
     private let dateLabel = UILabel(font: .helveticalRegular(withSize: 12),
-                                   textColor: Resources.Colors.titleGray,
+                                    textColor: .black,
                                    textAlignment: .left)
     private let commentLabel = UILabel(font: .helveticalRegular(withSize: 14),
                                       textColor: .black,
@@ -69,7 +69,7 @@ final class ReviewCell: UITableViewCell {
     }
     
     // MARK: - Public Methods
-    func configure(with rating: Rating, userProfile: UserProfile?, photos: [String]) {
+    func configure(with rating: Rating, userProfile: UserProfileShort?, photos: [String]) {
         configureUserInfo(userProfile)
         configureRating(rating)
         configureComment(rating.comment)
@@ -107,27 +107,29 @@ final class ReviewCell: UITableViewCell {
             mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -Constants.spacingMedium)
         ])
     }
-    
-    private func configureUserInfo(_ userProfile: UserProfile?) {
-        userNameLabel.text = userProfile?.username ?? Resources.Strings.Titles.anonymous
+
+    private func configureUserInfo(_ userProfile: UserProfileShort?) {
+        userNameLabel.text = userProfile?.username ?? AppStrings.Titles.anonymous
 
         imageTask?.cancel()
 
-        avatarImageView.image = Resources.Images.Icons.avatar
+        avatarImageView.image = AppImages.Icons.avatar
         guard let avatarPath = userProfile?.avatarPath else { return }
 
         imageTask = Task {
-            let image = await dataService.loadImage(from: avatarPath, bucket: Bucket.avatars)
+            do {
+                let image = try await dataService.loadImage(from: avatarPath, bucket: Bucket.avatars)
 
-            if !Task.isCancelled, let image = image {
-                DispatchQueue.main.async {
-                    self.avatarImageView.image = image
+                if !Task.isCancelled {
+                    DispatchQueue.main.async {
+                        self.avatarImageView.image = image
+                    }
                 }
-                
+            } catch {
+                print("Ошибка загрузки аватара: \(error)")
             }
         }
     }
-
     
     private func configureRating(_ rating: Rating) {
         ratingView.configure(with: rating.rating)

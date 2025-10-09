@@ -69,6 +69,11 @@ final class AppCoordinator {
     private func isPasswordResetURL(_ url: URL) -> Bool {
         url.absoluteString.contains("reset-password")
     }
+    
+    deinit {
+        print("✅ \(Self.self) деинициализирован")
+        NotificationCenter.default.removeObserver(self)
+    }
 }
 
 @MainActor
@@ -118,4 +123,6 @@ extension AppCoordinator {
     @objc private func handleLogout() {
         showAuthScreen()
     }
+    
+
 }

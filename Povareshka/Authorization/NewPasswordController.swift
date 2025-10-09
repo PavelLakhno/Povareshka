@@ -16,22 +16,22 @@ final class NewPasswordController: UIViewController {
     private let loginLabel = UILabel(textAlignment: .center)
 
     private let newPasswordTextField = UITextField.configureTextField(
-        placeholder: Resources.Strings.Placeholders.passwordNew,
+        placeholder: AppStrings.Placeholders.passwordNew,
         isSecureTextEntry: true,
         borderColor: .clear,
-        backgroundColor: Resources.Colors.backgroundLight
+        backgroundColor: AppColors.gray100
     )
 
     private let confirmPasswordTextField = UITextField.configureTextField(
-        placeholder: Resources.Strings.Placeholders.passwordRepeat,
+        placeholder: AppStrings.Placeholders.passwordRepeat,
         isSecureTextEntry: true,
         borderColor: .clear,
-        backgroundColor: Resources.Colors.backgroundLight
+        backgroundColor: AppColors.gray100
     )
 
     private lazy var confirmPasswordButton = UIButton(
-        title: Resources.Strings.Buttons.done,
-        backgroundColor: Resources.Colors.orange,
+        title: AppStrings.Buttons.done,
+        backgroundColor: AppColors.primaryOrange,
         tintColor: .white,
         cornerRadius: Constants.cornerRadiusSmall,
         target: self,
@@ -104,22 +104,22 @@ final class NewPasswordController: UIViewController {
         guard let newPassword = newPasswordTextField.text, !newPassword.isEmpty,
               let confirmPassword = confirmPasswordTextField.text, !confirmPassword.isEmpty else {
             AlertManager.shared.show(on: self,
-                                     title: Resources.Strings.Alerts.errorTitle,
-                                     message: Resources.Strings.Messages.enterFields)
+                                     title: AppStrings.Alerts.errorTitle,
+                                     message: AppStrings.Messages.enterFields)
             return
         }
         
         guard newPassword == confirmPassword else {
             AlertManager.shared.show(on: self,
-                                     title: Resources.Strings.Alerts.errorTitle,
-                                     message: Resources.Strings.Messages.passwordMismatch)
+                                     title: AppStrings.Alerts.errorTitle,
+                                     message: AppStrings.Messages.passwordMismatch)
             return
         }
         
         guard newPassword.count >= 6 else {
             AlertManager.shared.show(on: self,
-                                     title: Resources.Strings.Alerts.errorTitle,
-                                     message: Resources.Strings.Messages.passwordSixSigns)
+                                     title: AppStrings.Alerts.errorTitle,
+                                     message: AppStrings.Messages.passwordSixSigns)
             return
         }
         
@@ -192,5 +192,4 @@ final class NewPasswordController: UIViewController {
     enum PasswordResetError: Error {
         case invalidRecoverySession
     }
-
 }

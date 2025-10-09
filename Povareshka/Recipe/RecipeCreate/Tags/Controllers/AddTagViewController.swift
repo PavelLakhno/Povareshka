@@ -10,11 +10,11 @@ import UIKit
 final class AddTagViewController: BaseController {
     
     private var newTags: [String] = []
-    private let tagTextField = UITextField.configureTextField(placeholder: Resources.Strings.Placeholders.enterTag)
+    private let tagTextField = UITextField.configureTextField(placeholder: AppStrings.Placeholders.enterTag)
     
     private lazy var addButton = UIButton(
-        title: Resources.Strings.Buttons.add,
-        backgroundColor: Resources.Colors.orange,
+        title: AppStrings.Buttons.add,
+        backgroundColor: AppColors.primaryOrange,
         cornerRadius: Constants.cornerRadiusSmall,
         size: Constants.tagSizeButton,
         target: self, action: #selector(addTagTapped)
@@ -47,14 +47,14 @@ final class AddTagViewController: BaseController {
     }
     
     private func setupNavigationBar() {
-        navigationItem.title = Resources.Strings.Titles.addTags
-        addNavBarButtons(at: .left, types: [.title(Resources.Strings.Buttons.cancel)])
-        addNavBarButtons(at: .right, types: [.title(Resources.Strings.Buttons.done)])
+        navigationItem.title = AppStrings.Titles.addTags
+        addNavBarButtons(at: .left, types: [.title(AppStrings.Buttons.cancel)])
+        addNavBarButtons(at: .right, types: [.title(AppStrings.Buttons.done)])
     }
 
     internal override func setupViews() {
         super.setupViews()
-        view.backgroundColor = Resources.Colors.backgroundLight
+        view.backgroundColor = AppColors.gray100
 
         view.addSubview(tagTextField)
         view.addSubview(addButton)
@@ -105,8 +105,8 @@ extension AddTagViewController {
         guard let tag = tagTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !tag.isEmpty else {
             AlertManager.shared.show(
                 on: self,
-                title: Resources.Strings.Alerts.errorTitle,
-                message: Resources.Strings.Alerts.enterTag
+                title: AppStrings.Alerts.errorTitle,
+                message: AppStrings.Alerts.enterTag
             )
             return
         }
@@ -114,8 +114,8 @@ extension AddTagViewController {
         if newTags.contains(tag) {
             AlertManager.shared.show(
                 on: self,
-                title: Resources.Strings.Alerts.errorTitle,
-                message: Resources.Strings.Alerts.tagExists
+                title: AppStrings.Alerts.errorTitle,
+                message: AppStrings.Alerts.tagExists
             )
             return
         }
@@ -123,8 +123,8 @@ extension AddTagViewController {
         if tag.count > 20 {
             AlertManager.shared.show(
                 on: self,
-                title: Resources.Strings.Alerts.errorTitle,
-                message: Resources.Strings.Alerts.tagTooLong
+                title: AppStrings.Alerts.errorTitle,
+                message: AppStrings.Alerts.tagTooLong
             )
             return
         }
@@ -132,8 +132,8 @@ extension AddTagViewController {
         if newTags.count >= 10 {
             AlertManager.shared.show(
                 on: self,
-                title: Resources.Strings.Alerts.errorTitle,
-                message: Resources.Strings.Alerts.maxTags
+                title: AppStrings.Alerts.errorTitle,
+                message: AppStrings.Alerts.maxTags
             )
             return
         }

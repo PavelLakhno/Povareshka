@@ -9,24 +9,24 @@ import UIKit
 
 class NewIngredientViewController: BaseController, UIPickerViewDelegate, UIPickerViewDataSource {
     // MARK: - Properties
-    private let data = Resources.Strings.Unit.allValues
+    private let data = AppStrings.Unit.allValues
     
-    private let customScrollView = UIScrollView(backgroundColor: Resources.Colors.backgroundLight)
+    private let customScrollView = UIScrollView(backgroundColor: AppColors.gray100)
     override var scrollView: UIScrollView { customScrollView }
-    private let contentView = UIView(backgroundColor: Resources.Colors.backgroundLight)
+    private let contentView = UIView(backgroundColor: AppColors.gray100)
    
     private lazy var titleTextField = UITextField.configureTextField(
-        placeholder: Resources.Strings.Placeholders.enterIngredientName,
+        placeholder: AppStrings.Placeholders.enterIngredientName,
         delegate: self
     )
     
     private lazy var countTextField = UITextField.configureTextField(
-        placeholder: Resources.Strings.Placeholders.enterAmount,
+        placeholder: AppStrings.Placeholders.enterAmount,
         delegate: self
     )
     
     private lazy var measureTextField = UITextField.configureTextField(
-        placeholder: Resources.Strings.Placeholders.enterMeasure,
+        placeholder: AppStrings.Placeholders.enterMeasure,
         delegate: self
     )
 
@@ -38,8 +38,8 @@ class NewIngredientViewController: BaseController, UIPickerViewDelegate, UIPicke
         return toolbar
     }()
 
-    private lazy var saveButton = UIButton(title: Resources.Strings.Buttons.save,
-                                           backgroundColor: Resources.Colors.orange,
+    private lazy var saveButton = UIButton(title: AppStrings.Buttons.save,
+                                           backgroundColor: AppColors.primaryOrange,
                                            titleColor: .white,
                                            font: .helveticalRegular(withSize: 16),
                                            cornerRadius: 10,
@@ -73,13 +73,13 @@ class NewIngredientViewController: BaseController, UIPickerViewDelegate, UIPicke
     
     // MARK: - Setup
     private func setupNavigationBar() {
-        navigationItem.title = Resources.Strings.Titles.ingredient
-        addNavBarButtons(at: .left, types: [.title(Resources.Strings.Buttons.cancel)])
+        navigationItem.title = AppStrings.Titles.ingredient
+        addNavBarButtons(at: .left, types: [.title(AppStrings.Buttons.cancel)])
     }
     
     internal override func setupViews() {
         super.setupViews()
-        view.backgroundColor = Resources.Colors.backgroundLight
+        view.backgroundColor = AppColors.gray100
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubview(titleTextField)
@@ -136,12 +136,12 @@ class NewIngredientViewController: BaseController, UIPickerViewDelegate, UIPicke
         pickerView.dataSource = self
         
         let doneButton = UIBarButtonItem(
-            title: Resources.Strings.Buttons.done,
+            title: AppStrings.Buttons.done,
             style: .done,
             target: self,
             action: #selector(doneButtonTapped)
         )
-        doneButton.tintColor = Resources.Colors.orange
+        doneButton.tintColor = AppColors.primaryOrange
 
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         toolbar.setItems([flexibleSpace, doneButton], animated: true)
@@ -170,8 +170,8 @@ extension NewIngredientViewController {
         guard let title = titleTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !title.isEmpty else {
             AlertManager.shared.show(
                 on: self,
-                title: Resources.Strings.Alerts.errorTitle,
-                message: Resources.Strings.Alerts.enterIngredientName
+                title: AppStrings.Alerts.errorTitle,
+                message: AppStrings.Alerts.enterIngredientName
             )
             return
         }
@@ -180,8 +180,8 @@ extension NewIngredientViewController {
               let amount = Double(countText), amount > 0 else {
             AlertManager.shared.show(
                 on: self,
-                title: Resources.Strings.Alerts.errorTitle,
-                message: Resources.Strings.Alerts.enterValidAmount
+                title: AppStrings.Alerts.errorTitle,
+                message: AppStrings.Alerts.enterValidAmount
             )
             return
         }
@@ -189,8 +189,8 @@ extension NewIngredientViewController {
         guard let measure = measureTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !measure.isEmpty else {
             AlertManager.shared.show(
                 on: self,
-                title: Resources.Strings.Alerts.errorTitle,
-                message: Resources.Strings.Alerts.enterMeasure
+                title: AppStrings.Alerts.errorTitle,
+                message: AppStrings.Alerts.enterMeasure
             )
             return
         }
