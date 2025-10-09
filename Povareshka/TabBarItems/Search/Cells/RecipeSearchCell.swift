@@ -15,7 +15,7 @@ class RecipeSearchCell: UICollectionViewCell {
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 12
-        imageView.backgroundColor = .systemGray6
+        imageView.backgroundColor = AppColors.gray100
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()

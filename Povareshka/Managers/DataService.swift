@@ -23,7 +23,7 @@ final class DataService {
         try await supabaseManager.getCurrentUserId()
     }
     
-    func fetchUserProfile(userId: UUID) async throws -> Profile {
+    func fetchUserProfile(userId: UUID) async throws -> UserProfile {
         return try await SupabaseManager.shared.client
             .from("profiles")
             .select()
@@ -33,7 +33,22 @@ final class DataService {
             .value
     }
     
-    // MARK: - Recipes
+    func fetchUserProfiles(userIds: [UUID]) async throws -> [UUID: UserProfileShort] {
+        guard !userIds.isEmpty else { return [:] }
+        
+        let profiles: [UserProfileShort] = try await supabaseManager.client
+            .from("profiles")
+            .select()
+            .in("id", values: userIds)
+            .execute()
+            .value
+        
+        var profilesDict: [UUID: UserProfileShort] = [:]
+        profiles.forEach { profilesDict[$0.id] = $0 }
+        return profilesDict
+    }
+
+    // MARK: - Save Recipe
     func saveRecipe(
         recipeId: UUID,
         title: String,
@@ -47,9 +62,37 @@ final class DataService {
         tags: [String],
         categories: [CategorySupabase]
     ) async throws {
-        // Реализация из RecipeService.saveRecipeToSupabase
+        // 1. Загрузка изображения (если есть)
+        let imagePath = try await uploadInstructionImage(image, for: recipeId)
+        
+        // 2. Сохранение метаданных рецепта
+        try await saveRecipeMetadata(
+            recipeId: recipeId,
+            title: title,
+            description: description,
+            imagePath: imagePath,
+            servings: servings,
+            readyInMinutes: readyInMinutes,
+            difficulty: difficulty
+        )
+        
+        // 3. Сохранение связанных данных
+        try await saveIngredients(ingredients, for: recipeId)
+        try await saveInstructions(steps, for: recipeId)
+        try await saveTags(tags, for: recipeId)
+        try await saveCategories(categories, for: recipeId)
+    }
+
+    private func saveRecipeMetadata(
+        recipeId: UUID,
+        title: String,
+        description: String,
+        imagePath: String?,
+        servings: Int?,
+        readyInMinutes: Int?,
+        difficulty: Int?
+    ) async throws {
         let currentUser = try await supabaseManager.client.auth.session.user
-        let imagePath = try await uploadMainImageIfNeeded(image, for: recipeId)
         
         let recipe = RecipeSupabase(
             id: recipeId,
@@ -64,83 +107,66 @@ final class DataService {
             createdAt: Date(),
             updatedAt: Date()
         )
+        
         try await supabaseManager.client.from("recipes").insert(recipe).execute()
-        try await saveIngredients(ingredients, for: recipeId)
-        try await saveInstructions(steps, for: recipeId)
-        try await saveTags(tags, for: recipeId)
-        try await saveCategories(categories, for: recipeId)
     }
 
-//    func loadImage(from path: String, bucket: String = "recipes") async -> UIImage? {
-//        // Проверяем кэш
-//        if let cachedImage = ImageCache.shared.image(for: path) {
-//            return cachedImage
-//        }
-//        
-//        do {
-//            let data = try await supabaseManager.client
-//                .storage
-//                .from(bucket)
-//                .download(path: path)
-//            
-//            if let image = UIImage(data: data) {
-//                ImageCache.shared.setImage(image, for: path)
-//                return image
-//            }
-//            return Resources.Images.Icons.cameraMain
-//        } catch {
-//            print("Ошибка загрузки изображения \(path): \(error)")
-//            return Resources.Images.Icons.cameraMain
-//        }
-//    }
-    func loadImage(from path: String, bucket: String) async -> UIImage? {
-
-        if let cachedImage = ImageCache.shared.image(for: path) {
-            return cachedImage
-        }
-
-        do {
-            let data = try await supabaseManager.client
-                .storage
-                .from(bucket)
-                .download(path: path)
-            
-            guard !Task.isCancelled else { return nil } 
-
-            guard let image = UIImage(data: data) else {
-                throw NSError(domain: "ImageError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid image data"])
-            }
-
-            ImageCache.shared.setImage(image, for: path)
-            return image
-            
-        } catch {
-            print("⚠️ Ошибка загрузки изображения \(path): \(error.localizedDescription)")
-            return nil
+    private func saveIngredients(_ ingredients: [Ingredient], for recipeId: UUID) async throws {
+        for (index, ingredient) in ingredients.enumerated() {
+            let ingredientSupabase = IngredientSupabase(
+                id: UUID(),
+                recipeId: recipeId,
+                name: ingredient.name,
+                amount: "\(ingredient.amount) \(ingredient.measure)",
+                orderIndex: index
+            )
+            try await supabaseManager.client.from("ingredients").insert(ingredientSupabase).execute()
         }
     }
     
+    private func saveInstructions(_ steps: [Instruction], for recipeId: UUID) async throws {
+        for (index, step) in steps.enumerated() {
+            var imagePath: String? = nil
+            if let imageData = step.image, let image = UIImage(data: imageData) {
+                imagePath = try await uploadInstructionImage(image, for: recipeId)
+            }
+            let instruction = InstructionSupabase(
+                id: UUID(),
+                recipeId: recipeId,
+                stepNumber: index + 1,
+                description: step.describe,
+                imagePath: imagePath,
+                orderIndex: index
+            )
+            try await supabaseManager.client.from("instructions").insert(instruction).execute()
+        }
+    }
+    
+    private func saveTags(_ tags: [String], for recipeId: UUID) async throws {
+        for tag in tags {
+            let recipeTag = RecipeTagSupabase(
+                id: UUID(),
+                recipeId: recipeId,
+                tag: tag.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+            )
+            try await supabaseManager.client.from("recipe_tags").insert(recipeTag).execute()
+        }
+    }
+    
+    private func saveCategories(_ categories: [CategorySupabase], for recipeId: UUID) async throws {
+        for category in categories {
+            let recipeCategory = RecipeCategorySupabase(id: UUID(), recipeId: recipeId, categoryId: category.id)
+            try await supabaseManager.client.from("recipe_categories").insert(recipeCategory).execute()
+        }
+    }
+    
+    // MARK: - Fetch Recipe Data
     func fetchRecipe(id: UUID) async throws -> RecipeSupabase {
         try await supabaseManager.client
             .from("recipes")
             .select()
             .eq("id", value: id)
             .single()
-            .execute()
-            .value
-    }
-    
-    func loadShortRecipesInfo() async throws -> [RecipeShortInfo] {
-        try await supabaseManager.client
-            .from("recipes")
-            .select("""
-                    id,
-                    title,
-                    image_path,
-                    user_id,
-                    profiles!recipes_user_id_fkey(username, avatar_url)
-                """)
-            .order("created_at", ascending: false)
             .execute()
             .value
     }
@@ -192,57 +218,6 @@ final class DataService {
             .value
     }
     
-    // MARK: - Ratings
-    func fetchUserRating(recipeId: UUID) async throws -> Rating? {
-        guard let userId = try await supabaseManager.getCurrentUserId() else { return nil }
-        let ratings: [Rating] = try await supabaseManager.client
-            .from("ratings")
-            .select()
-            .eq("recipe_id", value: recipeId)
-            .eq("user_id", value: userId)
-            .execute()
-            .value
-        return ratings.first
-    }
-    
-    func submitRating(recipeId: UUID, rating: Int, comment: String?) async throws {
-        guard let userId = try await supabaseManager.getCurrentUserId() else {
-            throw RatingError.userNotAuthenticated
-        }
-        let rating = Rating(
-            id: UUID(),
-            recipeId: recipeId,
-            userId: userId,
-            rating: rating,
-            comment: comment,
-            createdAt: Date()
-        )
-        try await supabaseManager.client
-            .from("ratings")
-            .upsert(rating, onConflict: "recipe_id,user_id")
-            .execute()
-    }
-    
-    func fetchAverageRating(recipeId: UUID) async throws -> Double {
-        let response: [String: Double] = try await supabaseManager.client
-            .rpc("get_average_rating", params: ["recipe_id": recipeId])
-            .select()
-            .single()
-            .execute()
-            .value
-        return response["average"] ?? 0
-    }
-    
-    func loadRatings(recipeId: UUID) async throws -> [Rating] {
-        return try await supabaseManager.client
-            .from("ratings")
-            .select()
-            .eq("recipe_id", value: recipeId)
-            .order("created_at", ascending: false)
-            .execute()
-            .value
-    }
-    
     // MARK: - Favorites
     func isRecipeFavorite(recipeId: UUID) async throws -> Bool {
         guard let userId = try await supabaseManager.getCurrentUserId() else { return false }
@@ -255,181 +230,56 @@ final class DataService {
             .value
         return !favorites.isEmpty
     }
-
+   
     func toggleFavorite(recipeId: UUID, isCurrentlyFavorite: Bool) async throws {
-        guard let userId = try await supabaseManager.getCurrentUserId() else {
-            throw NSError(domain: "Auth", code: 401, userInfo: [NSLocalizedDescriptionKey: "User not authenticated"])
-        }
-
         if isCurrentlyFavorite {
-            // Удаляем из избранного
-            try await supabaseManager.client
-                .from("recipe_favorite")
-                .delete()
-                .eq("recipe_id", value: recipeId)
-                .eq("user_id", value: userId)
-                .execute()
+            try await removeFromFavorites(recipeId: recipeId)
         } else {
-            // Проверяем существование записи через count
-            let count = try await supabaseManager.client
-                .from("recipe_favorite")
-                .select("*", count: .exact)
-                .eq("recipe_id", value: recipeId)
-                .eq("user_id", value: userId)
-                .execute()
-                .count
-            
-            if count == 0 {
-                // Добавляем в избранное только если записи нет
-                let favorite = FavoriteRecipe(
-                    id: UUID(),
-                    recipeId: recipeId,
-                    userId: userId,
-                    createdAt: Date()
-                )
-                try await supabaseManager.client
-                    .from("recipe_favorite")
-                    .insert(favorite)
-                    .execute()
-            }
+            try await addToFavorites(recipeId: recipeId)
         }
     }
     
-    // MARK: - Review Photos
-    
-    func loadUserProfiles(userIds: [UUID]) async throws -> [UUID: UserProfile] {
-        guard !userIds.isEmpty else { return [:] }
+    private func addToFavorites(recipeId: UUID) async throws {
+        guard let userId = try await supabaseManager.getCurrentUserId() else {
+            throw AuthError.notAuthenticated
+        }
         
-        let profiles: [UserProfile] = try await supabaseManager.client
-            .from("profiles")
-            .select()
-            .in("id", values: userIds)
+        // Проверяем, не добавлен ли уже рецепт
+        let isAlreadyFavorite = try await isRecipeFavorite(recipeId: recipeId)
+        guard !isAlreadyFavorite else {
+            throw RecipeError.alreadyInFavorites
+        }
+        
+        let favorite = FavoriteRecipe(
+            id: UUID(),
+            recipeId: recipeId,
+            userId: userId,
+            createdAt: Date()
+        )
+        
+        try await supabaseManager.client
+            .from("recipe_favorite")
+            .insert(favorite)
             .execute()
-            .value
-        
-        var profilesDict: [UUID: UserProfile] = [:]
-        profiles.forEach { profilesDict[$0.id] = $0 }
-        return profilesDict
     }
-    
+
+    private func removeFromFavorites(recipeId: UUID) async throws {
+        guard let userId = try await supabaseManager.getCurrentUserId() else {
+            throw AuthError.notAuthenticated
+        }
+        
+        try await supabaseManager.client
+            .from("recipe_favorite")
+            .delete()
+            .eq("recipe_id", value: recipeId)
+            .eq("user_id", value: userId)
+            .execute()
+    }
+
+    // MARK: - Review Photos
     func uploadReviewPhotos(recipeId: UUID, photos: [UIImage]) async throws -> [String] {
         guard let userId = try await supabaseManager.getCurrentUserId() else {
-            throw RatingError.userNotAuthenticated
-        }
-        var uploadedPaths: [String] = []
-        for (index, photo) in photos.enumerated() {
-            guard let imageData = photo.jpegData(compressionQuality: 0.8) else { continue }
-            let fileName = "\(UUID().uuidString).jpg"
-            let filePath = "reviews/\(recipeId)/\(fileName)"
-            try await supabaseManager.client
-                .storage
-                .from("reviews")
-                .upload(filePath, data: imageData, options: FileOptions(contentType: "image/jpeg"))
-            uploadedPaths.append(filePath)
-            let reviewPhoto = ReviewPhoto(id: UUID(), recipeId: recipeId, userId: userId, photoPath: filePath, orderIndex: index)
-            try await supabaseManager.client.from("review_photos").insert([reviewPhoto]).execute()
-        }
-        return uploadedPaths
-    }
-    
-    func fetchReviewPhotos(recipeId: UUID, userId: UUID) async throws -> [UIImage] {
-        let photos: [ReviewPhoto] = try await supabaseManager.client
-            .from("review_photos")
-            .select()
-            .eq("recipe_id", value: recipeId)
-            .eq("user_id", value: userId)
-            .order("order_index")
-            .execute()
-            .value
-        var loadedImages: [UIImage] = []
-        for photo in photos {
-            do {
-                let data = try await supabaseManager.client
-                    .storage
-                    .from("reviews")
-                    .download(path: photo.photoPath)
-                if let image = UIImage(data: data) {
-                    loadedImages.append(image)
-                }
-            } catch {
-                print("Ошибка загрузки изображения \(photo.photoPath): \(error)")
-                continue
-            }
-        }
-        return loadedImages
-    }
-    
-    func getReviewPhotosInfo(recipeId: UUID, userId: UUID) async throws -> [ReviewPhoto] {
-        return try await supabaseManager.client
-            .from("review_photos")
-            .select()
-            .eq("recipe_id", value: recipeId)
-            .eq("user_id", value: userId)
-            .order("order_index")
-            .execute()
-            .value
-    }
-    
-    func loadReviewPhotos(recipeId: UUID) async throws -> [ReviewPhoto] {
-        return try await supabaseManager.client
-            .from("review_photos")
-            .select()
-            .eq("recipe_id", value: recipeId)
-            .order("order_index")
-            .execute()
-            .value
-    }
-    
-    func loadReviewPhotos(recipeId: UUID, userId: UUID) async throws -> [UIImage] {
-        // 1. Получаем метаданные фото из таблицы
-        let photos: [ReviewPhoto] = try await supabaseManager.client
-            .from("review_photos")
-            .select()
-            .eq("recipe_id", value: recipeId)
-            .eq("user_id", value: userId)
-            .order("order_index")
-            .execute()
-            .value
-        
-        // 2. Загружаем сами изображения из Storage
-        var loadedImages: [UIImage] = []
-
-        for photo in photos {
-            do {
-                let data = try await supabaseManager.client
-                    .storage
-                    .from("reviews") //"recipe_reviews"
-                    .download(path: photo.photoPath)
-                
-                if let image = UIImage(data: data) {
-                    loadedImages.append(image)
-                }
-            } catch {
-                print("Ошибка загрузки изображения \(photo.photoPath): \(error)")
-                // Можно продолжить загрузку остальных фото
-                continue
-            }
-        }
-        
-        return loadedImages
-    }
-    
-    func deletePhotos(paths: [String]) async throws {
-        try await supabaseManager.client
-            .storage
-            .from("reviews")
-            .remove(paths: paths)
-        
-        try await supabaseManager.client
-            .from("review_photos")
-            .delete()
-            .in("photo_path", values: paths)
-            .execute()
-    }
-    
-    func uploadPhotos(recipeId: UUID, photos: [UIImage]) async throws -> [String] {
-        guard let userId = try await supabaseManager.getCurrentUserId() else {
-            throw RatingError.userNotAuthenticated
+            throw AuthError.notAuthenticated
         }
         
         var uploadedPaths: [String] = []
@@ -469,9 +319,172 @@ final class DataService {
         return uploadedPaths
     }
     
+    func fetchUserReviewPhotos(recipeId: UUID, userId: UUID) async throws -> [ReviewPhoto] {
+        return try await supabaseManager.client
+            .from("review_photos")
+            .select()
+            .eq("recipe_id", value: recipeId)
+            .eq("user_id", value: userId)
+            .order("order_index")
+            .execute()
+            .value
+    }
+    
+    func fetchAllReviewPhotos(recipeId: UUID) async throws -> [ReviewPhoto] {
+        return try await supabaseManager.client
+            .from("review_photos")
+            .select()
+            .eq("recipe_id", value: recipeId)
+            .order("order_index")
+            .execute()
+            .value
+    }
+    
+    func loadReviewImages(recipeId: UUID, userId: UUID) async throws -> [UIImage] {
+        let photos = try await fetchUserReviewPhotos(recipeId: recipeId, userId: userId)
+        var loadedImages: [UIImage] = []
+        
+        for photo in photos {
+            let data = try await supabaseManager.client
+                .storage
+                .from("reviews")
+                .download(path: photo.photoPath)
+            
+            guard let image = UIImage(data: data) else {
+                throw ImageError.invalidImageData
+            }
+            
+            loadedImages.append(image)
+        }
+        
+        return loadedImages
+    }
+    
+    func removeReviewPhotos(paths: [String]) async throws {
+        try await supabaseManager.client
+            .storage
+            .from("reviews")
+            .remove(paths: paths)
+        
+        try await supabaseManager.client
+            .from("review_photos")
+            .delete()
+            .in("photo_path", values: paths)
+            .execute()
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+    
+    func fetchRecipesShortInfo() async throws -> [RecipeShortInfo] {
+        try await supabaseManager.client
+            .from("recipes")
+            .select("""
+                    id,
+                    title,
+                    image_path,
+                    user_id,
+                    profiles!recipes_user_id_fkey(username, avatar_url)
+                """)
+            .order("created_at", ascending: false)
+            .execute()
+            .value
+    }
+    
+
+    
+    // MARK: - Ratings
+    func fetchUserRating(recipeId: UUID) async throws -> Rating? {
+        guard let userId = try await supabaseManager.getCurrentUserId() else {
+            throw AuthError.notAuthenticated
+        }
+        let ratings: [Rating] = try await supabaseManager.client
+            .from("ratings")
+            .select()
+            .eq("recipe_id", value: recipeId)
+            .eq("user_id", value: userId)
+            .execute()
+            .value
+        return ratings.first
+    }
+    
+    func submitRating(recipeId: UUID, rating: Int, comment: String?) async throws {
+        guard let userId = try await supabaseManager.getCurrentUserId() else {
+            throw AuthError.notAuthenticated
+        }
+        let rating = Rating(
+            id: UUID(),
+            recipeId: recipeId,
+            userId: userId,
+            rating: rating,
+            comment: comment,
+            createdAt: Date()
+        )
+        try await supabaseManager.client
+            .from("ratings")
+            .upsert(rating, onConflict: "recipe_id,user_id")
+            .execute()
+    }
+    
+    func fetchAverageRating(recipeId: UUID) async throws -> Double {
+        let response: [String: Double] = try await supabaseManager.client
+            .rpc("get_average_rating", params: ["recipe_id": recipeId])
+            .select()
+            .single()
+            .execute()
+            .value
+        return response["average"] ?? 0
+    }
+    
+    func fetchRatings(recipeId: UUID) async throws -> [Rating] {
+        return try await supabaseManager.client
+            .from("ratings")
+            .select()
+            .eq("recipe_id", value: recipeId)
+            .order("created_at", ascending: false)
+            .execute()
+            .value
+    }
+    
+
+    
+
+    
+    func loadImage(from path: String, bucket: String) async throws -> UIImage {
+        if let cachedImage = ImageCache.shared.image(for: path) {
+            return cachedImage
+        }
+
+        let data = try await supabaseManager.client
+            .storage
+            .from(bucket)
+            .download(path: path)
+        
+        guard !Task.isCancelled else {
+            throw ImageError.operationCancelled
+        }
+        
+        guard let image = UIImage(data: data) else {
+            throw ImageError.invalidImageData
+        }
+
+        ImageCache.shared.setImage(image, for: path)
+        return image
+    }
+    
     // MARK: - Private Helpers
-    private func uploadMainImageIfNeeded(_ image: UIImage?, for recipeId: UUID) async throws -> String? {
-        guard let image = image, image != Resources.Images.Icons.cameraMain else { return nil }
+    private func uploadInstructionImage(_ image: UIImage?, for recipeId: UUID) async throws -> String? {
+        guard let image = image, image != AppImages.Icons.cameraMain else { return nil }
         guard let imageData = image.jpegData(compressionQuality: 0.8) else { return nil }
         let currentUser = try await supabaseManager.client.auth.session.user
         let userId = currentUser.id.uuidString.lowercased()
@@ -482,55 +495,7 @@ final class DataService {
             .upload(fullPath, data: imageData, options: FileOptions(contentType: "image/jpeg"))
         return fullPath
     }
-    
-    private func saveIngredients(_ ingredients: [Ingredient], for recipeId: UUID) async throws {
-        for (index, ingredient) in ingredients.enumerated() {
-            let ingredientSupabase = IngredientSupabase(
-                id: UUID(),
-                recipeId: recipeId,
-                name: ingredient.name,
-                amount: "\(ingredient.amount) \(ingredient.measure)",
-                orderIndex: index
-            )
-            try await supabaseManager.client.from("ingredients").insert(ingredientSupabase).execute()
-        }
-    }
-    
-    private func saveInstructions(_ steps: [Instruction], for recipeId: UUID) async throws {
-        for (index, step) in steps.enumerated() {
-            var imagePath: String? = nil
-            if let imageData = step.image, let image = UIImage(data: imageData) {
-                imagePath = try await uploadMainImageIfNeeded(image, for: recipeId)
-            }
-            let instruction = InstructionSupabase(
-                id: UUID(),
-                recipeId: recipeId,
-                stepNumber: index + 1,
-                description: step.describe,
-                imagePath: imagePath,
-                orderIndex: index
-            )
-            try await supabaseManager.client.from("instructions").insert(instruction).execute()
-        }
-    }
-    
-    private func saveTags(_ tags: [String], for recipeId: UUID) async throws {
-        for tag in tags {
-            let recipeTag = RecipeTagSupabase(
-                id: UUID(),
-                recipeId: recipeId,
-                tag: tag.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-            )
-            try await supabaseManager.client.from("recipe_tags").insert(recipeTag).execute()
-        }
-    }
-    
-    private func saveCategories(_ categories: [CategorySupabase], for recipeId: UUID) async throws {
-        for category in categories {
-            let recipeCategory = RecipeCategorySupabase(id: UUID(), recipeId: recipeId, categoryId: category.id)
-            try await supabaseManager.client.from("recipe_categories").insert(recipeCategory).execute()
-        }
-    }
+
     
     func fetchRecipeDetails(recipeId: UUID) async throws -> RecipeDetailsResponse {
         
@@ -570,7 +535,5 @@ final class DataService {
     }
 }
 
-enum RatingError: Error {
-    case userNotAuthenticated
-    case hz
-}
+
+

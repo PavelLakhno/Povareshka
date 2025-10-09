@@ -10,7 +10,7 @@ import UIKit
 class BaseAuthViewController: UIViewController {
     // General background
     private let backgroundImage: UIImageView = {
-        let iv = UIImageView(image: Resources.Images.Background.meet)
+        let iv = UIImageView(image: AppImages.Background.meet)
         iv.contentMode = .scaleAspectFill
         iv.isUserInteractionEnabled = true
         iv.clipsToBounds = true
@@ -151,9 +151,10 @@ class BaseAuthViewController: UIViewController {
         }
     }
     
-    func handleAuthError(_ error: Error) {
+    func handleAuthError(_ error: AppError) {
         DispatchQueue.main.async {
             AlertManager.shared.showError(on: self, error: error)
+            print("Auth error: \(error.userFriendlyMessage)")
         }
     }
 }

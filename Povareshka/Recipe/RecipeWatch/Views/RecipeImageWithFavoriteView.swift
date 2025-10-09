@@ -12,7 +12,7 @@ final class RecipeImageWithFavoriteView: UIView {
     // MARK: - Properties
     private let dataService = DataService.shared
     private let imageView = UIImageView(cornerRadius: Constants.cornerRadiusBig, contentMode: .scaleAspectFill)
-    private lazy var favoriteButton = UIButton(image: Resources.Images.Icons.heart,
+    private lazy var favoriteButton = UIButton(image: AppImages.Icons.heart,
                                                backgroundColor: .black.withAlphaComponent(0.3),
                                                cornerRadius: Constants.cornerRadiusMedium,
                                                size: Constants.iconCellSizeMedium,
@@ -39,7 +39,7 @@ final class RecipeImageWithFavoriteView: UIView {
     }
     
     // MARK: - Public Methods
-    func configure(with image: UIImage? = Resources.Images.Icons.cameraMain,
+    func configure(with image: UIImage? = AppImages.Icons.cameraMain,
                    isFavorite: Bool,
                    isCreator: Bool,
                    recipeId: UUID?,
@@ -75,7 +75,7 @@ final class RecipeImageWithFavoriteView: UIView {
             favoriteButton.isHidden = true
         } else {
             favoriteButton.isHidden = false
-            favoriteButton.tintColor = isFavorite ? .systemOrange : .white
+            favoriteButton.tintColor = isFavorite ? AppColors.primaryOrange : .white
         }
     }
     
@@ -97,7 +97,7 @@ final class RecipeImageWithFavoriteView: UIView {
             } catch {
                 DispatchQueue.main.async {
                     AlertManager.shared.showError(on: parentVC, error: error)
-                    print("Ошибка изменения статуса избранного: \(error)")
+                    print("Ошибка изменения статуса избранного: \(error.localizedDescription)")
                 }
             }
         }

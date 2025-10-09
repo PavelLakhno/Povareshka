@@ -17,14 +17,7 @@ final class ReviewPhotoCell: UICollectionViewCell {
         style: .medium,
         centerIn: self
     )
-//    private let activityIndicator: UIActivityIndicatorView = {
-//        let indicator = UIActivityIndicatorView(style: .medium)
-//        indicator.hidesWhenStopped = true
-//        indicator.color = Resources.Colors.orange
-//        indicator.translatesAutoresizingMaskIntoConstraints = false
-//        return indicator
-//    }()
-    
+
     private let dataService = DataService.shared
     
     private var currentImagePath: String?
@@ -59,12 +52,17 @@ final class ReviewPhotoCell: UICollectionViewCell {
         imageTask = Task { [weak self] in
             guard let self = self else { return }
             
-            let image = await dataService.loadImage(from: imagePath, bucket: Bucket.reviews)
+            do {
+                let image = try await dataService.loadImage(from: imagePath, bucket: Bucket.reviews)
+                
+                guard !Task.isCancelled, self.currentImagePath == imagePath else { return }
+                
+                self.imageView.image = image
+                self.activityIndicator.stopAnimating()
+            } catch {
+                
+            }
             
-            guard !Task.isCancelled, self.currentImagePath == imagePath else { return }
-            
-            self.imageView.image = image
-            self.activityIndicator.stopAnimating()
         }
     }
     
@@ -79,9 +77,6 @@ final class ReviewPhotoCell: UICollectionViewCell {
             imageView.leadingAnchor.constraint(equalTo: leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: trailingAnchor),
             imageView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            
-//            activityIndicator.centerXAnchor.constraint(equalTo: centerXAnchor),
-//            activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
     }
 }

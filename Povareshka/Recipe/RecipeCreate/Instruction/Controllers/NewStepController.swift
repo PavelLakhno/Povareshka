@@ -15,36 +15,36 @@ class NewStepController: BaseController {
     
     private lazy var stepPhotoPickerView = UIImagePickerController(delegate: self)
 
-    private let customScrollView = UIScrollView(backgroundColor: Resources.Colors.backgroundLight)
+    private let customScrollView = UIScrollView(backgroundColor: AppColors.gray100)
     override var scrollView: UIScrollView { customScrollView }
     
-    private let contentView = UIView(backgroundColor: Resources.Colors.backgroundLight)
+    private let contentView = UIView(backgroundColor: AppColors.gray100)
     
-    private let imageBubbleView = UIView(backgroundColor: .white, cornerRadius: 12)
+    private let imageBubbleView = UIView(backgroundColor: .white, cornerRadius: Constants.cornerRadiusSmall)
     private let stepImageView = UIImageView(
-        cornerRadius: 12,
+        cornerRadius: Constants.cornerRadiusSmall,
         contentMode: .scaleAspectFit,
         borderWidth: 1
     )
    
-    private lazy var addPhotoButton = UIButton(title: Resources.Strings.Buttons.addPhoto,
-                                               titleColor: Resources.Colors.orange,
+    private lazy var addPhotoButton = UIButton(title: AppStrings.Buttons.addPhoto,
+                                               titleColor: AppColors.primaryOrange,
                                                font: .helveticalRegular(withSize: 16),
                                                target: self, action: #selector(addPhotoTapped))
-    private lazy var saveButton = UIButton(title: Resources.Strings.Buttons.save,
-                                           backgroundColor: Resources.Colors.orange,
+    private lazy var saveButton = UIButton(title: AppStrings.Buttons.save,
+                                           backgroundColor: AppColors.primaryOrange,
                                            titleColor: .white,
                                            font: .helveticalRegular(withSize: 16),
-                                           cornerRadius: 10,
+                                           cornerRadius: Constants.cornerRadiusSmall,
                                            target: self, action: #selector(saveButtonTapped))
     
     private lazy var removePhotoIconButton: UIButton = {
         let button = UIButton(
-            image: Resources.Images.Icons.trash,
+            image: AppImages.Icons.trash,
             backgroundColor: .white.withAlphaComponent(0.6),
-            tintColor: .gray,
-            cornerRadius: 16,
-            size: CGSize(width: 32, height: 32),
+            tintColor: .red,
+            cornerRadius: Constants.cornerRadiusMedium,
+            size: Constants.iconCellSizeMedium,
             target: self,
             action: #selector(removePhotoTapped)
         )
@@ -53,7 +53,7 @@ class NewStepController: BaseController {
     }()
     
     private lazy var descriptionTextView = UITextView.configureTextView(
-        placeholder: Resources.Strings.Placeholders.enterDescription,
+        placeholder: AppStrings.Placeholders.enterDescription,
         delegate: self
     )
 
@@ -89,7 +89,7 @@ class NewStepController: BaseController {
     // MARK: - Setup
     private func setupNavigationBar() {
         navigationItem.title = "Шаг \(stepNumber)"
-        addNavBarButtons(at: .left, types: [.title(Resources.Strings.Buttons.cancel)])
+        addNavBarButtons(at: .left, types: [.title(AppStrings.Buttons.cancel)])
     }
     
     internal override func setupViews() {
@@ -157,7 +157,7 @@ class NewStepController: BaseController {
                 self.descriptionTextView.dynamicTextViewHeight(minHeight: 150)
             }
         } else {
-            descriptionTextView.placeholder = Resources.Strings.Placeholders.enterDescription
+            descriptionTextView.placeholder = AppStrings.Placeholders.enterDescription
             descriptionTextView.textColor = .lightGray
         }
         
@@ -172,7 +172,7 @@ class NewStepController: BaseController {
         let hasImage = stepImage != nil
         addPhotoButton.setTitle(
             hasImage ?
-            Resources.Strings.Buttons.changePhoto : Resources.Strings.Buttons.addPhoto,
+            AppStrings.Buttons.changePhoto : AppStrings.Buttons.addPhoto,
             for: .normal
         )
         removePhotoIconButton.isHidden = !hasImage
@@ -192,7 +192,7 @@ extension NewStepController {
     
     @objc private func removePhotoTapped() {
         stepImage = nil
-        stepImageView.image = Resources.Images.Icons.cameraMain
+        stepImageView.image = AppImages.Icons.cameraMain
         stepImageView.contentMode = .scaleAspectFit
         stepImageView.layer.borderColor = UIColor.black.cgColor
         updateUI()
@@ -202,8 +202,8 @@ extension NewStepController {
         guard let description = descriptionTextView.text?.trimmingCharacters(in: .whitespacesAndNewlines), !description.isEmpty else {
             AlertManager.shared.show(
                 on: self,
-                title: Resources.Strings.Alerts.errorTitle,
-                message: Resources.Strings.Alerts.enterDescription
+                title: AppStrings.Alerts.errorTitle,
+                message: AppStrings.Alerts.enterDescription
             )
             return
         }
@@ -236,13 +236,13 @@ extension NewStepController: UITextViewDelegate {
         textView.resignFirstResponder()
         textView.clearButtonStatus = true
         if textView.text.isEmpty {
-            textView.text = Resources.Strings.Placeholders.enterDescription
+            textView.text = AppStrings.Placeholders.enterDescription
             textView.textColor = .lightGray
         }
     }
     
     func textViewDidChange(_ textView: UITextView) {
-        textView.placeholder = textView.hasText ? nil : Resources.Strings.Placeholders.enterDescription
+        textView.placeholder = textView.hasText ? nil : AppStrings.Placeholders.enterDescription
         textView.clearButtonStatus = !textView.hasText
         textView.dynamicTextViewHeight(minHeight: 150)
         scrollView.scrollRectToVisible(textView.frame, animated: true)

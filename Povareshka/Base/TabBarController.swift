@@ -15,28 +15,16 @@ enum Tabs: Int, CaseIterable {
 }
 
 class TabBarController: UITabBarController {
-    
-//    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-//        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-//        
-//        configureAppearance()
-//    }
-//    
-//    required init?(coder: NSCoder) {
-//        fatalError("init(coder:) has not been implemented")
-//    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         configureAppearance()
-        // Do any additional setup after loading the view.
     }
     
     private func configureAppearance() {
-        tabBar.tintColor = Resources.Colors.active
-        //tabBar.barTintColor = Resources.Colors.inactive
+        tabBar.tintColor = AppColors.primaryOrange
         tabBar.backgroundColor = .white
-        tabBar.layer.borderColor = Resources.Colors.separator.cgColor
+        tabBar.layer.borderColor = AppColors.gray100.cgColor
         tabBar.layer.borderWidth = 1
         tabBar.layer.masksToBounds = true
         
@@ -51,26 +39,26 @@ class TabBarController: UITabBarController {
         let profileNavigation = UINavigationController(rootViewController: profileController)
         
         mainviewNavigation.tabBarItem = UITabBarItem(
-            title: Resources.Strings.TabBar.mainview,
-            image: Resources.Images.TabBar.mainview,
+            title: AppStrings.TabBar.mainview,
+            image: AppImages.TabBar.mainview,
             tag: Tabs.mainview.rawValue
         )
         
         favoriteNavigation.tabBarItem = UITabBarItem(
-            title: Resources.Strings.TabBar.search,
-            image: Resources.Images.TabBar.search,
+            title: AppStrings.TabBar.search,
+            image: AppImages.TabBar.search,
             tag: Tabs.favorite.rawValue
         )
         
         shopNavigation.tabBarItem = UITabBarItem(
-            title: Resources.Strings.TabBar.shop,
-            image: Resources.Images.TabBar.shop,
+            title: AppStrings.TabBar.shop,
+            image: AppImages.TabBar.shop,
             tag: Tabs.shop.rawValue
         )
         
         profileNavigation.tabBarItem = UITabBarItem(
-            title: Resources.Strings.TabBar.profile,
-            image: Resources.Images.TabBar.profile,
+            title: AppStrings.TabBar.profile,
+            image: AppImages.TabBar.profile,
             tag: Tabs.profile.rawValue
         )
         
@@ -81,6 +69,4 @@ class TabBarController: UITabBarController {
             profileNavigation
         ], animated: false)
     }
-
-
 }

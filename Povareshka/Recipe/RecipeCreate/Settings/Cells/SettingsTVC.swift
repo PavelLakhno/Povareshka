@@ -14,38 +14,38 @@ class SettingTableViewCell: UITableViewCell {
     
     // MARK: - UI Elements
     private let bubbleView = UIView(
-        backgroundColor: Resources.Colors.backgroundMedium,
+        backgroundColor: AppColors.gray200,
         cornerRadius: Constants.cornerRadiusSmall
     )//
     
     private let iconBubleView = UIView(
         size: Constants.iconCellSizeBig,
-        backgroundColor: Resources.Colors.background,
+        backgroundColor: .white,
         cornerRadius: Constants.cornerRadiusSmall
     )
     
     private let iconImage = UIImageView(
         size: Constants.iconCellSizeMedium,
         contentMode: .scaleAspectFit,
-        tintColor: Resources.Colors.orange,
+        tintColor: AppColors.primaryOrange,
         backgroundColor: .clear
     )
 
     private let titleLabel = UILabel(
         font: .helveticalRegular(withSize: 16),
-        textColor: Resources.Colors.titleGray,
+        textColor: .black,
         textAlignment: .left, numberOfLines: 2
     )
     
     private let valueLabel = UILabel(
         font: .helveticalRegular(withSize: 16),
-        textColor: Resources.Colors.secondary,
+        textColor: AppColors.gray600,
         textAlignment: .right
     )
 
     private lazy var actionButton = UIButton(
-        image: Resources.Images.Icons.forward,
-        tintColor: Resources.Colors.orange,
+        image: AppImages.Icons.forward,
+        tintColor: AppColors.primaryOrange,
         size: Constants.iconCellSizeMedium,
         target: self,
         action: #selector(actionButtonTapped)
@@ -67,7 +67,7 @@ class SettingTableViewCell: UITableViewCell {
     // MARK: - Private Methods
     private func setupViews() {
         selectionStyle = .none
-        backgroundColor = Resources.Colors.backgroundLight
+        backgroundColor = AppColors.gray100
         contentView.addSubview(bubbleView)
         bubbleView.addSubview(iconBubleView)
         iconBubleView.addSubview(iconImage)

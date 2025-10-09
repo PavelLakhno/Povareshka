@@ -12,7 +12,7 @@ class SettingsViewController: UIViewController {
     // MARK: - UI Components
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .grouped)
-        tableView.backgroundColor = .systemGray6
+        tableView.backgroundColor = AppColors.gray100
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
     }()
@@ -40,7 +40,7 @@ class SettingsViewController: UIViewController {
     
     // MARK: - Setup
     private func setupUI() {
-        view.backgroundColor = .systemGray6
+        view.backgroundColor = AppColors.gray100
         title = "НАСТРОЙКИ"
         
         view.addSubview(tableView)

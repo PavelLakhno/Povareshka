@@ -37,7 +37,8 @@ final class CategoriesSelectionController: BaseController {
                 TableViewCellConfig(cellClass: CategoryCell.self, identifier: CategoryCell.id),
             ],
             delegate: self,
-            dataSource: self
+            dataSource: self,
+            isScrollEnabled: true
         )
         return tableView
     }()
@@ -76,18 +77,18 @@ final class CategoriesSelectionController: BaseController {
     }
     
     private func setupNavigation() {
-        navigationItem.title = Resources.Strings.Titles.selectCategories
-        addNavBarButtons(at: .left, types: [.title(Resources.Strings.Buttons.cancel)])
+        navigationItem.title = AppStrings.Titles.selectCategories
+        addNavBarButtons(at: .left, types: [.title(AppStrings.Buttons.cancel)])
         
         let switchButton = UIBarButtonItem(
-            image: Resources.Images.Icons.table,
+            image: AppImages.Icons.table,
             style: .plain,
             target: self,
             action: #selector(toggleViewMode)
         )
 
         let doneButton = UIBarButtonItem(
-            title: Resources.Strings.Buttons.done,
+            title: AppStrings.Buttons.done,
             style: .done,
             target: self,
             action: #selector(doneTapped)
@@ -123,7 +124,7 @@ final class CategoriesSelectionController: BaseController {
         
         UIView.animate(withDuration: 0.2) {
             self.navigationItem.rightBarButtonItems?[1].image = self.isTableViewMode ?
-            Resources.Images.Icons.collection : Resources.Images.Icons.table
+            AppImages.Icons.collection : AppImages.Icons.table
         }
         
     }
@@ -213,8 +214,8 @@ extension CategoriesSelectionController {
             if selectedCategories.count >= 5 {
                 AlertManager.shared.show(
                     on: self,
-                    title: Resources.Strings.Alerts.errorTitle,
-                    message: Resources.Strings.Alerts.maxCategories
+                    title: AppStrings.Alerts.errorTitle,
+                    message: AppStrings.Alerts.maxCategories
                 )
                 return
             }

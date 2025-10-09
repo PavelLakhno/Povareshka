@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Модель для обновления профиля
 
-struct Profile: Codable, Identifiable {
+struct UserProfile: Codable, Identifiable {
     let id: UUID
     let username: String?
     let fullName: String?
@@ -26,7 +26,7 @@ struct Profile: Codable, Identifiable {
 }
 
 // ShortInfoUser
-struct UserProfile: Codable {
+struct UserProfileShort: Codable {
     let id: UUID
     let username: String?
     let avatarPath: String?

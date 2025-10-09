@@ -14,16 +14,16 @@ final class ReviewsViewController: BaseController {
     private let recipeId: UUID
     private var averageRating: Double
     private var ratings: [Rating] = []
-    private var userProfiles: [UUID: UserProfile] = [:]
+    private var userProfiles: [UUID: UserProfileShort] = [:]
     private var reviewPhotos: [ReviewPhoto] = []
     private var filteredRatings: [Rating] = []
     private var sortOption: SortOption = .dateDesc
     
     // MARK: - UI Elements
-    private let customScrollView = UIScrollView(backgroundColor: Resources.Colors.backgroundLight)
+    private let customScrollView = UIScrollView(backgroundColor: AppColors.gray100)
     override var scrollView: UIScrollView { customScrollView }
     
-    private let contentView = UIView(backgroundColor: Resources.Colors.backgroundLight)
+    private let contentView = UIView(backgroundColor: AppColors.gray100)
     private let ratingHeaderView = RatingHeaderView(backgroundColor: .systemBackground,
                                                     cornerRadius: Constants.cornerRadiusBig)
     private let photosSectionView = UIView(backgroundColor: .systemBackground,
@@ -49,8 +49,8 @@ final class ReviewsViewController: BaseController {
                                            target: self,
                                            action: #selector(showSortOptions))
     
-    private lazy var viewAllButton = UIButton(title: Resources.Strings.Buttons.watchPhotos,
-                                              titleColor: Resources.Colors.orange,
+    private lazy var viewAllButton = UIButton(title: AppStrings.Buttons.watchPhotos,
+                                              titleColor: AppColors.primaryOrange,
                                            font: .helveticalRegular(withSize: 14),
                                            target: self,
                                            action: #selector(viewAllPhotos))
@@ -74,13 +74,6 @@ final class ReviewsViewController: BaseController {
         style: .medium,
         centerIn: view
     )
-//    private let activityIndicator: UIActivityIndicatorView = {
-//        let indicator = UIActivityIndicatorView(style: .medium)
-//        indicator.hidesWhenStopped = true
-//        indicator.color = Resources.Colors.orange
-//        indicator.translatesAutoresizingMaskIntoConstraints = false
-//        return indicator
-//    }()
     
     private let dataService = DataService.shared
     
@@ -108,13 +101,13 @@ final class ReviewsViewController: BaseController {
 // MARK: - Setup
 extension ReviewsViewController {
     private func setupNavigationBar() {
-        navigationItem.title = Resources.Strings.Titles.feedback
-        addNavBarButtons(at: .left, types: [.title(Resources.Strings.Buttons.cancel)])
+        navigationItem.title = AppStrings.Titles.feedback
+        addNavBarButtons(at: .left, types: [.title(AppStrings.Buttons.cancel)])
     }
     
     internal override func setupViews() {
         super.setupViews()
-        view.backgroundColor = Resources.Colors.backgroundLight
+        view.backgroundColor = AppColors.gray100
         view.addSubview(scrollView)
         view.addSubview(activityIndicator)
         
@@ -191,11 +184,11 @@ private extension ReviewsViewController {
         
         Task {
             do {
-                async let ratingsTask = dataService.loadRatings(recipeId: recipeId)
-                async let photosTask = dataService.loadReviewPhotos(recipeId: recipeId)
+                async let ratingsTask = dataService.fetchRatings(recipeId: recipeId)
+                async let photosTask = dataService.fetchAllReviewPhotos(recipeId: recipeId)
                 
                 let (ratings, photos) = await (try ratingsTask, try photosTask)
-                let profiles = try await dataService.loadUserProfiles(userIds: ratings.map { $0.userId })
+                let profiles = try await dataService.fetchUserProfiles(userIds: ratings.map { $0.userId })
                 
                 DispatchQueue.main.async {
                     self.ratings = ratings
@@ -210,8 +203,8 @@ private extension ReviewsViewController {
                     self.activityIndicator.stopAnimating()
                     AlertManager.shared.show(
                         on: self,
-                        title: Resources.Strings.Alerts.errorTitle,
-                        message: Resources.Strings.Messages.failedDownload
+                        title: AppStrings.Alerts.errorTitle,
+                        message: AppStrings.Messages.failedDownload
                     )
 
                 }

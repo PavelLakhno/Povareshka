@@ -7,19 +7,19 @@
 
 import UIKit
 
-class RecipeWatchController: BaseController {
+final class RecipeWatchController: BaseController {
     
     var recipeId: UUID?
-    private var recipe: RecipeSupabase?
-    private var ingredients: [IngredientSupabase] = []
-    private var instructions: [InstructionSupabase] = []
-    private let dataService = DataService.shared
+
+    private let viewModel = RecipeWatchViewModel()
     
-    private var tags: [String] = []
-    private var categories: [CategorySupabase] = []
+    // Data Sources вместо прямого хранения данных
+    private let ingredientsDataSource = IngredientsDataSource()
+    private let instructionsDataSource = InstructionsDataSource()
     
-    private var averageRating: Double = 0
-    private var userRating: Rating?
+    // НОВОЕ: Data Sources для коллекций
+    private let tagsDataSource = TagsCollectionViewDataSource()
+    private let categoriesDataSource = CategoriesCollectionViewDataSource()
     
     private let recipeImageView = RecipeImageWithFavoriteView()
     
@@ -36,8 +36,8 @@ class RecipeWatchController: BaseController {
             cellConfigs: [
                 TableViewCellConfig(cellClass: IngredientCell.self, identifier: IngredientCell.id)
             ],
-            delegate: self,
-            dataSource: self
+            delegate: ingredientsDataSource,
+            dataSource: ingredientsDataSource
         )
         return tableView
     }()
@@ -48,8 +48,8 @@ class RecipeWatchController: BaseController {
                 TableViewCellConfig(cellClass: InstructionTextCell.self, identifier: InstructionTextCell.id),
                 TableViewCellConfig(cellClass: InstructionImageCell.self, identifier: InstructionImageCell.id)
             ],
-            delegate: self,
-            dataSource: self
+            delegate: instructionsDataSource,
+            dataSource: instructionsDataSource
         )
         return tableView
     }()
@@ -60,8 +60,8 @@ class RecipeWatchController: BaseController {
             cellConfigs: [
                 CollectionViewCellConfig(cellClass: TagCollectionViewCell.self, identifier: TagCollectionViewCell.id)
             ],
-            delegate: self,
-            dataSource: self,
+            delegate: tagsDataSource,
+            dataSource: tagsDataSource,
             showsHorizontalScrollIndicator: false,
             showsVerticalScrollIndicator: false,
             isScrollEnabled: true,
@@ -75,8 +75,8 @@ class RecipeWatchController: BaseController {
             cellConfigs: [
                 CollectionViewCellConfig(cellClass: CategoryGridCell.self, identifier: CategoryGridCell.id),
             ],
-            delegate: self,
-            dataSource: self,
+            delegate: categoriesDataSource,
+            dataSource: categoriesDataSource,
             isScrollEnabled: false
         )
         return collectionView
@@ -116,80 +116,76 @@ class RecipeWatchController: BaseController {
         ])
     }
 
-
     private func loadRecipeData() {
         guard let recipeId = recipeId else { return }
         loadingIndicator.startAnimating()
         
         Task {
-            do {
-                let results = try await dataService.fetchRecipeDetails(recipeId: recipeId)
-                DispatchQueue.main.async {
-                    self.updateUI(with: results)
-                    self.loadingIndicator.stopAnimating()
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    self.loadingIndicator.stopAnimating()
-                    AlertManager.shared.showError(on: self, error: error)
-                }
-            }
+            // ИСПОЛЬЗУЕМ ViewModel вместо прямого вызова DataService
+            await viewModel.loadRecipe(recipeId: recipeId)
+            updateUI()
         }
     }
     
-    private func updateUI(with results: RecipeDetailsResponse) {
-        recipe = results.recipe
-        ingredients = results.ingredients
-        instructions = results.instructions
-        tags = results.tags
-        categories = results.categories
-        averageRating = results.averageRating
-        userRating = results.userRating
-        
-        guard let recipe = recipe else { return }
+    @MainActor
+    private func updateUI() {
+        guard let recipe = viewModel.recipe else { return }
 
+        // Обновляем Data Sources из ViewModel
+        ingredientsDataSource.updateIngredients(viewModel.ingredients)
+        instructionsDataSource.updateInstructions(viewModel.instructions)
+        
+        tagsDataSource.updateTags(viewModel.tags)
+        categoriesDataSource.updateCategories(viewModel.categories)
+        
+        // Очищаем stackView
+        stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        
+        // Строим UI на основе ViewModel
         setupRecipeTitle(recipe.title)
         setupRecipeImageView(with: recipe)
         setupMetaStack(with: recipe)
 
-        if let description = recipe.description {
+        if viewModel.hasDescription, let description = recipe.description {
             setupDescription(with: description)
         }
 
-        if !categories.isEmpty {
+        if viewModel.hasCategories {
             setupCategoriesSection()
         }
 
-        if !tags.isEmpty {
+        if viewModel.hasTags {
             setupTagsSection()
         }
         
         setupIngredientsSection()
         setupInstructionsSection()
         setupRateButton()
+        
+        loadingIndicator.stopAnimating()
     }
+    
+
 
     private func setupRecipeImageView(with recipe: RecipeSupabase) {
         recipeImageView.heightAnchor.constraint(equalToConstant: view.frame.width / 1.5).isActive = true
         stackView.addArrangedSubview(recipeImageView)
-        
-        if let imagePath = recipe.imagePath {
-            Task {
-                do {
-                    let image = await dataService.loadImage(from: imagePath, bucket: Bucket.recipes)
-                    let isCreator = await checkIfCurrentUserIsCreator(recipe: recipe)
-                    let isFavorite = try await dataService.isRecipeFavorite(recipeId: recipe.id)
-                    
-                    DispatchQueue.main.async {
-                        self.recipeImageView.configure(
-                            with: image,
-                            isFavorite: isFavorite,
-                            isCreator: isCreator,
-                            recipeId: recipe.id,
-                            parentViewController: self
-                        )
-                    }
-                } 
+
+        Task {
+            do {
+                let image = await viewModel.loadRecipeImage(for: recipe)
+                let isFavorite = try await viewModel.checkIfRecipeIsFavorite(recipeId: recipe.id)
+                let isCreator = await viewModel.checkIfCurrentUserIsCreator(recipe: recipe)
+                
+                DispatchQueue.main.async {
+                    self.recipeImageView.configure(
+                        with: image,
+                        isFavorite: isFavorite,
+                        isCreator: isCreator,
+                        recipeId: recipe.id,
+                        parentViewController: self
+                    )
+                }
             }
         }
     }
@@ -198,7 +194,6 @@ class RecipeWatchController: BaseController {
         let titleLabel = UILabel(
             text: title,
             font: .helveticalBold(withSize: 24),
-            textColor: .black,
             textAlignment: .center,
             numberOfLines: 0
         )
@@ -207,7 +202,7 @@ class RecipeWatchController: BaseController {
     
     private func setupMetaStack(with recipe: RecipeSupabase) {
         let metaStack = RecipeMetaStackView()
-        metaStack.configure(with: recipe, averageRating: averageRating, recipeId: recipe.id)
+        metaStack.configure(with: recipe, averageRating: viewModel.averageRating, recipeId: recipe.id)
         metaStack.delegate = self
         stackView.addArrangedSubview(metaStack)
     }
@@ -216,7 +211,6 @@ class RecipeWatchController: BaseController {
         let descriptionLabel = UILabel(
             text: description,
             font: .helveticalRegular(withSize: 16),
-            textColor: .black,
             numberOfLines: 0
         )
         stackView.addArrangedSubview(descriptionLabel)
@@ -224,14 +218,14 @@ class RecipeWatchController: BaseController {
     
     private func setupCategoriesSection() {
         let titleLabel = UILabel(
-            text: Resources.Strings.Titles.categories,
+            text: AppStrings.Titles.categories,
             font: .helveticalBold(withSize: 18),
             textColor: .black
         )
         stackView.addArrangedSubview(titleLabel)
         
         categoriesCollectionView.reloadData()
-        let rows = ceil(Double(categories.count) / 3.0)
+        let rows = ceil(Double(viewModel.categories.count) / 3.0)
         let height = rows * 100 + (rows - 1) * 8
         
         categoriesCollectionView.heightAnchor.constraint(equalToConstant: height).isActive = true
@@ -240,7 +234,7 @@ class RecipeWatchController: BaseController {
     
     private func setupTagsSection() {
         let titleLabel = UILabel(
-            text: Resources.Strings.Titles.tags,
+            text: AppStrings.Titles.tags,
             font: .helveticalBold(withSize: 18),
             textColor: .black
         )
@@ -253,7 +247,7 @@ class RecipeWatchController: BaseController {
     
     private func setupIngredientsSection() {
         let titleLabel = UILabel(
-            text: Resources.Strings.Titles.ingredient,
+            text: AppStrings.Titles.ingredient,
             font: .helveticalBold(withSize: 20),
             textColor: .black,
             textAlignment: .center
@@ -268,7 +262,7 @@ class RecipeWatchController: BaseController {
     
     private func setupInstructionsSection() {
         let titleLabel = UILabel(
-            text: Resources.Strings.Titles.cookingStages,
+            text: AppStrings.Titles.cookingStages,
             font: .helveticalBold(withSize: 20),
             textColor: .black,
             textAlignment: .center
@@ -282,8 +276,8 @@ class RecipeWatchController: BaseController {
     
     private func setupRateButton() {
         let rateButton = UIButton(
-            title: userRating != nil ? "Изменить оценку" : "Оценить рецепт",
-            backgroundColor: .systemOrange,
+            title: viewModel.userRating != nil ? "Изменить оценку" : "Оценить рецепт",
+            backgroundColor: AppColors.primaryOrange,
             titleColor: .white,
             cornerRadius: Constants.cornerRadiusSmall,
             target: self,
@@ -295,147 +289,13 @@ class RecipeWatchController: BaseController {
     
     @objc private func rateButtonTapped() {
         let rateVC = RecipeRatingController(recipeId: recipeId)
-//        let rateVC = RecipeRatingController()
-//        rateVC.recipeId = recipeId
-//        rateVC.currentRating = userRating?.rating
-//        rateVC.comment = userRating?.comment
         navigationController?.pushViewController(rateVC, animated: true)
-    }
-    
-    private func checkIfCurrentUserIsCreator(recipe: RecipeSupabase) async -> Bool {
-        do {
-            guard let currentUserId = try await dataService.getCurrentUserId(),
-                  let creatorId = UUID(uuidString: recipe.userId.uuidString.lowercased()) else {
-                return false
-            }
-            return currentUserId == creatorId
-        } catch {
-            print("Ошибка получения текущего пользователя: \(error)")
-            return false
-        }
-    }
-}
-
-//MARK: UITableViewDataSource, UITableViewDelegate
-extension RecipeWatchController: UITableViewDataSource, UITableViewDelegate {
-    func numberOfSections(in tableView: UITableView) -> Int {
-        if tableView == stepsTableView {
-            return instructions.count
-        }
-        return 1
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if tableView == ingredientsTableView {
-            return ingredients.count
-        } else {
-            let instruction = instructions[section]
-            return instruction.imagePath != nil ? 2 : 1
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if tableView == ingredientsTableView {
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: IngredientCell.id, for: indexPath) as? IngredientCell else {
-                return IngredientCell()
-            }
-            
-            let ingredient = ingredients[indexPath.row]
-            let newIngredient = IngredientData(name: ingredient.name, amount: ingredient.amount)
-            let isAdded = ShoppingListManager.shared.contains(ingredient: newIngredient)
-            
-            cell.configure(with: newIngredient, isAdded: isAdded)
-            cell.addActionHandler = { ShoppingListManager.shared.addIngredient($0) }
-            
-            DispatchQueue.main.async {
-                tableView.dynamicHeightForTableView()
-            }
-            return cell
-        } else {
-            let instruction = instructions[indexPath.section]
-            
-            if indexPath.row == 0 {
-                guard let cell = tableView.dequeueReusableCell(withIdentifier: InstructionTextCell.id, for: indexPath) as? InstructionTextCell else {
-                    return InstructionTextCell()
-                }
-                cell.configure(stepNumber: instruction.stepNumber, description: instruction.description ?? "")
-                DispatchQueue.main.async {
-                    tableView.dynamicHeightForTableView()
-                }
-                return cell
-            } else {
-                guard let cell = tableView.dequeueReusableCell(withIdentifier: InstructionImageCell.id, for: indexPath) as? InstructionImageCell else {
-                    return InstructionImageCell()
-                }
-                if let imagePath = instruction.imagePath {
-                    cell.configure(with: imagePath)
-                    DispatchQueue.main.async {
-                        tableView.dynamicHeightForTableView()
-                    }
-                }
-                return cell
-            }
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: false)
-    }
-    
-    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-        tableView != stepsTableView
-    }
-}
-
-// MARK: UICollectionViewDataSource
-extension RecipeWatchController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if collectionView == tagsCollectionView {
-            return tags.count
-        } else {
-            return categories.count
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if collectionView == tagsCollectionView {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagCollectionViewCell.id, for: indexPath) as? TagCollectionViewCell else {
-                return TagCollectionViewCell()
-            }
-            cell.configure(with: tags[indexPath.item],
-                           showDelete: false)
-            return cell
-        } else {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoryGridCell.id, for: indexPath) as? CategoryGridCell else {
-                return CategoryGridCell()
-            }
-            cell.configure(with: categories[indexPath.item].title,
-                           iconName: categories[indexPath.item].iconName,
-                           isSelected: false)
-            return cell
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        if collectionView == tagsCollectionView {
-            let tag = tags[indexPath.item]
-            let font = UIFont.helveticalRegular(withSize: 14)
-            let attributes = [NSAttributedString.Key.font: font]
-            let size = (tag as NSString).size(withAttributes: attributes)
-            return CGSize(width: size.width + 24, height: 30)
-        } else {
-            return Constants.categoryCellSize
-        }
     }
 }
 
 extension RecipeWatchController: @preconcurrency RecipeMetaStackViewDelegate {
     func didTapRatingView(recipeId: UUID) {
-        let reviewsVC = ReviewsViewController(recipeId: recipeId, averageRating: averageRating)
+        let reviewsVC = ReviewsViewController(recipeId: recipeId, averageRating: viewModel.averageRating)
         navigationController?.pushViewController(reviewsVC, animated: true)
     }
 }

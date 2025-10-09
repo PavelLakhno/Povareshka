@@ -16,8 +16,8 @@ class SettingsCell: UITableViewCell {
     
     private let iconContainer: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemGray6
-        view.layer.cornerRadius = 16
+        view.backgroundColor = AppColors.gray100
+        view.layer.cornerRadius = Constants.cornerRadiusMedium
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -48,7 +48,7 @@ class SettingsCell: UITableViewCell {
     
     private let toggleSwitch: UISwitch = {
         let toggle = UISwitch()
-        toggle.onTintColor = .systemOrange
+        toggle.onTintColor = AppColors.primaryOrange
         toggle.isHidden = true
         toggle.translatesAutoresizingMaskIntoConstraints = false
         return toggle

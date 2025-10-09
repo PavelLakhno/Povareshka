@@ -57,13 +57,13 @@ extension UIView {
 }
 
 extension UIImageView {
-    convenience init(image: UIImage? = Resources.Images.Icons.cameraMain,
+    convenience init(image: UIImage? = AppImages.Icons.cameraMain,
                      size: CGSize? = nil,
                      cornerRadius: CGFloat = 0,
                      contentMode: ContentMode = .scaleAspectFill,
                      borderWidth: CGFloat = 0,
-                     tintColor: UIColor = Resources.Colors.orange,
-                     borderColor: UIColor = Resources.Colors.orange,
+                     tintColor: UIColor = AppColors.primaryOrange,
+                     borderColor: UIColor = AppColors.primaryOrange,
                      backgroundColor: UIColor = .white) {
         self.init()
         self.backgroundColor = backgroundColor
@@ -107,7 +107,7 @@ extension UIImage {
 }
 
 extension UILabel {
-    convenience init(text: String = "", font: UIFont? = .helveticalBold(withSize: 20),backgroundColor: UIColor = .clear, textColor: UIColor = .gray, textAlignment: NSTextAlignment = .left, numberOfLines: Int = 0, height: CGFloat? = nil, layer: Bool? = nil) {
+    convenience init(text: String = "", font: UIFont? = .helveticalBold(withSize: 20),backgroundColor: UIColor = .clear, textColor: UIColor = .black, textAlignment: NSTextAlignment = .left, numberOfLines: Int = 0, height: CGFloat? = nil, layer: Bool? = nil) {
         self.init()
         self.text = text
         self.font = font
@@ -122,7 +122,7 @@ extension UILabel {
             heightAnchor.constraint(equalToConstant: height).isActive = true
         }
         if let layer = layer {
-            self.layer.borderColor = Resources.Colors.orange.cgColor
+            self.layer.borderColor = AppColors.primaryOrange.cgColor
             self.layer.borderWidth = 1
             self.layer.cornerRadius = Constants.cornerRadiusSmall
             self.layer.masksToBounds = layer
@@ -264,7 +264,7 @@ extension UITextField {
                                    delegate: UITextFieldDelegate? = nil,
                                    keyboardType: UIKeyboardType = .default,
                                    isSecureTextEntry: Bool = false,
-                                   borderColor: UIColor = Resources.Colors.orange,
+                                   borderColor: UIColor = AppColors.primaryOrange,
                                    cornerRadius: CGFloat = Constants.cornerRadiusSmall,
                                    backgroundColor: UIColor = .white,
                                    fontSize: CGFloat = 16) -> UITextField {
@@ -317,4 +317,19 @@ extension UIActivityIndicatorView {
             
             return indicator
         }
+}
+
+// MARK: check leaks
+extension UIViewController {
+    private static var deinitCounterKey = "DeinitCounterKey"
+    
+    class var deinitCounter: Int {
+        get { UserDefaults.standard.integer(forKey: "DeinitCounterKey") }
+        set { UserDefaults.standard.set(newValue, forKey: "DeinitCounterKey") }
+    }
+    
+    func trackAllocation() {
+        let className = String(describing: type(of: self))
+        print("🔵 ALLOCATED: \(className) - Total: \(Self.deinitCounter)")
+    }
 }

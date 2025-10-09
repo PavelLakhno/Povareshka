@@ -34,13 +34,13 @@ class BaseController: UIViewController {
     // MARK: - Navigation Bar Configuration
     func configureNavigationBar() {
         let navigationBar = navigationController?.navigationBar
-        navigationBar?.tintColor = Resources.Colors.orange
+        navigationBar?.tintColor = AppColors.primaryOrange
         
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = .systemBackground
         appearance.titleTextAttributes = [
-            .foregroundColor: Resources.Colors.titleGray,
+            .foregroundColor: UIColor.black,
             .font: UIFont.helveticalRegular(withSize: 16)
         ]
         
@@ -48,7 +48,7 @@ class BaseController: UIViewController {
         navigationBar?.scrollEdgeAppearance = appearance
         
         navigationBar?.addBottomBorder(
-            with: Resources.Colors.separator,
+            with: AppColors.gray100,
             height: 1
         )
     }
@@ -56,6 +56,16 @@ class BaseController: UIViewController {
     deinit {
         KeyboardManager.removeKeyboardNotifications(observer: self)
     }
+    
+    // MARK: check leaks
+//    deinit {
+//        let className = String(describing: type(of: self))
+//        Task { @MainActor in
+//            UIViewController.deinitCounter += 1
+//            print("🔴 DEINIT: \(className) - Total: \(UIViewController.deinitCounter)")
+//        }
+//        NotificationCenter.default.removeObserver(self)
+//    }
 }
 
 // MARK: - Base Methods
@@ -66,7 +76,7 @@ class BaseController: UIViewController {
     }
     func setupConstraints() {}
     func configureAppearance() {
-        view.backgroundColor = Resources.Colors.background
+        view.backgroundColor = AppColors.gray100
     }
 }
 
@@ -101,8 +111,8 @@ extension BaseController {
         case .title(let title):
             let button = UIButton(type: .system)
             button.setTitle(title, for: .normal)
-            button.setTitleColor(Resources.Colors.active, for: .normal)
-            button.setTitleColor(Resources.Colors.inactive, for: .disabled)
+            button.setTitleColor(AppColors.primaryOrange, for: .normal)
+            button.setTitleColor(AppColors.gray400, for: .disabled)
             button.titleLabel?.font = .helveticalRegular(withSize: 16)
             
             if let action = action {
@@ -119,7 +129,7 @@ extension BaseController {
         case .image(let image):
             let button = UIButton(type: .system)
             button.setImage(image, for: .normal)
-            button.tintColor = Resources.Colors.orange
+            button.tintColor = AppColors.primaryOrange
             
             if let action = action {
                 button.addTarget(self, action: action, for: .touchUpInside)
@@ -200,7 +210,5 @@ extension BaseController {
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
-    
-
 }
 

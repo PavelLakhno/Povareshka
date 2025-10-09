@@ -18,7 +18,7 @@ final class TagCollectionViewCell: UICollectionViewCell {
     )
     
     private lazy var deleteButton = UIButton(
-        image: Resources.Images.Icons.deleteX,
+        image: AppImages.Icons.deleteX,
         size: Constants.iconCellSizeSmall,
         target: self, action: #selector(deleteTapped)
     )
@@ -40,7 +40,7 @@ final class TagCollectionViewCell: UICollectionViewCell {
     }
     
     private func setupViews() {
-        backgroundColor = .systemGray2
+        backgroundColor = AppColors.gray600
         layer.cornerRadius = Constants.cornerRadiusMedium
         layer.masksToBounds = true
         

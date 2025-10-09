@@ -11,15 +11,15 @@ final class AddCategoryGridCell: UICollectionViewCell {
     static let id = "AddCategoryGridCell"
     
     private let iconView = UIImageView(
-        image: Resources.Images.Icons.addFill,
+        image: AppImages.Icons.addFill,
         size: Constants.iconCellSizeBig,
         contentMode: .scaleAspectFit,
-        tintColor: .systemGray2,
+        tintColor: AppColors.gray600,
         backgroundColor: .clear
     )
     
     private let titleLabel = UILabel(
-        text: Resources.Strings.Buttons.add,
+        text: AppStrings.Buttons.add,
         font: .helveticalRegular(withSize: 12),
         textColor: .black,
         textAlignment: .center
@@ -46,9 +46,8 @@ final class AddCategoryGridCell: UICollectionViewCell {
         stackView.addArrangedSubview(titleLabel)
         contentView.addSubview(stackView)
         
-        backgroundColor = Resources.Colors.backgroundMedium
-        
-        // Настройка скругления углов
+        backgroundColor = AppColors.gray200
+
         layer.cornerRadius = Constants.cornerRadiusMedium
         contentView.layer.cornerRadius = Constants.cornerRadiusMedium
         contentView.layer.masksToBounds = true

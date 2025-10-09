@@ -11,7 +11,7 @@ final class RatingHeaderView: UIView {
     private let ratingLabel = UILabel(font: .helveticalBold(withSize: 30),
                                       textColor: .black,
                                       textAlignment: .left)
-    private let titleLabel = UILabel(text: Resources.Strings.Titles.opinionUsers,
+    private let titleLabel = UILabel(text: AppStrings.Titles.opinionUsers,
                                      font: .helveticalRegular(withSize: 14),
                                      textColor: .secondaryLabel,
                                      textAlignment: .left, numberOfLines: 1)
@@ -44,10 +44,10 @@ final class RatingHeaderView: UIView {
         
         for i in 1...5 {
             let star = UIImageView(
-                image: i <= Int(rating) ? Resources.Images.Icons.starFilled : Resources.Images.Icons.starEmpty,
+                image: i <= Int(rating) ? AppImages.Icons.starFilled : AppImages.Icons.starEmpty,
                 size: Constants.iconCellSizeSmall,
                 contentMode: .scaleAspectFit,
-                tintColor: Resources.Colors.orange
+                tintColor: AppColors.primaryOrange
             )
             starsView.addArrangedSubview(star)
         }

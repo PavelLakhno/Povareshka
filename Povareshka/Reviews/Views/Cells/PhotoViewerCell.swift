@@ -17,13 +17,6 @@ final class PhotoViewerCell: UICollectionViewCell  {
         style: .medium,
         centerIn: contentView
     )
-//    private let activityIndicator: UIActivityIndicatorView = {
-//        let indicator = UIActivityIndicatorView(style: .medium)
-//        indicator.hidesWhenStopped = true
-//        indicator.color = Resources.Colors.orange
-//        indicator.translatesAutoresizingMaskIntoConstraints = false
-//        return indicator
-//    }()
     
     private lazy var scrollView: UIScrollView = {
         let sv = UIScrollView()
@@ -76,9 +69,6 @@ final class PhotoViewerCell: UICollectionViewCell  {
             imageView.heightAnchor.constraint(equalTo: scrollView.heightAnchor),
             imageView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             imageView.centerYAnchor.constraint(equalTo: scrollView.centerYAnchor),
-            
-//            activityIndicator.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-//            activityIndicator.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }
     
@@ -113,12 +103,17 @@ final class PhotoViewerCell: UICollectionViewCell  {
         imageTask = Task { [weak self] in
             guard let self = self else { return }
             
-            let image = await DataService.shared.loadImage(from: imagePath, bucket: Bucket.reviews)
+            do {
+                let image = try await DataService.shared.loadImage(from: imagePath, bucket: Bucket.reviews)
 
-            guard !Task.isCancelled, self.currentImagePath == imagePath else { return }
+                guard !Task.isCancelled, self.currentImagePath == imagePath else { return }
+                
+                self.imageView.image = image
+                self.activityIndicator.stopAnimating()
+            } catch {
+                print("Ошибка загрузки \(error)")
+            }
             
-            self.imageView.image = image
-            self.activityIndicator.stopAnimating()
         }
     }
 }

@@ -45,7 +45,7 @@ final class MainIngredientsTableViewCell: UITableViewCell {
     
     private func setupViews() {
         selectionStyle = .none
-        backgroundColor = Resources.Colors.backgroundLight
+        backgroundColor = AppColors.gray100
         contentView.addSubview(contentStackView)
         contentStackView.addArrangedSubview(ingredientName)
         contentStackView.addArrangedSubview(weightName)

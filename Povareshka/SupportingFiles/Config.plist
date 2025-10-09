@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>SUPABASE_URL</key>
+	<string>https://ixedhtnqygtzezlgpgyg.supabase.co</string>
+	<key>SUPABASE_REDIRECT</key>
+	<string>povareshka-supabase://reset-password</string>
+	<key>SUPABASE_KEY</key>
+	<string>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4ZWRodG5xeWd0emV6bGdwZ3lnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ3NDAyNjEsImV4cCI6MjA2MDMxNjI2MX0.SBzYsv_l0zQmLeroGOL38dik8hzjS0K9XK7MA27soVA</string>
+</dict>
+</plist>

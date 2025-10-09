@@ -19,11 +19,11 @@ class ProfileViewController: BaseController {
         return view
     }()
     
-    private let profileImageView = UIImageView(image: Resources.Images.Icons.profile,
+    private let profileImageView = UIImageView(image: AppImages.Icons.profile,
                                             cornerRadius: 40,
                                             contentMode: .scaleAspectFill,
-                                            tintColor: .systemGray3,
-                                            backgroundColor: .systemGray6)
+                                            tintColor: AppColors.gray600,
+                                            backgroundColor: AppColors.gray100)
 
     private let nameLabel: UILabel = {
         let label = UILabel()
@@ -41,7 +41,7 @@ class ProfileViewController: BaseController {
     }()
     
     private lazy var editProfileButton = UIButton(title: "Редактировать профиль",
-                                                  titleColor: Resources.Colors.orange,
+                                                  titleColor: AppColors.primaryOrange,
                                                   target: self,
                                                   action: #selector(editProfileTapped))
  
@@ -81,8 +81,8 @@ class ProfileViewController: BaseController {
     
     // MARK: - Setup
     internal override func setupViews() {
-        view.backgroundColor = .systemGray6
-        navigationItem.title = Resources.Strings.Titles.profile
+        view.backgroundColor = AppColors.gray100
+        navigationItem.title = AppStrings.Titles.profile
         
         view.addSubview(profileHeaderView)
         profileHeaderView.addSubview(profileImageView)
@@ -155,7 +155,7 @@ class ProfileViewController: BaseController {
     }
     
   
-    private func updateUI(with email: String, profile: Profile) {
+    private func updateUI(with email: String, profile: UserProfile) {
         emailLabel.text = email
         nameLabel.text = profile.username ?? "Пользователь"
         

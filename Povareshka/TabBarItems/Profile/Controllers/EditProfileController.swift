@@ -12,17 +12,17 @@ import Storage
 class EditProfileController: UIViewController, UITextFieldDelegate {
     
     // MARK: - UI Components
-    private let avatarImageView = UIImageView(image: Resources.Images.Icons.profile,
+    private let avatarImageView = UIImageView(image: AppImages.Icons.profile,
                                               cornerRadius: 40,
                                               contentMode: .scaleAspectFill,
-                                              tintColor: .systemGray3,
-                                              backgroundColor: .systemGray6)
+                                              tintColor: AppColors.gray600,
+                                              backgroundColor: AppColors.gray100)
     private let usernameTextField = UITextField()
     private let ageTextField = UITextField()
     private let websiteTextField = UITextField()
-    private lazy var updateButton = UIButton(title: Resources.Strings.Buttons.save,
-                                             tintColor: .orange,
-                                             titleColor: Resources.Colors.orange,
+    private lazy var updateButton = UIButton(title: AppStrings.Buttons.save,
+                                             tintColor: AppColors.primaryOrange,
+                                             titleColor: AppColors.primaryOrange,
                                              target: self,
                                              action: #selector(updateProfileTapped))
     private let activityIndicator = UIActivityIndicatorView(style: .medium)
@@ -131,7 +131,7 @@ class EditProfileController: UIViewController, UITextFieldDelegate {
         Task {
             do {
                 let currentUser = try await SupabaseManager.shared.client.auth.session.user
-                let profile: Profile = try await fetchProfile(userId: currentUser.id)
+                let profile: UserProfile = try await fetchProfile(userId: currentUser.id)
                 
                 DispatchQueue.main.async {
                     self.updateUI(with: profile)
@@ -142,7 +142,7 @@ class EditProfileController: UIViewController, UITextFieldDelegate {
         }
     }
     
-    private func fetchProfile(userId: UUID) async throws -> Profile {
+    private func fetchProfile(userId: UUID) async throws -> UserProfile {
         return try await SupabaseManager.shared.client
             .from("profiles")
             .select()
@@ -152,7 +152,7 @@ class EditProfileController: UIViewController, UITextFieldDelegate {
             .value
     }
     
-    private func updateUI(with profile: Profile) {
+    private func updateUI(with profile: UserProfile) {
         usernameTextField.text = profile.username
         ageTextField.text = profile.fullName
         websiteTextField.text = profile.website
@@ -252,7 +252,7 @@ class EditProfileController: UIViewController, UITextFieldDelegate {
     private func updateProfile(avatarURL: String?) async throws {
         let currentUser = try await SupabaseManager.shared.client.auth.session.user
         
-        let updatedProfile = Profile(
+        let updatedProfile = UserProfile(
             id: currentUser.id,
             username: usernameTextField.text,
             fullName: ageTextField.text,

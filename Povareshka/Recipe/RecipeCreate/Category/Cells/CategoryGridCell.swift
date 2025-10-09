@@ -14,7 +14,7 @@ final class CategoryGridCell: UICollectionViewCell {
     private let iconView = UIImageView(
         size: Constants.iconCellSizeBig,
         contentMode: .scaleAspectFit,
-        tintColor: Resources.Colors.orange,
+        tintColor: AppColors.primaryOrange,
         backgroundColor: .clear
     )
     
@@ -67,8 +67,8 @@ final class CategoryGridCell: UICollectionViewCell {
     func configure(with category: String, iconName: String, isSelected: Bool) {
         titleLabel.text = category
         iconView.image = UIImage(named: iconName)?.withRenderingMode(.alwaysTemplate)
-        backgroundColor = isSelected ? Resources.Colors.orange.withAlphaComponent(0.2) : Resources.Colors.backgroundLight
+        backgroundColor = isSelected ? AppColors.primaryOrange.withAlphaComponent(0.2) : AppColors.gray100
         layer.borderWidth = isSelected ? 1 : 0
-        layer.borderColor = isSelected ? Resources.Colors.orange.cgColor : UIColor.clear.cgColor
+        layer.borderColor = isSelected ? AppColors.primaryOrange.cgColor : UIColor.clear.cgColor
     }
 }

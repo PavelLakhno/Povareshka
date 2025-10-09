@@ -12,22 +12,22 @@ final class AuthViewController: UIViewController {
     
     // MARK: - UI Elements
     private lazy var loginTextField = UITextField.configureTextField(
-        placeholder: Resources.Strings.Placeholders.login,
+        placeholder: AppStrings.Placeholders.login,
         keyboardType: .emailAddress,
         borderColor: .clear,
-        backgroundColor: Resources.Colors.backgroundLight
+        backgroundColor: AppColors.gray100
     )
 
     private lazy var passwordTextField = UITextField.configureTextField(
-        placeholder: Resources.Strings.Placeholders.password,
+        placeholder: AppStrings.Placeholders.password,
         isSecureTextEntry: true,
         borderColor: .clear,
-        backgroundColor: Resources.Colors.backgroundLight
+        backgroundColor: AppColors.gray100
     )
 
     private lazy var signInButton = UIButton(
-        title: Resources.Strings.Buttons.entrance,
-        backgroundColor: Resources.Colors.orange,
+        title: AppStrings.Buttons.entrance,
+        backgroundColor: AppColors.primaryOrange,
         tintColor: .white,
         cornerRadius: Constants.cornerRadiusSmall,
         target: self,
@@ -35,8 +35,8 @@ final class AuthViewController: UIViewController {
     )
 
     private lazy var signUpButton = UIButton(
-        title: Resources.Strings.Buttons.reg,
-        backgroundColor: Resources.Colors.orange,
+        title: AppStrings.Buttons.reg,
+        backgroundColor: AppColors.primaryOrange,
         tintColor: .white,
         cornerRadius: Constants.cornerRadiusSmall,
         target: self,
@@ -44,8 +44,8 @@ final class AuthViewController: UIViewController {
     )
 
     private lazy var forgotPasswordButton = UIButton(
-        title: Resources.Strings.Buttons.passwordForget,
-        backgroundColor: Resources.Colors.orange.withAlphaComponent(0.6),
+        title: AppStrings.Buttons.passwordForget,
+        backgroundColor: AppColors.primaryOrange.withAlphaComponent(0.6),
         tintColor: .white,
         cornerRadius: Constants.cornerRadiusSmall,
         target: self,
@@ -118,38 +118,21 @@ final class AuthViewController: UIViewController {
             let password = passwordTextField.text, !password.isEmpty
         else {
             AlertManager.shared.show(on: self,
-                                     title: Resources.Strings.Alerts.errorTitle,
-                                     message: Resources.Strings.Messages.enterFields)
+                                     title: AppStrings.Alerts.errorTitle,
+                                     message: AppStrings.Messages.enterFields)
             return
         }
         
         Task {
             do {
                 try await SupabaseManager.shared.client.auth.signIn(email: email, password: password)
-//                AlertManager.shared.showSuccess(on: self, message: "✅ Login completed: \(response.user.email ?? "No email")")
-//                print("✅ Login completed:", response.user.email ?? "No email")
                 
                 (parent as? BaseAuthViewController)?.handleAuthSuccess()
             } catch {
-                let authError: Resources.AuthError
-                        
-                        if let supabaseError = error as? Resources.AuthError {
-                            // Ошибка от Supabase
-                            authError = supabaseError
-                        } else if let urlError = error as? URLError {
-                            // Ошибка сети
-                            authError = Resources.AuthError.networkError(urlError)
-                        } else {
-                            // Неизвестная ошибка
-                            authError = Resources.AuthError.unknown(error)
-                        }
-                       
-                        // Логируем полную ошибку для разработчика
-//                AlertManager.shared.showError(on: self, error: authError)
-//                        print("🔴 Auth failed: \(authError.localizedDescription)")
-                        
-                        // Передаем обработанную ошибку в контроллер
-                (parent as? BaseAuthViewController)?.handleAuthError(authError)
+
+                let appError = mapToAppError(error)
+                AlertManager.shared.showError(on: self, error: appError)
+                (parent as? BaseAuthViewController)?.handleAuthError(appError)
             }
         }
     }
@@ -160,8 +143,8 @@ final class AuthViewController: UIViewController {
             let password = passwordTextField.text, !password.isEmpty
         else {
             AlertManager.shared.show(on: self,
-                                     title: Resources.Strings.Alerts.errorTitle,
-                                     message: Resources.Strings.Messages.enterFields)
+                                     title: AppStrings.Alerts.errorTitle,
+                                     message: AppStrings.Messages.enterFields)
             return
         }
         
@@ -171,18 +154,29 @@ final class AuthViewController: UIViewController {
                 
                 (parent as? BaseAuthViewController)?.handleAuthSuccess()
             } catch {
-                let authError: Resources.AuthError
-                
-                if let supabaseError = error as? Resources.AuthError {
-                    // Supabase error
-                    authError = supabaseError
-                } else if let urlError = error as? URLError {
-                    authError = Resources.AuthError.networkError(urlError)
-                } else {
-                    authError = Resources.AuthError.unknown(error)
-                }
-                (parent as? BaseAuthViewController)?.handleAuthError(authError)
+                let appError = mapToAppError(error)
+                AlertManager.shared.showError(on: self, error: appError)
+                (parent as? BaseAuthViewController)?.handleAuthError(appError)
             }
         }
+    }
+    
+    // MARK: - Error Mapping
+    private func mapToAppError(_ error: Error) -> AppError {
+        // Преобразуем ошибки Supabase Auth в наши доменные ошибки
+        let errorMessage = error.localizedDescription.lowercased()
+        
+        if errorMessage.contains("invalid login credentials") {
+            return AuthError.invalidCredentials
+        } else if errorMessage.contains("email not confirmed") {
+            return AuthError.emailNotVerified
+        } else if errorMessage.contains("too many requests") {
+            return AuthError.tooManyRequests
+        } else if let _ = error as? URLError {
+            return DataError.networkUnavailable
+        }
+        
+        // Для неизвестных ошибок используем DataError с описанием
+        return DataError.operationFailed(description: error.localizedDescription)
     }
 }

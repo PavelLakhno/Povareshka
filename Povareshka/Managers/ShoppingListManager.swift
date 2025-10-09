@@ -43,6 +43,3 @@ final class ShoppingListManager {
     }
 }
 
-//extension Notification.Name {
-//    static let shoppingListDidChange = Notification.Name("shoppingListDidChange")
-//}
