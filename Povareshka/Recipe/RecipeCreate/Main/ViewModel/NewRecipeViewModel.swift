@@ -66,13 +66,10 @@ extension NewRecipeViewModel {
     
     // MARK: - Save Recipe
     func saveRecipe() async throws {
-        guard !isSaving else { return }
-        
-        isSaving = true
-        defer { isSaving = false }
+        let recipeId = UUID()
         
         try await dataService.saveRecipe(
-            recipeId: UUID(),
+            recipeId: recipeId,
             title: recipeName,
             description: recipeDescription,
             image: recipeImage,
@@ -84,6 +81,7 @@ extension NewRecipeViewModel {
             tags: tagsManager.tags,
             categories: categoriesDataSource.selectedCategories
         )
+        print("saved")
     }
     
     // MARK: - Validation

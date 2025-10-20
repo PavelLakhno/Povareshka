@@ -6,11 +6,11 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class InstructionImageCell: UITableViewCell {
     static let id = "InstructionImageCell"
-    
-    private var imageTask: Task<Void, Never>?
+
     private lazy var stepImageView = UIImageView(cornerRadius: Constants.cornerRadiusSmall)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -24,12 +24,14 @@ final class InstructionImageCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        imageTask?.cancel()
-        stepImageView.image = nil
+        stepImageView.kf.cancelDownloadTask()
+        stepImageView.image = AppImages.Icons.cameraMain
     }
     
     private func setupViews() {
         contentView.addSubview(stepImageView)
+        stepImageView.contentMode = .scaleAspectFill
+        stepImageView.clipsToBounds = true
         
         NSLayoutConstraint.activate([
             stepImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
@@ -41,21 +43,33 @@ final class InstructionImageCell: UITableViewCell {
     }
     
     func configure(with imagePath: String) {
-        imageTask?.cancel()
-
-        if let cachedImage = ImageCache.shared.image(for: imagePath) {
-            stepImageView.image = cachedImage
-            return
-        }
-
-        imageTask = Task {
+        stepImageView.image = AppImages.Icons.cameraMain
+        
+        Task { [weak self] in
             do {
-                let image = try await DataService.shared.loadImage(from: imagePath, bucket: Bucket.recipes)
-                if !Task.isCancelled {
-                    stepImageView.image = image
+                let url = try await DataService.shared.getImageURL(for: imagePath, bucket: Bucket.recipes)
+                
+                guard !Task.isCancelled else { return }
+
+                DispatchQueue.main.async {
+                    self?.stepImageView.kf.setImage(
+                        with: url,
+                        placeholder: AppImages.Icons.cameraMain,
+                        options: [
+                            .transition(.fade(0.3)),
+                            .scaleFactor(UIScreen.main.scale),
+                            .cacheOriginalImage,
+                            .targetCache(ImageCache.default)
+                        ]
+                    )
                 }
             } catch {
-                print("Ошибка загрузки: \(error)")
+                guard !Task.isCancelled else { return }
+                
+                print("❌ Ошибка получения URL: \(error)")
+                DispatchQueue.main.async  {
+                    self?.stepImageView.image = AppImages.Icons.cameraMain
+                }
             }
         }
     }

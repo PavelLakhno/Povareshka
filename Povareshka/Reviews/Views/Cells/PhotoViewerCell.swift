@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class PhotoViewerCell: UICollectionViewCell  {
     static let id = "PhotoViewerCell"
@@ -29,8 +30,6 @@ final class PhotoViewerCell: UICollectionViewCell  {
         return sv
     }()
     
-    private var imageTask: Task<Void, Never>?
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
@@ -45,7 +44,7 @@ final class PhotoViewerCell: UICollectionViewCell  {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        imageTask?.cancel()
+        imageView.kf.cancelDownloadTask()
         imageView.image = nil
         activityIndicator.stopAnimating()
     }
@@ -97,23 +96,39 @@ final class PhotoViewerCell: UICollectionViewCell  {
     // MARK: - Public Methods
     func configure(with imagePath: String) {
         currentImagePath = imagePath
-        imageTask?.cancel()
-        activityIndicator.startAnimating()
-        
-        imageTask = Task { [weak self] in
-            guard let self = self else { return }
-            
-            do {
-                let image = try await DataService.shared.loadImage(from: imagePath, bucket: Bucket.reviews)
 
-                guard !Task.isCancelled, self.currentImagePath == imagePath else { return }
+        activityIndicator.startAnimating()
+
+        Task { [weak self] in
+            do {
+                let url = try await DataService.shared.getImageURL(for: imagePath, bucket: Bucket.reviews)
                 
-                self.imageView.image = image
-                self.activityIndicator.stopAnimating()
+                guard !Task.isCancelled else { return }
+                guard self?.currentImagePath == imagePath else { return }
+
+                DispatchQueue.main.async {
+                    self?.imageView.kf.setImage(
+                        with: url,
+                        placeholder: AppImages.Icons.cameraMain,
+                        options: [
+                            .transition(.fade(0.3)),
+                            .scaleFactor(UIScreen.main.scale),
+                            .cacheOriginalImage,
+                            .targetCache(ImageCache.default)
+                        ]
+                    )
+                    self?.activityIndicator.stopAnimating()
+                }
             } catch {
-                print("Ошибка загрузки \(error)")
+                guard !Task.isCancelled else { return }
+                
+                print("❌ Ошибка получения URL: \(error)")
+                DispatchQueue.main.async  {
+                    self?.imageView.image = AppImages.Icons.cameraMain
+                    self?.activityIndicator.stopAnimating()
+                }
+                
             }
-            
         }
     }
 }

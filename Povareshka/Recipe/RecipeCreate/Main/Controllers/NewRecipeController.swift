@@ -10,7 +10,7 @@ import UIKit
 final class NewRecipeController: BaseController {
 
     // MARK: - Properties
-//    private var viewModel: NewRecipeViewModel!
+//    var viewModel: NewRecipeViewModel!
     lazy var viewModel: NewRecipeViewModel = {
         let vm = NewRecipeViewModel()
         return vm
@@ -150,6 +150,7 @@ final class NewRecipeController: BaseController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+//        viewModel = NewRecipeViewModel()
         setupNavigationBar()
         setupViews()
         setupConstraints()

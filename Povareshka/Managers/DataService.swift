@@ -7,12 +7,12 @@
 
 import UIKit
 import Storage
+import Kingfisher
 
 @MainActor 
 final class DataService {
     static let shared = DataService()
     private let supabaseManager: SupabaseManager
-    private let cache = NSCache<NSString, NSData>() // Для кэширования данных
     
     private init(supabaseManager: SupabaseManager = .shared) {
         self.supabaseManager = supabaseManager
@@ -63,7 +63,7 @@ final class DataService {
         categories: [CategorySupabase]
     ) async throws {
         // 1. Загрузка изображения (если есть)
-        let imagePath = try await uploadInstructionImage(image, for: recipeId)
+        let imagePath = try await uploadRecipeImage(image, for: recipeId)
         
         // 2. Сохранение метаданных рецепта
         try await saveRecipeMetadata(
@@ -81,6 +81,7 @@ final class DataService {
         try await saveInstructions(steps, for: recipeId)
         try await saveTags(tags, for: recipeId)
         try await saveCategories(categories, for: recipeId)
+        
     }
 
     private func saveRecipeMetadata(
@@ -128,7 +129,7 @@ final class DataService {
         for (index, step) in steps.enumerated() {
             var imagePath: String? = nil
             if let imageData = step.image, let image = UIImage(data: imageData) {
-                imagePath = try await uploadInstructionImage(image, for: recipeId)
+                imagePath = try await uploadInstructionImage(image, forStep: index+1, currentRecipeID: recipeId)
             }
             let instruction = InstructionSupabase(
                 id: UUID(),
@@ -340,26 +341,6 @@ final class DataService {
             .value
     }
     
-    func loadReviewImages(recipeId: UUID, userId: UUID) async throws -> [UIImage] {
-        let photos = try await fetchUserReviewPhotos(recipeId: recipeId, userId: userId)
-        var loadedImages: [UIImage] = []
-        
-        for photo in photos {
-            let data = try await supabaseManager.client
-                .storage
-                .from("reviews")
-                .download(path: photo.photoPath)
-            
-            guard let image = UIImage(data: data) else {
-                throw ImageError.invalidImageData
-            }
-            
-            loadedImages.append(image)
-        }
-        
-        return loadedImages
-    }
-    
     func removeReviewPhotos(paths: [String]) async throws {
         try await supabaseManager.client
             .storage
@@ -373,19 +354,6 @@ final class DataService {
             .execute()
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-
-    
     func fetchRecipesShortInfo() async throws -> [RecipeShortInfo] {
         try await supabaseManager.client
             .from("recipes")
@@ -400,9 +368,7 @@ final class DataService {
             .execute()
             .value
     }
-    
-
-    
+ 
     // MARK: - Ratings
     func fetchUserRating(recipeId: UUID) async throws -> Rating? {
         guard let userId = try await supabaseManager.getCurrentUserId() else {
@@ -456,45 +422,19 @@ final class DataService {
             .value
     }
     
-
-    
-
-    
-    func loadImage(from path: String, bucket: String) async throws -> UIImage {
-        if let cachedImage = ImageCache.shared.image(for: path) {
-            return cachedImage
-        }
-
-        let data = try await supabaseManager.client
-            .storage
-            .from(bucket)
-            .download(path: path)
-        
-        guard !Task.isCancelled else {
-            throw ImageError.operationCancelled
-        }
-        
-        guard let image = UIImage(data: data) else {
-            throw ImageError.invalidImageData
-        }
-
-        ImageCache.shared.setImage(image, for: path)
-        return image
-    }
-    
     // MARK: - Private Helpers
-    private func uploadInstructionImage(_ image: UIImage?, for recipeId: UUID) async throws -> String? {
-        guard let image = image, image != AppImages.Icons.cameraMain else { return nil }
-        guard let imageData = image.jpegData(compressionQuality: 0.8) else { return nil }
-        let currentUser = try await supabaseManager.client.auth.session.user
-        let userId = currentUser.id.uuidString.lowercased()
-        let fileName = "main_\(UUID().uuidString).jpeg"
-        let fullPath = "\(userId)/\(recipeId)/\(fileName)"
-        try await supabaseManager.client.storage
-            .from("recipes")
-            .upload(fullPath, data: imageData, options: FileOptions(contentType: "image/jpeg"))
-        return fullPath
-    }
+//    private func uploadInstructionImage(_ image: UIImage?, for recipeId: UUID) async throws -> String? {
+//        guard let image = image, image != AppImages.Icons.cameraMain else { return nil }
+//        guard let imageData = image.jpegData(compressionQuality: 0.8) else { return nil }
+//        let currentUser = try await supabaseManager.client.auth.session.user
+//        let userId = currentUser.id.uuidString.lowercased()
+//        let fileName = "main_\(UUID().uuidString).jpeg"
+//        let fullPath = "\(userId)/\(recipeId)/\(fileName)"
+//        try await supabaseManager.client.storage
+//            .from("recipes")
+//            .upload(fullPath, data: imageData, options: FileOptions(contentType: "image/jpeg"))
+//        return fullPath
+//    }
 
     
     func fetchRecipeDetails(recipeId: UUID) async throws -> RecipeDetailsResponse {
@@ -535,5 +475,181 @@ final class DataService {
     }
 }
 
+// MARK: - Image Loading with Kingfisher
+extension DataService {
 
+    func getImageURL(for path: String, bucket: String) async throws -> URL {
+        return try await supabaseManager.getDownloadURL(bucket: bucket, path: path)
+    }
+    
+    func loadReviewImages(recipeId: UUID, userId: UUID) async throws -> [UIImage] {
+        let photos = try await fetchUserReviewPhotos(recipeId: recipeId, userId: userId)
+        var loadedImages: [UIImage] = []
+        
+        for photo in photos {
+            do {
+                let url = try await getImageURL(for: photo.photoPath, bucket: Bucket.reviews)
+                if let image = await loadImageWithKingfisher(url: url) {
+                    loadedImages.append(image)
+                }
+            } catch {
+                print("❌ Ошибка загрузки изображения отзыва: \(error)")
+                continue
+            }
+        }
+        
+        return loadedImages
+    }
+    
+    func loadImageWithKingfisher(url: URL) async -> UIImage? {
+        return await withCheckedContinuation { continuation in
+            KingfisherManager.shared.retrieveImage(with: url) { result in
+                switch result {
+                case .success(let value):
+                    continuation.resume(returning: value.image)
+                case .failure:
+                    continuation.resume(returning: nil)
+                }
+            }
+        }
+    }
+}
 
+// MARK: upload images with max size 100kb
+extension DataService {
+    private func uploadRecipeImage(_ image: UIImage?, for recipeId: UUID) async throws -> String? {
+        guard let image = image, image != AppImages.Icons.cameraMain else { return nil }
+        
+        // Максимальный размер в байтах
+        let maxSizeInBytes = 100 * 1024 // 100 КБ
+        
+        guard let imageData = compressImage(image, toMaxSize: maxSizeInBytes) else { return nil }
+        
+        let currentUser = try await supabaseManager.client.auth.session.user
+        let userId = currentUser.id.uuidString.lowercased()
+        let fileName = "main_\(UUID().uuidString).jpeg"
+        let fullPath = "\(userId)/\(recipeId)/\(fileName)"
+        
+        try await supabaseManager.client.storage
+            .from("recipes")
+            .upload(fullPath, data: imageData, options: FileOptions(contentType: "image/jpeg"))
+        return fullPath
+    }
+    
+    private func uploadInstructionImage(_ image: UIImage, forStep stepNumber: Int, currentRecipeID: UUID) async throws -> String? {
+        
+        // Максимальный размер в байтах
+        let maxSizeInBytes = 100 * 1024 // 100 КБ
+        
+        guard let imageData = compressImage(image, toMaxSize: maxSizeInBytes) else { return nil }
+        
+        let currentUser = try await SupabaseManager.shared.client.auth.session.user
+        let userId = currentUser.id.uuidString.lowercased()
+        let recipeId = currentRecipeID
+        let fileName = "step_\(stepNumber)_\(UUID().uuidString).jpeg"
+        let fullPath = "\(userId)/\(recipeId)/\(fileName)"
+        
+        try await SupabaseManager.shared.client.storage
+            .from("recipes")
+            .upload(
+                fullPath,
+                data: imageData,
+                options: FileOptions(
+                    contentType: "image/jpeg",
+                )
+            )
+        return fullPath
+    }
+    
+    private func compressImage(_ image: UIImage, toMaxSize maxSize: Int) -> Data? {
+        let minQuality: CGFloat = 0.1
+        let maxSizeInBytes = maxSize
+        
+        // Попытка сжатия через качество
+        var compressionQuality: CGFloat = 0.8
+        var imageData = image.jpegData(compressionQuality: compressionQuality)
+        
+        while imageData?.count ?? 0 > maxSizeInBytes && compressionQuality > minQuality {
+            compressionQuality -= 0.1
+            imageData = image.jpegData(compressionQuality: compressionQuality)
+        }
+        
+        // Если сжатия качеством недостаточно - уменьшаем размер
+        if imageData?.count ?? 0 > maxSizeInBytes {
+            return compressImageByScaling(image, toMaxSize: maxSizeInBytes)
+        }
+        
+        return imageData
+    }
+    
+    private func compressImageByScaling(_ image: UIImage, toMaxSize maxSize: Int) -> Data? {
+        let minQuality: CGFloat = 0.1
+        var currentImage = image
+        var scaleFactor: CGFloat = 0.9
+        
+        while let imageData = currentImage.jpegData(compressionQuality: minQuality),
+              imageData.count > maxSize && scaleFactor > 0.1 {
+            
+            let newSize = CGSize(
+                width: currentImage.size.width * scaleFactor,
+                height: currentImage.size.height * scaleFactor
+            )
+            
+            UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
+            currentImage.draw(in: CGRect(origin: .zero, size: newSize))
+            currentImage = UIGraphicsGetImageFromCurrentImageContext() ?? currentImage
+            UIGraphicsEndImageContext()
+            
+            scaleFactor -= 0.1
+        }
+        
+        return currentImage.jpegData(compressionQuality: minQuality)
+    }
+}
+//    private func uploadInstructionImage(_ image: UIImage?, for recipeId: UUID) async throws -> String? {
+//        guard let image = image, image != AppImages.Icons.cameraMain else { return nil }
+//        
+//        // Простое решение: фиксированный размер + сжатие
+//        let targetSize = CGSize(width: 800, height: 800)
+//        let resizedImage = await resizeImage(image, to: targetSize)
+//        
+//        guard let imageData = resizedImage.jpegData(compressionQuality: 0.5) else {
+//            return nil
+//        }
+//        
+//        print("📸 Размер после сжатия: \(imageData.count / 1024) KB")
+//        
+//        let currentUser = try await supabaseManager.client.auth.session.user
+//        let userId = currentUser.id.uuidString.lowercased()
+//        let fileName = "main_\(UUID().uuidString).jpeg"
+//        let fullPath = "\(userId)/\(recipeId)/\(fileName)"
+//        
+//        try await supabaseManager.client.storage
+//            .from("recipes")
+//            .upload(fullPath, data: imageData, options: FileOptions(contentType: "image/jpeg"))
+//        
+//        return fullPath
+//    }
+//
+//    private func resizeImage(_ image: UIImage, to targetSize: CGSize) async -> UIImage {
+//        return await withCheckedContinuation { continuation in
+//            DispatchQueue.global(qos: .userInitiated).async {
+//                let size = image.size
+//                
+//                let widthRatio  = targetSize.width  / size.width
+//                let heightRatio = targetSize.height / size.height
+//                
+//                let newSize = widthRatio > heightRatio ?
+//                    CGSize(width: size.width * heightRatio, height: size.height * heightRatio) :
+//                    CGSize(width: size.width * widthRatio, height: size.height * widthRatio)
+//                
+//                UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
+//                image.draw(in: CGRect(origin: .zero, size: newSize))
+//                let newImage = UIGraphicsGetImageFromCurrentImageContext()
+//                UIGraphicsEndImageContext()
+//                
+//                continuation.resume(returning: newImage ?? image)
+//            }
+//        }
+//    }
+//}

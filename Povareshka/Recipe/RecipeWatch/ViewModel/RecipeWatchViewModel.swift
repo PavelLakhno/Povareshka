@@ -6,6 +6,7 @@
 //
 
 import UIKit
+//import Kingfisher
 
 @MainActor
 final class RecipeWatchViewModel: ObservableObject {
@@ -52,17 +53,19 @@ final class RecipeWatchViewModel: ObservableObject {
     }
     
     // MARK: - Helper Methods
+    
     func loadRecipeImage(for recipe: RecipeSupabase) async -> UIImage? {
         guard let imagePath = recipe.imagePath else { return nil }
         
         do {
-            return try await dataService.loadImage(from: imagePath, bucket: Bucket.recipes)
+            let url = try await dataService.getImageURL(for: imagePath, bucket: Bucket.recipes)
+            return await dataService.loadImageWithKingfisher(url: url)
         } catch {
-            print("Ошибка загрузки изображения: \(error)")
+            print("Ошибка получения URL изображения: \(error)")
             return nil
         }
     }
-    
+  
     func checkIfCurrentUserIsCreator(recipe: RecipeSupabase) async -> Bool {
         do {
             guard let currentUserId = try await dataService.getCurrentUserId(),
