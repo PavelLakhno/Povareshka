@@ -121,7 +121,6 @@ final class RecipeWatchController: BaseController {
         loadingIndicator.startAnimating()
         
         Task {
-            // ИСПОЛЬЗУЕМ ViewModel вместо прямого вызова DataService
             await viewModel.loadRecipe(recipeId: recipeId)
             updateUI()
         }
@@ -170,8 +169,14 @@ final class RecipeWatchController: BaseController {
     private func setupRecipeImageView(with recipe: RecipeSupabase) {
         recipeImageView.heightAnchor.constraint(equalToConstant: view.frame.width / 1.5).isActive = true
         stackView.addArrangedSubview(recipeImageView)
+        
+        let loadImageIndicator = UIActivityIndicatorView.createIndicator(
+            style: .medium,
+            centerIn: recipeImageView
+        )
+        loadImageIndicator.startAnimating()
 
-        Task {
+        Task { [unowned self] in
             do {
                 let image = await viewModel.loadRecipeImage(for: recipe)
                 let isFavorite = try await viewModel.checkIfRecipeIsFavorite(recipeId: recipe.id)
@@ -185,6 +190,7 @@ final class RecipeWatchController: BaseController {
                         recipeId: recipe.id,
                         parentViewController: self
                     )
+                    loadImageIndicator.stopAnimating()
                 }
             }
         }

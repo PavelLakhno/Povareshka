@@ -40,5 +40,15 @@ final class SupabaseManager: Sendable {
     }
 }
 
+extension SupabaseManager {
+    func getImageURL(bucket: String, path: String) -> URL? {
+        let url = try? client.storage.from(bucket).getPublicURL(path: path)
+        return url //URL(string: url)
+    }
     
+    func getDownloadURL(bucket: String, path: String) async throws -> URL {
+        let url = try await client.storage.from(bucket).createSignedURL(path: path, expiresIn: 3600)
+        return url
+    }
+}
 

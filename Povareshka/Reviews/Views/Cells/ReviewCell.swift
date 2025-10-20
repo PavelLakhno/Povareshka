@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ReviewCell: UITableViewCell {
     static let id = "ReviewCell"
@@ -47,7 +48,6 @@ final class ReviewCell: UITableViewCell {
     
     // MARK: - Properties
     private var currentPhotos: [String] = []
-    private var imageTask: Task<Void, Never>?
     
     // MARK: - Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -63,7 +63,7 @@ final class ReviewCell: UITableViewCell {
     // MARK: - Lifecycle
     override func prepareForReuse() {
         super.prepareForReuse()
-        imageTask?.cancel()
+        avatarImageView.kf.cancelDownloadTask()
         avatarImageView.image = nil
         currentPhotos = []
     }
@@ -111,22 +111,34 @@ final class ReviewCell: UITableViewCell {
     private func configureUserInfo(_ userProfile: UserProfileShort?) {
         userNameLabel.text = userProfile?.username ?? AppStrings.Titles.anonymous
 
-        imageTask?.cancel()
-
         avatarImageView.image = AppImages.Icons.avatar
         guard let avatarPath = userProfile?.avatarPath else { return }
 
-        imageTask = Task {
+        Task { [weak self] in
             do {
-                let image = try await dataService.loadImage(from: avatarPath, bucket: Bucket.avatars)
+                let url = try await DataService.shared.getImageURL(for: avatarPath, bucket: Bucket.avatars)
+                
+                guard !Task.isCancelled else { return }
 
-                if !Task.isCancelled {
-                    DispatchQueue.main.async {
-                        self.avatarImageView.image = image
-                    }
+                DispatchQueue.main.async {
+                    self?.avatarImageView.kf.setImage(
+                        with: url,
+                        placeholder: AppImages.Icons.avatar,
+                        options: [
+                            .transition(.fade(0.3)),
+                            .scaleFactor(UIScreen.main.scale),
+                            .cacheOriginalImage,
+                            .targetCache(ImageCache.default)
+                        ]
+                    )
                 }
             } catch {
-                print("Ошибка загрузки аватара: \(error)")
+                guard !Task.isCancelled else { return }
+                
+                print("❌ Ошибка получения URL: \(error)")
+                DispatchQueue.main.async  {
+                    self?.avatarImageView.image = AppImages.Icons.avatar
+                }
             }
         }
     }
