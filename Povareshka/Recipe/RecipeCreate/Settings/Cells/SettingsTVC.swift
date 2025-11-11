@@ -19,13 +19,13 @@ class SettingTableViewCell: UITableViewCell {
     )//
     
     private let iconBubleView = UIView(
-        size: Constants.iconCellSizeBig,
+        size: Constants.viewSize40,
         backgroundColor: .white,
         cornerRadius: Constants.cornerRadiusSmall
     )
     
     private let iconImage = UIImageView(
-        size: Constants.iconCellSizeMedium,
+        size: Constants.viewSize30,
         contentMode: .scaleAspectFit,
         tintColor: AppColors.primaryOrange,
         backgroundColor: .clear
@@ -46,7 +46,7 @@ class SettingTableViewCell: UITableViewCell {
     private lazy var actionButton = UIButton(
         image: AppImages.Icons.forward,
         tintColor: AppColors.primaryOrange,
-        size: Constants.iconCellSizeMedium,
+        size: Constants.viewSize30,
         target: self,
         action: #selector(actionButtonTapped)
     )

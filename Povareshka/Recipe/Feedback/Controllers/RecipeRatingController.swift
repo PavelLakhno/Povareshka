@@ -49,7 +49,7 @@ final class RecipeRatingController: BaseController {
                                            textColor: .black)
     private lazy var photosCollectionView: UICollectionView = {
         let collectionView = createCollectionView(
-            type: .horizontalFixedSize(Constants.categoryCellSize),
+            type: .horizontalFixedSize(Constants.viewSize100),
             cellConfigs: [
                 CollectionViewCellConfig(cellClass: AddPhotoCell.self, identifier: AddPhotoCell.id),
                 CollectionViewCellConfig(cellClass: PhotoCell.self, identifier: PhotoCell.id)
@@ -270,7 +270,7 @@ extension RecipeRatingController: UICollectionViewDataSource, UICollectionViewDe
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        Constants.categoryCellSize
+        Constants.viewSize100
     }
 }
 

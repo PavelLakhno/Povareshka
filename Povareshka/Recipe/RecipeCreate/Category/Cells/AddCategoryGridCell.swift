@@ -12,7 +12,7 @@ final class AddCategoryGridCell: UICollectionViewCell {
     
     private let iconView = UIImageView(
         image: AppImages.Icons.addFill,
-        size: Constants.iconCellSizeBig,
+        size: Constants.viewSize40,
         contentMode: .scaleAspectFit,
         tintColor: AppColors.gray600,
         backgroundColor: .clear

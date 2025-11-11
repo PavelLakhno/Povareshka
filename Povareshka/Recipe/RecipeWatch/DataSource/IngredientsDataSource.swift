@@ -11,12 +11,14 @@ final class IngredientsDataSource: NSObject {
     
     // MARK: - Properties
     var ingredients: [IngredientSupabase] = []
-    var onAddIngredient: ((IngredientData) -> Void)?
+    var onAddIngredient: ((Ingredient) -> Void)?
+//    var onAddIngredient: ((IngredientSupabase) -> Void)?
     
     // MARK: - Public Methods
     func updateIngredients(_ ingredients: [IngredientSupabase]) {
         self.ingredients = ingredients
     }
+
 }
 
 // MARK: - UITableViewDataSource
@@ -31,13 +33,13 @@ extension IngredientsDataSource: UITableViewDataSource {
         }
         
         let ingredient = ingredients[indexPath.row]
-        let newIngredient = IngredientData(name: ingredient.name, amount: ingredient.amount)
+
+        let newIngredient = Ingredient(name: ingredient.name, amount: ingredient.amount, measure: ingredient.measure)
         let isAdded = ShoppingListManager.shared.contains(ingredient: newIngredient)
         
         cell.configure(with: newIngredient, isAdded: isAdded)
         cell.addActionHandler = { [weak self] ingredient in
-            self?.onAddIngredient?(ingredient)
-            ShoppingListManager.shared.addIngredient(ingredient)
+            self?.onAddIngredient?(newIngredient)
         }
         
         DispatchQueue.main.async {

@@ -30,7 +30,7 @@ final class PhotoViewerController: BaseController {
     private lazy var closeButton = UIButton(image: AppImages.Icons.deleteX,
                                             backgroundColor: .black.withAlphaComponent(0.3),
                                             cornerRadius: Constants.cornerRadiusMedium,
-                                            size: Constants.iconCellSizeMedium,
+                                            size: Constants.viewSize30,
                                             target: self,
                                             action: #selector(close))
     

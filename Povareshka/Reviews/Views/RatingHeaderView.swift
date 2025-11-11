@@ -45,7 +45,7 @@ final class RatingHeaderView: UIView {
         for i in 1...5 {
             let star = UIImageView(
                 image: i <= Int(rating) ? AppImages.Icons.starFilled : AppImages.Icons.starEmpty,
-                size: Constants.iconCellSizeSmall,
+                size: Constants.viewSize20,
                 contentMode: .scaleAspectFit,
                 tintColor: AppColors.primaryOrange
             )

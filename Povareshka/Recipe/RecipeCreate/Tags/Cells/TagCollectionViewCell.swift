@@ -19,10 +19,13 @@ final class TagCollectionViewCell: UICollectionViewCell {
     
     private lazy var deleteButton = UIButton(
         image: AppImages.Icons.deleteX,
-        size: Constants.iconCellSizeSmall,
+        size: Constants.viewSize20,
         target: self, action: #selector(deleteTapped)
     )
     var deleteAction: (() -> Void)?
+    
+    private var withDeleteButtonConstraints: [NSLayoutConstraint] = []
+    private var withoutDeleteButtonConstraints: [NSLayoutConstraint] = []
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -47,25 +50,49 @@ final class TagCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(tagLabel)
         contentView.addSubview(deleteButton)
     }
-    
+
     private func setupConstraints() {
-        NSLayoutConstraint.activate([
-            tagLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.paddingMedium),
-            tagLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            tagLabel.trailingAnchor.constraint(equalTo: deleteButton.leadingAnchor, constant: -Constants.paddingSmall),
+            tagLabel.translatesAutoresizingMaskIntoConstraints = false
+            deleteButton.translatesAutoresizingMaskIntoConstraints = false
             
-            deleteButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.paddingSmall),
-            deleteButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-        ])
-    }
+            // Констрейнты когда кнопка есть
+            withDeleteButtonConstraints = [
+                tagLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.paddingMedium),
+                tagLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+                tagLabel.trailingAnchor.constraint(equalTo: deleteButton.leadingAnchor, constant: -Constants.paddingSmall),
+                
+                deleteButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.paddingSmall),
+                deleteButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            ]
+            
+            // Констрейнты когда кнопки нет
+            withoutDeleteButtonConstraints = [
+                tagLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.paddingMedium),
+                tagLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.paddingMedium),
+                tagLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+            ]
+            
+            // По умолчанию активируем констрейнты с кнопкой
+            NSLayoutConstraint.activate(withDeleteButtonConstraints)
+        }
     
     @objc private func deleteTapped() {
         deleteAction?()
     }
     
+    // MARK: correct
     func configure(with tag: String, showDelete: Bool = true) {
         tagLabel.text = tag
         deleteButton.isHidden = !showDelete
+        if showDelete {
+            NSLayoutConstraint.deactivate(withoutDeleteButtonConstraints)
+            NSLayoutConstraint.activate(withDeleteButtonConstraints)
+            
+        } else {
+            NSLayoutConstraint.deactivate(withDeleteButtonConstraints)
+            NSLayoutConstraint.activate(withoutDeleteButtonConstraints)
+        }
+        layoutIfNeeded()
     }
 }
 

@@ -46,3 +46,10 @@ class InstructionTextCell: UITableViewCell {
         descriptionLabel.text = description
     }
 }
+
+//extension InstructionTextCell {
+//    func configure(with instruction: Instruction) {
+//        stepLabel.text = "Шаг \(instruction.number)"
+//        descriptionLabel.text = instruction.describe
+//    }
+//}

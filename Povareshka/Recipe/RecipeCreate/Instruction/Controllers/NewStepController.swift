@@ -44,7 +44,7 @@ class NewStepController: BaseController {
             backgroundColor: .white.withAlphaComponent(0.6),
             tintColor: .red,
             cornerRadius: Constants.cornerRadiusMedium,
-            size: Constants.iconCellSizeMedium,
+            size: Constants.viewSize30,
             target: self,
             action: #selector(removePhotoTapped)
         )
@@ -57,10 +57,12 @@ class NewStepController: BaseController {
         delegate: self
     )
 
+//    var saveStepCallback: ((InstructionSupabase) -> Void)?
     var saveStepCallback: ((Instruction) -> Void)?
     
     // MARK: - Init
     init(stepNumber: Int, existingStep: Instruction? = nil) {
+
         self.stepNumber = stepNumber
         super.init(nibName: nil, bundle: nil)
         
@@ -70,6 +72,7 @@ class NewStepController: BaseController {
                 self.stepImage = UIImage(data: imageData)
             }
         }
+
     }
     
     required init?(coder: NSCoder) {

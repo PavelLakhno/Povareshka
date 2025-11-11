@@ -58,6 +58,7 @@ class ProfileViewController: BaseController {
         [
             MenuItem(title: "Мои рецепты", icon: "book"),
             MenuItem(title: "Избранное", icon: "heart"),
+            MenuItem(title: "Сохраненное", icon: "arrow.down.to.line.circle"),
             MenuItem(title: "Список покупок", icon: "cart")
         ],
         [
@@ -223,19 +224,23 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         switch menuItem.title {
         case "Мои рецепты":
             print("Мои рецепты")
-//            let myRecipesVC = RecipesViewController()
-//            myRecipesVC.mode = .myRecipes
-//            navigationController?.pushViewController(myRecipesVC, animated: true)
+            //            let myRecipesVC = RecipesViewController()
+            //            myRecipesVC.mode = .myRecipes
+            //            navigationController?.pushViewController(myRecipesVC, animated: true)
             
         case "Избранное":
             print("Избранное")
-//            let favoritesVC = FavoritesViewController()
-//            navigationController?.pushViewController(favoritesVC, animated: true)
+            //            let favoritesVC = FavoritesViewController()
+            //            navigationController?.pushViewController(favoritesVC, animated: true)
+        case "Сохраненное":
+            print("Сохраненное")
+            let savedRecipesVC = SavedRecipesController()
+            navigationController?.pushViewController(savedRecipesVC, animated: true)
             
         case "Список покупок":
             let shoppingListVC = ShoppingListViewController()
             present(shoppingListVC, animated: true)
-//            navigationController?.pushViewController(shoppingListVC, animated: true)
+            //            navigationController?.pushViewController(shoppingListVC, animated: true)
             
         case "Настройки":
             let settingsVC = SettingsViewController()

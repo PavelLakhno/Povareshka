@@ -16,7 +16,7 @@ final class PhotoCell: UICollectionViewCell {
                                              backgroundColor: .white,
                                              tintColor: .systemRed,
                                              cornerRadius: Constants.cornerRadiusSmall,
-                                             size: Constants.iconCellSizeSmall,
+                                             size: Constants.viewSize20,
                                              target: self,
                                              action: #selector(deleteTapped))
     var deleteHandler: (() -> Void)?

@@ -49,6 +49,6 @@ extension CategoriesCollectionViewDataSource: UICollectionViewDelegateFlowLayout
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        return Constants.categoryCellSize
+        Constants.viewSize100
     }
 }

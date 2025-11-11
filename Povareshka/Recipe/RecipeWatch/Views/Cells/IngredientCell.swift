@@ -17,13 +17,15 @@ final class IngredientCell: UITableViewCell {
     
     private lazy var addButton = UIButton(image: AppImages.Icons.addFill,
                                           tintColor: AppColors.primaryOrange,
-                                          size: Constants.iconCellSizeMedium,
+                                          size: Constants.viewSize30,
                                           target: self,
                                           action: #selector(addButtonTapped))
     
     // MARK: - Properties
-    private var ingredient: IngredientData?
-    var addActionHandler: ((IngredientData) -> Void)?
+    private var ingredient: Ingredient?
+    var addActionHandler: ((Ingredient) -> Void)?
+//    private var ingredient: IngredientSupabase?
+//    var addActionHandler: ((IngredientSupabase) -> Void)?
     
     // MARK: - Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -68,9 +70,18 @@ final class IngredientCell: UITableViewCell {
     }
     
     // MARK: - Public Methods
-    func configure(with ingredient: IngredientData, isAdded: Bool = false) {
+//    func configure(with ingredient: IngredientData, isAdded: Bool = false) {
+//        self.ingredient = ingredient
+//        titleLabel.text = "\(ingredient.name)  \(ingredient.amount)"
+//        
+//        let image = isAdded ? AppImages.Icons.okFill : AppImages.Icons.addFill
+//        addButton.setImage(image, for: .normal)
+//        addButton.isEnabled = !isAdded
+//    }
+    
+    func configure(with ingredient: Ingredient, isAdded: Bool = false) {
         self.ingredient = ingredient
-        titleLabel.text = "\(ingredient.name)  \(ingredient.amount)"
+        titleLabel.text = "\(ingredient.name)  \(ingredient.amount) \(ingredient.measure)"
         
         let image = isAdded ? AppImages.Icons.okFill : AppImages.Icons.addFill
         addButton.setImage(image, for: .normal)
@@ -78,3 +89,9 @@ final class IngredientCell: UITableViewCell {
     }
 }
 
+//MARK: offline configuration
+extension IngredientCell {
+    func configure(with ingredient: IngredientSupabase) { //Ingredient
+        titleLabel.text = "\(ingredient.name) \(ingredient.amount) \(ingredient.measure)"
+    }
+}

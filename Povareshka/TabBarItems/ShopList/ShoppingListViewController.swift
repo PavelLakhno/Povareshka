@@ -41,7 +41,8 @@ class ShoppingListViewController: BaseController {
         return table
     }()
     
-    private var ingredients: [IngredientData] = []
+//    private var ingredients: [IngredientData] = []
+    private var ingredients: [Ingredient] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -133,7 +134,8 @@ class ShoppingListViewController: BaseController {
                   let quantity = alert.textFields?[1].text,
                   !name.isEmpty else { return }
             
-            let ingredient = IngredientData(name: name, amount: quantity)
+//            let ingredient = IngredientData(name: name, amount: quantity)
+            let ingredient = Ingredient(name: name, amount: quantity, measure: "")
             ShoppingListManager.shared.addIngredient(ingredient)
         }
         
@@ -208,7 +210,8 @@ extension ShoppingListViewController: UITableViewDelegate, UITableViewDataSource
                   let quantity = alert.textFields?[1].text,
                   !name.isEmpty else { return }
             
-            let updatedIngredient = IngredientData(name: name, amount: quantity)
+//            let updatedIngredient = IngredientData(name: name, amount: quantity)
+            let updatedIngredient = Ingredient(name: name, amount: quantity, measure: "")
             ShoppingListManager.shared.updateIngredient(updatedIngredient, at: indexPath.row)
         }
         

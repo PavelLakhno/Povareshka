@@ -41,7 +41,7 @@ class SettingsViewController: UIViewController {
     // MARK: - Setup
     private func setupUI() {
         view.backgroundColor = AppColors.gray100
-        title = "НАСТРОЙКИ"
+//        title = "НАСТРОЙКИ"
         
         view.addSubview(tableView)
         
@@ -54,7 +54,7 @@ class SettingsViewController: UIViewController {
     }
     
     private func setupTableView() {
-        tableView.register(SettingsCell.self, forCellReuseIdentifier: "SettingsCell")
+        tableView.register(SettingsCell.self, forCellReuseIdentifier: SettingsCell.id)
         tableView.delegate = self
         tableView.dataSource = self
     }

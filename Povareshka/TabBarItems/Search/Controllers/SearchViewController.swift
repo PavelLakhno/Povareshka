@@ -18,67 +18,81 @@ final class SearchViewController: BaseController {
         return searchBar
     }()
     
-    private let filterButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "slider.horizontal.3"), for: .normal)
-        button.tintColor = AppColors.primaryOrange
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
-    private let collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.minimumInteritemSpacing = 16
-        layout.minimumLineSpacing = 16
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .clear
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
+    private lazy var filterButton = UIButton(
+        image: AppImages.Icons.slider,
+        tintColor: AppColors.primaryOrange,
+        size: Constants.viewSize50,
+        target: self,
+        action: #selector(filterButtonTapped)
+    )
+
+    private lazy var collectionView: UICollectionView = {
+        let collectionView = createCollectionView(
+            type: .verticalFixedSize(Constants.viewSize100),
+            cellConfigs: [
+                CollectionViewCellConfig(cellClass: RecipeSearchCell.self, identifier: RecipeSearchCell.id),
+            ],
+            delegate: self,
+            dataSource: self,
+            showsVerticalScrollIndicator: false,
+            isScrollEnabled: true,
+            minimumInteritemSpacing: 16,
+            minimumLineSpacing: 16
+        )
         return collectionView
     }()
     
-    private let emptyStateView: UIView = {
-        let view = UIView()
-        view.isHidden = true
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
+    private let emptyStateView = UIView(size: Constants.viewSize200,
+                                        backgroundColor: AppColors.gray100)
     
-    private let emptyStateImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(systemName: "magnifyingglass")
-        imageView.tintColor = AppColors.gray600
-        imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        return imageView
-    }()
+    private let emptyStateImageView = UIImageView(
+        image: AppImages.TabBar.search,
+        size: Constants.viewSize50,
+        tintColor: AppColors.gray600,
+        backgroundColor: AppColors.gray100
+    )
     
-    private let emptyStateLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Начните поиск рецептов"
-        label.textAlignment = .center
-        label.font = .systemFont(ofSize: 16)
-        label.textColor = .gray
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    private let emptyStateLabel = UILabel(text: AppStrings.Messages.enterText,
+                                          font: .helveticalRegular(withSize: 16),
+                                          textColor: .gray,
+                                          textAlignment: .center)
     
+
     // MARK: - Properties
-    private var recipes: [Recipe] = []
-    private var filteredRecipes: [Recipe] = []
+    private var allRecipes: [RecipeShortInfo] = []
+    private var filteredRecipes: [RecipeShortInfo] = []
     private var isSearching: Bool = false
+    private var currentSearchTask: Task<Void, Never>?
+    var currentFilters: RecipeFilters?
+    private var searchTimer: Timer?
+    private let searchDelay: TimeInterval = 0.5
+    
+    private lazy var searchActivityIndicator = UIActivityIndicatorView.createIndicator(
+        style: .medium,
+        centerIn: view
+    )
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
-        setupCollectionView()
+
         setupSearchBar()
+        loadAllRecipes()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // Если есть активные фильтры, но поиск еще не выполнялся - выполняем
+        if let filters = currentFilters, (!filters.categories.isEmpty || filters.maxCookingTime > 0), filteredRecipes.isEmpty {
+            print("🔄 Автоматический поиск при появлении view")
+            performSearch(query: searchBar.text ?? "", filters: filters)
+        }
+    }
     // MARK: - Setup
-    private func setupUI() {
-        view.backgroundColor = .systemBackground
-        title = "Поиск"
+    
+    override func setupViews() {
+        title = AppStrings.TabBar.search
         
         view.addSubview(searchBar)
         view.addSubview(filterButton)
@@ -88,77 +102,161 @@ final class SearchViewController: BaseController {
         emptyStateView.addSubview(emptyStateImageView)
         emptyStateView.addSubview(emptyStateLabel)
         
+        if let textField = searchBar.value(forKey: "searchField") as? UITextField {
+            textField.rightView = searchActivityIndicator
+            textField.rightViewMode = .unlessEditing
+        }
+    }
+    
+    override func setupConstraints() {
         NSLayoutConstraint.activate([
             searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
-            searchBar.trailingAnchor.constraint(equalTo: filterButton.leadingAnchor, constant: -8),
+            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.paddingSmall),
+            searchBar.trailingAnchor.constraint(equalTo: filterButton.leadingAnchor, constant: -Constants.paddingSmall),
             
             filterButton.centerYAnchor.constraint(equalTo: searchBar.centerYAnchor),
-            filterButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            filterButton.widthAnchor.constraint(equalToConstant: 44),
-            filterButton.heightAnchor.constraint(equalToConstant: 44),
+            filterButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.paddingMedium),
             
-            collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 8),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: Constants.paddingSmall),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.paddingMedium),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.paddingMedium),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
             emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             emptyStateView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            emptyStateView.widthAnchor.constraint(equalToConstant: 200),
-            emptyStateView.heightAnchor.constraint(equalToConstant: 200),
             
             emptyStateImageView.centerXAnchor.constraint(equalTo: emptyStateView.centerXAnchor),
             emptyStateImageView.centerYAnchor.constraint(equalTo: emptyStateView.centerYAnchor),
-            emptyStateImageView.widthAnchor.constraint(equalToConstant: 60),
-            emptyStateImageView.heightAnchor.constraint(equalToConstant: 60),
             
-            emptyStateLabel.topAnchor.constraint(equalTo: emptyStateImageView.bottomAnchor, constant: 16),
+            emptyStateLabel.topAnchor.constraint(equalTo: emptyStateImageView.bottomAnchor, constant: Constants.paddingMedium),
             emptyStateLabel.centerXAnchor.constraint(equalTo: emptyStateView.centerXAnchor)
         ])
-        
-        filterButton.addTarget(self, action: #selector(filterButtonTapped), for: .touchUpInside)
-    }
-    
-    private func setupCollectionView() {
-        collectionView.register(RecipeSearchCell.self, forCellWithReuseIdentifier: RecipeSearchCell.id)
-        collectionView.delegate = self
-        collectionView.dataSource = self
     }
     
     private func setupSearchBar() {
         searchBar.delegate = self
+    }
+    // MARK: - Data Loading
+    private func loadAllRecipes() {
+        Task {
+            do {
+                let recipes = try await DataService.shared.fetchRecipesShortInfo()
+
+                DispatchQueue.main.async {
+                    self.allRecipes = recipes
+                    self.collectionView.reloadData()
+                    self.updateEmptyState()
+
+                    if let filters = self.currentFilters, (!filters.categories.isEmpty || filters.maxCookingTime > 0) {
+                        print("🔄 Применяем фильтры после загрузки всех рецептов")
+                        self.performSearch(query: self.searchBar.text ?? "", filters: filters)
+                    }
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    AlertManager.shared.show(on: self,
+                                             title: AppStrings.Alerts.errorTitle,
+                                             message: "Ошибка загрузки рецептов")
+                    self.updateEmptyState()
+                }
+            }
+        }
+    }
+
+    func performSearch(query: String, filters: RecipeFilters? = nil) {
+        showLoading()
+        
+        // Отменяем предыдущий поиск
+        currentSearchTask?.cancel()
+        
+        isSearching = !query.isEmpty || (filters != nil && (!filters!.categories.isEmpty || filters!.maxCookingTime > 0))
+        
+        print("🔍 Начинаем поиск после задержки: '\(query)'")
+        
+        currentSearchTask = Task {
+            // Добавляем небольшую проверку на случай быстрой отмены
+            try? await Task.sleep(nanoseconds: 50_000_000) // 0.05 секунды
+            guard !Task.isCancelled else { return }
+            
+            do {
+                let recipes: [RecipeShortInfo]
+                
+                //
+                recipes = try await DataService.shared.searchRecipes(
+                    query: query.isEmpty ? nil : query,
+                    categoryTitles: filters?.categories ?? [],
+                    maxCookingTime: filters?.maxCookingTime
+                )
+                
+                if !Task.isCancelled {
+                    DispatchQueue.main.async {
+                        self.filteredRecipes = recipes
+                        self.collectionView.reloadData()
+                        self.hideLoading()
+                        self.updateEmptyState()
+                        print("✅ Поиск завершен: \(recipes.count) рецептов для запроса '\(query)'")
+                    }
+                }
+            } catch {
+                if !Task.isCancelled {
+                    DispatchQueue.main.async {
+                        print("❌ Ошибка поиска: \(error)")
+                        self.filteredRecipes = []
+                        self.collectionView.reloadData()
+                        self.hideLoading()
+                        self.updateEmptyState()
+                    }
+                }
+            }
+        }
+    }
+    
+    // MARK: - Helper Methods
+    private func updateEmptyState() {
+        let recipesToShow = isSearching ? filteredRecipes : allRecipes
+        let shouldShowEmptyState = recipesToShow.isEmpty
+        
+        emptyStateView.isHidden = !shouldShowEmptyState
+        collectionView.isHidden = shouldShowEmptyState
+        
+        if shouldShowEmptyState {
+            emptyStateImageView.image = isSearching ? AppImages.TabBar.search : AppImages.Icons.book
+            emptyStateLabel.text = isSearching ? AppStrings.Messages.notFoundRecipe : AppStrings.Messages.notCreateRecipe
+        }
     }
     
     // MARK: - Actions
     @objc private func filterButtonTapped() {
         let filterVC = FilterViewController()
         filterVC.delegate = self
+        filterVC.selectedCategories = Set(currentFilters?.categories ?? [])
+        filterVC.selectedTime = Float(currentFilters?.maxCookingTime ?? 60)
         let nav = UINavigationController(rootViewController: filterVC)
         present(nav, animated: true)
-    }
-    
-    // MARK: - Helper Methods
-    private func updateEmptyState() {
-        let shouldShowEmptyState = (isSearching ? filteredRecipes : recipes).isEmpty
-        emptyStateView.isHidden = !shouldShowEmptyState
-        collectionView.isHidden = shouldShowEmptyState
     }
 }
 
 // MARK: - UICollectionView Delegate & DataSource
 extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return isSearching ? filteredRecipes.count : recipes.count
+        return isSearching ? filteredRecipes.count : allRecipes.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeSearchCell.id, for: indexPath) as? RecipeSearchCell else {
             return RecipeSearchCell()
         }
-        let recipe = isSearching ? filteredRecipes[indexPath.item] : recipes[indexPath.item]
+        let recipe = isSearching ? filteredRecipes[indexPath.item] : allRecipes[indexPath.item]
         cell.configure(with: recipe)
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let recipe = isSearching ? filteredRecipes[indexPath.item] : allRecipes[indexPath.item]
+        
+        let controller = RecipeWatchController()
+        controller.recipeSource = .online(recipe.id)
+        navigationController?.pushViewController(controller, animated: true)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -170,23 +268,169 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
 // MARK: - UISearchBar Delegate
 extension SearchViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        // Отменяем предыдущий таймер
+        searchTimer?.invalidate()
+        
         if searchText.isEmpty {
+            // Если текст очищен - сразу сбрасываем поиск
             isSearching = false
             filteredRecipes = []
+            currentSearchTask?.cancel()
+            updateEmptyState()
+            collectionView.reloadData()
+            print("🔄 Поиск очищен")
         } else {
-            isSearching = true
-//            filteredRecipes = recipes.filter { $0.title?.lowercased().contains(searchText.lowercased()) }
+            // Запускаем новый таймер с задержкой
+            searchTimer = Timer.scheduledTimer(withTimeInterval: searchDelay, repeats: false) { [weak self] _ in
+                Task { @MainActor in
+                    guard let self = self else { return }
+                    print("🔍 Выполняем поиск после задержки: '\(searchText)'")
+                    self.performSearch(query: searchText, filters: self.currentFilters)
+                }
+            }
         }
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        // При нажатии кнопки поиска - выполняем сразу
+        searchBar.resignFirstResponder()
+        searchTimer?.invalidate() // Отменяем таймер если он активен
+        
+        if let searchText = searchBar.text, !searchText.isEmpty {
+            print("🔍 Выполняем поиск по кнопке: '\(searchText)'")
+            performSearch(query: searchText, filters: currentFilters)
+        }
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        // При отмене поиска
+        searchBar.text = ""
+        searchBar.resignFirstResponder()
+        searchTimer?.invalidate()
+        currentSearchTask?.cancel()
+        isSearching = false
+        filteredRecipes = []
         updateEmptyState()
         collectionView.reloadData()
     }
 }
 
+// MARK: - FilterViewControllerDelegate
 extension SearchViewController: @preconcurrency FilterViewControllerDelegate {
     func filterViewController(_ viewController: FilterViewController, didApplyFilters filters: RecipeFilters) {
-        collectionView.reloadData()
+        currentFilters = filters
+        
+        print("🎛️ Применены фильтры: \(filters.categories), макс. время: \(filters.maxCookingTime)")
+        
+        // Если есть активный поиск - обновляем результаты
+        if let searchText = searchBar.text, !searchText.isEmpty {
+            performSearch(query: searchText, filters: filters)
+        } else {
+            // Если поиска нет, но есть фильтры - показываем все отфильтрованные рецепты
+            performSearch(query: "", filters: filters)
+        }
+    }
+}
+
+// В BaseController или прямо в SearchViewController
+extension SearchViewController {
+    private func showLoading() {
+        // Реализация показа индикатора загрузки
+        collectionView.isHidden = true
+        emptyStateView.isHidden = true
+        searchActivityIndicator.startAnimating()
+        // Показать activity indicator
+    }
+    
+    private func hideLoading() {
+        // Скрыть индикатор загрузки
+        searchActivityIndicator.stopAnimating()
+        collectionView.isHidden = false
+        updateEmptyState()
     }
 }
 
 
 
+
+
+
+//    private func loadAllRecipes() {
+//        showLoading()
+//        Task {
+//            do {
+//                let recipes = try await DataService.shared.fetchRecipesShortInfo()
+//
+//                DispatchQueue.main.async {
+//                    self.allRecipes = recipes
+//                    self.hideLoading()
+//                    self.collectionView.reloadData()
+//                }
+//            } catch {
+//                DispatchQueue.main.async {
+//                    self.hideLoading()
+//                    AlertManager.shared.show(on: self,
+//                                             title: AppStrings.Alerts.errorTitle,
+//                                             message: "Ошибка загрузки рецептов")
+//                }
+//            }
+//        }
+//    }
+    
+//    func performSearch(query: String, filters: RecipeFilters? = nil) {
+//        showLoading()
+//
+//        // Отменяем предыдущий поиск
+//        currentSearchTask?.cancel()
+//
+//        isSearching = !query.isEmpty || (filters != nil && (!filters!.categories.isEmpty || filters!.maxCookingTime > 0))
+//
+//        print("🔍 Начинаем поиск после задержки: '\(query)'")
+//
+//        currentSearchTask = Task {
+//            // Добавляем небольшую проверку на случай быстрой отмены
+//            try? await Task.sleep(nanoseconds: 50_000_000) // 0.05 секунды
+//            guard !Task.isCancelled else { return }
+//
+//            do {
+//                let recipes: [RecipeShortInfo]
+//
+//                // ЕСЛИ У НАС ЕСТЬ ЛОКАЛЬНЫЕ ДАННЫЕ И МЫ ИЩЕМ БЕЗ ТЕКСТОВОГО ЗАПРОСА - используем локальный поиск
+//                if query.isEmpty && !allRecipes.isEmpty {
+//                    recipes = filterRecipesLocally(filters: filters)
+//                    await MainActor.run {
+//                        self.isSearching = !recipes.isEmpty
+//                    }
+//                } else {
+//                    // Иначе - серверный поиск
+//                    recipes = try await DataService.shared.searchRecipes(
+//                        query: query.isEmpty ? nil : query,
+//                        categoryTitles: filters?.categories ?? [],
+//                        maxCookingTime: filters?.maxCookingTime
+//                    )
+//
+//                    await MainActor.run {
+//                        self.isSearching = true
+//                    }
+//                }
+//
+//                if !Task.isCancelled {
+//                    DispatchQueue.main.async {
+//                        self.filteredRecipes = recipes
+//                        self.collectionView.reloadData()
+//                        self.hideLoading()
+//                        print("✅ Поиск завершен: \(recipes.count) рецептов для запроса '\(query)'")
+//                    }
+//                }
+//            } catch {
+//                if !Task.isCancelled {
+//                    DispatchQueue.main.async {
+//                        print("❌ Ошибка поиска: \(error)")
+//                        self.filteredRecipes = []
+//                        self.collectionView.reloadData()
+//                        self.hideLoading()
+//                    }
+//                }
+//            }
+//        }
+//    }

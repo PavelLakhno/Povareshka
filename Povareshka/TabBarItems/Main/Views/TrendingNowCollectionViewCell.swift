@@ -28,7 +28,7 @@ final class TrendingNowCollectionViewCell: UICollectionViewCell {
 
     private lazy var photoDish = UIImageView(
         cornerRadius: Constants.cornerRadiusMedium,
-        contentMode: .scaleToFill
+        contentMode: .scaleAspectFill
     )
 
     private var ratingContainerView = UIView(
@@ -60,7 +60,8 @@ final class TrendingNowCollectionViewCell: UICollectionViewCell {
         spacing: Constants.cornerRadiusSmall
     )
     
-    private var creatorImageView = UIImageView(cornerRadius: Constants.cornerRadiusMedium)
+    private var creatorImageView = UIImageView(size: Constants.viewSize30,
+                                               cornerRadius: Constants.cornerRadiusMedium)
     
     private var creatorLabel = UILabel(
         font: .helveticalRegular(withSize: 12),
@@ -116,14 +117,6 @@ final class TrendingNowCollectionViewCell: UICollectionViewCell {
                         ],
                         completionHandler: { result in
                             self.mainImageActivityIndicator.stopAnimating()
-                            
-                            switch result {
-                            case .success(let value):
-                                print("✅ Основное изображение загружено: \(value.source.url?.absoluteString ?? "")")
-                            case .failure(let error):
-                                print("❌ Ошибка загрузки основного изображения: \(error)")
-                                self.photoDish.image = AppImages.Icons.cameraMain
-                            }
                         }
                     )
                 }
@@ -165,14 +158,6 @@ final class TrendingNowCollectionViewCell: UICollectionViewCell {
                         ],
                         completionHandler: { result in
                             self.avatarActivityIndicator.stopAnimating()
-                            
-                            switch result {
-                            case .success(let value):
-                                print("✅ Аватар загружен: \(value.source.url?.absoluteString ?? "")")
-                            case .failure(let error):
-                                print("❌ Ошибка загрузки аватара: \(error)")
-                                self.creatorImageView.image = AppImages.Icons.avatar
-                            }
                         }
                     )
                 }
@@ -216,7 +201,7 @@ final class TrendingNowCollectionViewCell: UICollectionViewCell {
     }
     
     private func setupConstraints() {
-        // ... ваши существующие констрейнты без изменений ...
+
         NSLayoutConstraint.activate([
             photoDish.topAnchor.constraint(equalTo: topAnchor),
             photoDish.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -239,16 +224,13 @@ final class TrendingNowCollectionViewCell: UICollectionViewCell {
 
             creatorStackView.topAnchor.constraint(equalTo: photoDish.bottomAnchor, constant: Constants.paddingSmall),
             creatorStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.paddingSmall),
-            
-            creatorImageView.heightAnchor.constraint(equalToConstant: 32),
-            creatorImageView.widthAnchor.constraint(equalTo: creatorImageView.heightAnchor),
         ])
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        // Отменяем все загрузки Kingfisher :cite[3]
+        // Отменяем все загрузки Kingfisher
         photoDish.kf.cancelDownloadTask()
         creatorImageView.kf.cancelDownloadTask()
         

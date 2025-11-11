@@ -111,14 +111,15 @@ final class DataService {
         
         try await supabaseManager.client.from("recipes").insert(recipe).execute()
     }
-
-    private func saveIngredients(_ ingredients: [Ingredient], for recipeId: UUID) async throws {
+    
+    private func saveIngredients(_ ingredients: [Ingredient], for recipeId: UUID) async throws { //Ingredient
         for (index, ingredient) in ingredients.enumerated() {
             let ingredientSupabase = IngredientSupabase(
                 id: UUID(),
                 recipeId: recipeId,
                 name: ingredient.name,
                 amount: "\(ingredient.amount) \(ingredient.measure)",
+                measure: ingredient.measure,
                 orderIndex: index
             )
             try await supabaseManager.client.from("ingredients").insert(ingredientSupabase).execute()
@@ -192,14 +193,15 @@ final class DataService {
             .value
     }
     
-    private func fetchTags(recipeId: UUID) async throws -> [String] {
+    private func fetchTags(recipeId: UUID) async throws -> [RecipeTagSupabase] { //[String]
         let tags: [RecipeTagSupabase] = try await supabaseManager.client
             .from("recipe_tags")
             .select()
             .eq("recipe_id", value: recipeId)
             .execute()
             .value
-        return tags.map { $0.tag }
+//        return tags.map { $0.tag }
+        return tags
     }
     
     private func fetchCategories(recipeId: UUID) async throws -> [CategorySupabase] {
@@ -219,7 +221,17 @@ final class DataService {
             .value
     }
     
-    // MARK: - Favorites
+    func getFavoritesCount(recipeId: UUID) async throws -> Int {
+        let favorites: [FavoriteRecipe] = try await supabaseManager.client
+            .from("recipe_favorite")
+            .select()
+            .eq("recipe_id", value: recipeId)
+            .execute()
+            .value
+        
+        return favorites.count
+    }
+    
     func isRecipeFavorite(recipeId: UUID) async throws -> Bool {
         guard let userId = try await supabaseManager.getCurrentUserId() else { return false }
         let favorites: [FavoriteRecipe] = try await supabaseManager.client
@@ -232,11 +244,13 @@ final class DataService {
         return !favorites.isEmpty
     }
    
-    func toggleFavorite(recipeId: UUID, isCurrentlyFavorite: Bool) async throws {
+    func toggleFavorite(recipeId: UUID, isCurrentlyFavorite: Bool) async throws -> Bool {
         if isCurrentlyFavorite {
             try await removeFromFavorites(recipeId: recipeId)
+            return false
         } else {
             try await addToFavorites(recipeId: recipeId)
+            return true
         }
     }
     
@@ -248,7 +262,8 @@ final class DataService {
         // Проверяем, не добавлен ли уже рецепт
         let isAlreadyFavorite = try await isRecipeFavorite(recipeId: recipeId)
         guard !isAlreadyFavorite else {
-            throw RecipeError.alreadyInFavorites
+            // Если уже в избранном, просто возвращаемся
+            return
         }
         
         let favorite = FavoriteRecipe(
@@ -258,10 +273,17 @@ final class DataService {
             createdAt: Date()
         )
         
-        try await supabaseManager.client
-            .from("recipe_favorite")
-            .insert(favorite)
-            .execute()
+        do {
+            try await supabaseManager.client
+                .from("recipe_favorite")
+                .insert(favorite)
+                .execute()
+        } catch {
+            // Игнорируем ошибку дубликата, так как рецепт уже в избранном
+            if !error.localizedDescription.contains("duplicate key") {
+                throw error
+            }
+        }
     }
 
     private func removeFromFavorites(recipeId: UUID) async throws {
@@ -353,7 +375,7 @@ final class DataService {
             .in("photo_path", values: paths)
             .execute()
     }
-
+//MARK: fetchRecipesShortInfo
     func fetchRecipesShortInfo() async throws -> [RecipeShortInfo] {
         try await supabaseManager.client
             .from("recipes")
@@ -362,6 +384,7 @@ final class DataService {
                     title,
                     image_path,
                     user_id,
+                    ready_in_minutes,
                     profiles!recipes_user_id_fkey(username, avatar_url)
                 """)
             .order("created_at", ascending: false)
@@ -423,20 +446,6 @@ final class DataService {
     }
     
     // MARK: - Private Helpers
-//    private func uploadInstructionImage(_ image: UIImage?, for recipeId: UUID) async throws -> String? {
-//        guard let image = image, image != AppImages.Icons.cameraMain else { return nil }
-//        guard let imageData = image.jpegData(compressionQuality: 0.8) else { return nil }
-//        let currentUser = try await supabaseManager.client.auth.session.user
-//        let userId = currentUser.id.uuidString.lowercased()
-//        let fileName = "main_\(UUID().uuidString).jpeg"
-//        let fullPath = "\(userId)/\(recipeId)/\(fileName)"
-//        try await supabaseManager.client.storage
-//            .from("recipes")
-//            .upload(fullPath, data: imageData, options: FileOptions(contentType: "image/jpeg"))
-//        return fullPath
-//    }
-
-    
     func fetchRecipeDetails(recipeId: UUID) async throws -> RecipeDetailsResponse {
         
         async let recipeTask = fetchRecipe(id: recipeId)
@@ -606,50 +615,205 @@ extension DataService {
         return currentImage.jpegData(compressionQuality: minQuality)
     }
 }
-//    private func uploadInstructionImage(_ image: UIImage?, for recipeId: UUID) async throws -> String? {
-//        guard let image = image, image != AppImages.Icons.cameraMain else { return nil }
-//        
-//        // Простое решение: фиксированный размер + сжатие
-//        let targetSize = CGSize(width: 800, height: 800)
-//        let resizedImage = await resizeImage(image, to: targetSize)
-//        
-//        guard let imageData = resizedImage.jpegData(compressionQuality: 0.5) else {
-//            return nil
-//        }
-//        
-//        print("📸 Размер после сжатия: \(imageData.count / 1024) KB")
-//        
-//        let currentUser = try await supabaseManager.client.auth.session.user
-//        let userId = currentUser.id.uuidString.lowercased()
-//        let fileName = "main_\(UUID().uuidString).jpeg"
-//        let fullPath = "\(userId)/\(recipeId)/\(fileName)"
-//        
-//        try await supabaseManager.client.storage
-//            .from("recipes")
-//            .upload(fullPath, data: imageData, options: FileOptions(contentType: "image/jpeg"))
-//        
-//        return fullPath
-//    }
-//
-//    private func resizeImage(_ image: UIImage, to targetSize: CGSize) async -> UIImage {
-//        return await withCheckedContinuation { continuation in
-//            DispatchQueue.global(qos: .userInitiated).async {
-//                let size = image.size
-//                
-//                let widthRatio  = targetSize.width  / size.width
-//                let heightRatio = targetSize.height / size.height
-//                
-//                let newSize = widthRatio > heightRatio ?
-//                    CGSize(width: size.width * heightRatio, height: size.height * heightRatio) :
-//                    CGSize(width: size.width * widthRatio, height: size.height * widthRatio)
-//                
-//                UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
-//                image.draw(in: CGRect(origin: .zero, size: newSize))
-//                let newImage = UIGraphicsGetImageFromCurrentImageContext()
-//                UIGraphicsEndImageContext()
-//                
-//                continuation.resume(returning: newImage ?? image)
-//            }
-//        }
-//    }
-//}
+
+// Search Recipes
+extension DataService {
+    func searchRecipes(
+            query: String? = nil,
+            categoryTitles: [String] = [],
+            maxCookingTime: Int? = nil
+        ) async throws -> [RecipeShortInfo] {
+            
+            // Если запрос пустой - используем обычный поиск
+            guard let query = query, !query.isEmpty else {
+                return try await searchRecipesWithoutQuery(
+                    categoryTitles: categoryTitles,
+                    maxCookingTime: maxCookingTime
+                )
+            }
+            
+            // Ищем рецепты по названию
+            let titleRecipes = try await searchRecipesByTitle(
+                query: query,
+                categoryTitles: categoryTitles,
+                maxCookingTime: maxCookingTime
+            )
+            
+            // Ищем рецепты по тегам
+            let tagRecipes = try await searchRecipesByTags(
+                query: query,
+                categoryTitles: categoryTitles,
+                maxCookingTime: maxCookingTime
+            )
+            
+            // Объединяем результаты, убирая дубликаты
+            let allRecipes = (titleRecipes + tagRecipes).reduce(into: [RecipeShortInfo]()) { result, recipe in
+                if !result.contains(where: { $0.id == recipe.id }) {
+                    result.append(recipe)
+                }
+            }
+            
+            print("🔍 Поиск '\(query)': найдено \(allRecipes.count) рецептов (по названию: \(titleRecipes.count), по тегам: \(tagRecipes.count))")
+            
+            return allRecipes
+        }
+        
+        // Вспомогательный метод для поиска по названию
+        private func searchRecipesByTitle(
+            query: String,
+            categoryTitles: [String] = [],
+            maxCookingTime: Int? = nil
+        ) async throws -> [RecipeShortInfo] {
+            
+            var request = supabaseManager.client
+                .from("recipes")
+                .select("""
+                    id,
+                    title,
+                    image_path,
+                    user_id,
+                    ready_in_minutes,
+                    profiles!recipes_user_id_fkey(username, avatar_url)
+                """)
+                .eq("is_public", value: true)
+                .ilike("title", pattern: "%\(query)%")
+            
+            if let maxCookingTime = maxCookingTime, maxCookingTime > 0 {
+                request = request.lte("ready_in_minutes", value: maxCookingTime)
+            }
+            
+            let recipes: [RecipeShortInfo] = try await request
+                .order("created_at", ascending: false)
+                .execute()
+                .value
+            
+            // Фильтрация по категориям
+            if !categoryTitles.isEmpty {
+                return try await filterRecipesByCategories(recipes, categoryTitles: categoryTitles)
+            }
+            
+            return recipes
+        }
+        
+        // Новый метод для поиска по тегам
+    private func searchRecipesByTags(
+        query: String,
+        categoryTitles: [String] = [],
+        maxCookingTime: Int? = nil
+    ) async throws -> [RecipeShortInfo] {
+        
+        print("🏷️ Начинаем поиск по тегам: '\(query)'")
+        
+        // Сначала находим теги, которые совпадают с запросом
+        let matchingTags: [RecipeTagSupabase] = try await supabaseManager.client
+            .from("recipe_tags")
+//            .select("recipe_id")
+            .select()
+            .ilike("tag", pattern: "%\(query)%")
+            .execute()
+            .value
+        
+        print("🏷️ Найдено совпадающих тегов: \(matchingTags.count)")
+        
+        let recipeIds = matchingTags.map { $0.recipeId }
+        
+        guard !recipeIds.isEmpty else {
+            print("🏷️ Нет рецептов с подходящими тегами")
+            return []
+        }
+        
+        // Затем получаем рецепты по найденным ID
+        var request = supabaseManager.client
+            .from("recipes")
+            .select("""
+                id,
+                title,
+                image_path,
+                user_id,
+                ready_in_minutes,
+                profiles!recipes_user_id_fkey(username, avatar_url)
+            """)
+            .eq("is_public", value: true)
+            .in("id", values: recipeIds) //
+        
+        if let maxCookingTime = maxCookingTime, maxCookingTime > 0 {
+            request = request.lte("ready_in_minutes", value: maxCookingTime)
+        }
+        
+        let recipes: [RecipeShortInfo] = try await request
+            .order("created_at", ascending: false)
+            .execute()
+            .value
+        
+        print("🏷️ Найдено рецептов по тегам: \(recipes.count)")
+        
+        // Фильтрация по категориям
+        if !categoryTitles.isEmpty {
+            let filteredRecipes = try await filterRecipesByCategories(recipes, categoryTitles: categoryTitles)
+            print("🏷️ После фильтрации по категориям: \(filteredRecipes.count) рецептов")
+            return filteredRecipes
+        }
+        
+        return recipes
+    }
+        
+        // Метод для поиска без текстового запроса (только фильтры)
+        private func searchRecipesWithoutQuery(
+            categoryTitles: [String] = [],
+            maxCookingTime: Int? = nil
+        ) async throws -> [RecipeShortInfo] {
+            
+            var request = supabaseManager.client
+                .from("recipes")
+                .select("""
+                    id,
+                    title,
+                    image_path,
+                    user_id,
+                    ready_in_minutes,
+                    profiles!recipes_user_id_fkey(username, avatar_url)
+                """)
+                .eq("is_public", value: true)
+            
+            if let maxCookingTime = maxCookingTime, maxCookingTime > 0 {
+                request = request.lte("ready_in_minutes", value: maxCookingTime)
+            }
+            
+            let recipes: [RecipeShortInfo] = try await request
+                .order("created_at", ascending: false)
+                .execute()
+                .value
+            
+            // Фильтрация по категориям
+            if !categoryTitles.isEmpty {
+                return try await filterRecipesByCategories(recipes, categoryTitles: categoryTitles)
+            }
+            
+            return recipes
+        }
+    
+    private func filterRecipesByCategories(_ recipes: [RecipeShortInfo], categoryTitles: [String]) async throws -> [RecipeShortInfo] {
+        var filteredRecipes: [RecipeShortInfo] = []
+        
+        print("🔍 Начинаем фильтрацию по категориям: \(categoryTitles)")
+        
+        for recipe in recipes {
+            let categories = try await fetchCategories(recipeId: recipe.id)
+            let recipeCategoryTitles = categories.map { $0.title }
+            
+            print("📋 Рецепт '\(recipe.title)' имеет категории: \(recipeCategoryTitles)")
+            
+            let hasAllCategories = categoryTitles.allSatisfy { categoryTitle in
+                recipeCategoryTitles.contains(categoryTitle)
+            }
+            
+            if hasAllCategories {
+                filteredRecipes.append(recipe)
+                print("✅ Рецепт '\(recipe.title)' подходит под фильтр")
+            }
+        }
+        
+        print("🔍 После фильтрации осталось \(filteredRecipes.count) рецептов")
+        return filteredRecipes
+    }
+}
