@@ -91,7 +91,7 @@ final class NewRecipeController: BaseController {
         backgroundColor: .black.withAlphaComponent(0.3),
         tintColor: .white,
         cornerRadius: Constants.cornerRadiusMedium,
-        size: Constants.iconCellSizeMedium,
+        size: Constants.viewSize30,
         target: self,
         action: #selector(editButtonTapped)
     )
@@ -116,7 +116,7 @@ final class NewRecipeController: BaseController {
     
     private lazy var categoriesCollectionView: UICollectionView = {
         let collectionView = createCollectionView(
-            type: .verticalFixedSize(Constants.categoryCellSize),
+            type: .verticalFixedSize(Constants.viewSize100),
             cellConfigs: [
                 CollectionViewCellConfig(cellClass: CategoryGridCell.self, identifier: CategoryGridCell.id),
                 CollectionViewCellConfig(cellClass: AddCategoryGridCell.self, identifier: AddCategoryGridCell.id)
@@ -150,7 +150,7 @@ final class NewRecipeController: BaseController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-//        viewModel = NewRecipeViewModel()
+
         setupNavigationBar()
         setupViews()
         setupConstraints()
@@ -497,7 +497,7 @@ extension NewRecipeController: UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         if textField != recipeNameTextField {
-            viewModel.ingredientsDataSource.ingredients[textField.tag].name = textField.text ?? ""
+            viewModel.ingredientsDataSource.ingredients[textField.tag].name = textField.text ?? "" //Cannot assign to property: 'name' is a 'let' constant
         }
     }
     

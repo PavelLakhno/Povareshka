@@ -196,6 +196,7 @@ extension NewIngredientViewController {
         }
         
         let newIngredient = Ingredient(name: title, amount: countText, measure: measure)
+//        let newIngredient = IngredientSupabase.createForUI(name: title, amount: countText, measure: measure)
         saveIngredientCallback?(newIngredient)
         navigationController?.popViewController(animated: true)
     }

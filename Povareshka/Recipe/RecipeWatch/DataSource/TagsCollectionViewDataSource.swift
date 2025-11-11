@@ -8,12 +8,11 @@
 import UIKit
 
 final class TagsCollectionViewDataSource: NSObject {
-    
     // MARK: - Properties
-    var tags: [String] = []
+    var tags: [RecipeTagSupabase] = []
     
     // MARK: - Public Methods
-    func updateTags(_ tags: [String]) {
+    func updateTags(_ tags: [RecipeTagSupabase]) {
         self.tags = tags
     }
 }
@@ -36,7 +35,7 @@ extension TagsCollectionViewDataSource: UICollectionViewDataSource {
             return TagCollectionViewCell()
         }
         
-        cell.configure(with: tags[indexPath.item], showDelete: false)
+        cell.configure(with: tags[indexPath.item].tag, showDelete: false)
         return cell
     }
 }
@@ -51,7 +50,7 @@ extension TagsCollectionViewDataSource: UICollectionViewDelegateFlowLayout {
         let tag = tags[indexPath.item]
         let font = UIFont.helveticalRegular(withSize: 14)
         let attributes = [NSAttributedString.Key.font: font]
-        let size = (tag as NSString).size(withAttributes: attributes)
+        let size = (tag.tag as NSString).size(withAttributes: attributes) //
         return CGSize(width: size.width + 24, height: 30)
     }
 }

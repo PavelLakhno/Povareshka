@@ -11,7 +11,7 @@ final class AddPhotoCell: UICollectionViewCell {
     static let id = "AddPhotoCell"
     
     private let iconView = UIImageView(image: AppImages.Icons.addFill,
-                                       size: Constants.iconCellSizeMedium,
+                                       size: Constants.viewSize30,
                                        contentMode: .scaleAspectFit,
                                        tintColor: AppColors.gray600,
                                        backgroundColor: .clear)

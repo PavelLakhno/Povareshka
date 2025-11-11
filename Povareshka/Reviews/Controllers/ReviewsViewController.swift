@@ -31,7 +31,7 @@ final class ReviewsViewController: BaseController {
     
     private lazy var photosCollectionView: UICollectionView = {
         let collectionView = createCollectionView(
-            type: .horizontalFixedSize(Constants.categoryCellSize, insets: Constants.insentsRightLeftSides),
+            type: .horizontalFixedSize(Constants.viewSize100, insets: Constants.insentsRightLeftSides),
             cellConfigs: [
                 CollectionViewCellConfig(cellClass: ReviewPhotoCell.self, identifier: ReviewPhotoCell.id),
             ],

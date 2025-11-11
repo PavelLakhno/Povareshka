@@ -12,14 +12,15 @@ final class RecipeImageWithFavoriteView: UIView {
     // MARK: - Properties
     private let dataService = DataService.shared
     private let imageView = UIImageView(cornerRadius: Constants.cornerRadiusBig, contentMode: .scaleAspectFill)
-    private lazy var favoriteButton = UIButton(image: AppImages.Icons.heart,
+    private lazy var favoriteButton = UIButton(image: AppImages.Icons.favorite,
                                                backgroundColor: .black.withAlphaComponent(0.3),
                                                cornerRadius: Constants.cornerRadiusMedium,
-                                               size: Constants.iconCellSizeMedium,
+                                               size: Constants.viewSize30,
                                                target: self,
                                                action: #selector(favoriteButtonTapped))
     private var isFavorite = false
     private var isCreator = false
+    private var showFavoriteButton = true
     private var recipeId: UUID?
     private weak var parentViewController: UIViewController?
     
@@ -43,12 +44,13 @@ final class RecipeImageWithFavoriteView: UIView {
                    isFavorite: Bool,
                    isCreator: Bool,
                    recipeId: UUID?,
-                   parentViewController: UIViewController?) {
+                   parentViewController: UIViewController?, showFavoriteButton: Bool = true) {
         imageView.image = image
         self.isFavorite = isFavorite
         self.isCreator = isCreator
         self.recipeId = recipeId
         self.parentViewController = parentViewController
+        self.showFavoriteButton = showFavoriteButton
         updateFavoriteButton()
     }
     
@@ -71,7 +73,7 @@ final class RecipeImageWithFavoriteView: UIView {
     }
     
     private func updateFavoriteButton() {
-        if isCreator {
+        if isCreator || !showFavoriteButton {
             favoriteButton.isHidden = true
         } else {
             favoriteButton.isHidden = false
@@ -86,10 +88,13 @@ final class RecipeImageWithFavoriteView: UIView {
         
         Task {
             do {
-                try await dataService.toggleFavorite(recipeId: recipeId, isCurrentlyFavorite: isFavorite)
+                let newFavoriteState = try await dataService.toggleFavorite(
+                                    recipeId: recipeId,
+                                    isCurrentlyFavorite: isFavorite
+                                )
                 
                 DispatchQueue.main.async {
-                    self.isFavorite.toggle()
+                    self.isFavorite = newFavoriteState
                     self.animateButton()
                     self.updateFavoriteButton()
                     self.favoriteStatusChanged?(self.isFavorite)

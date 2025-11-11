@@ -7,16 +7,67 @@
 
 import UIKit
 
+//final class InstructionsDataSource: NSObject {
+//    
+//    // MARK: - Properties
+//    var instructions: [InstructionSupabase] = []
+//    
+//    // MARK: - Public Methods
+//    func updateInstructions(_ instructions: [InstructionSupabase]) {
+//        self.instructions = instructions
+//    }
+//}
+//
+//// MARK: - UITableViewDataSource
+//extension InstructionsDataSource: UITableViewDataSource {
+//    func numberOfSections(in tableView: UITableView) -> Int {
+//        return instructions.count
+//    }
+//    
+//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        let instruction = instructions[section]
+//        return instruction.imagePath != nil ? 2 : 1
+//    }
+//    
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        let instruction = instructions[indexPath.section]
+//        
+//        if indexPath.row == 0 {
+//            guard let cell = tableView.dequeueReusableCell(withIdentifier: InstructionTextCell.id, for: indexPath) as? InstructionTextCell else {
+//                return InstructionTextCell()
+//            }
+//            cell.configure(stepNumber: instruction.stepNumber, description: instruction.description ?? "")
+//            
+//            DispatchQueue.main.async {
+//                tableView.dynamicHeightForTableView()
+//            }
+//            return cell
+//        } else {
+//            guard let cell = tableView.dequeueReusableCell(withIdentifier: InstructionImageCell.id, for: indexPath) as? InstructionImageCell else {
+//                return InstructionImageCell()
+//            }
+//
+//            if let imagePath = instruction.imagePath {
+//                cell.configure(with: imagePath)
+//            }
+//           
+//            DispatchQueue.main.async {
+//                tableView.dynamicHeightForTableView()
+//            }
+//            return cell
+//        }
+//    }
+//}
+
 final class InstructionsDataSource: NSObject {
     
     // MARK: - Properties
-    var instructions: [InstructionSupabase] = []
+    var instructions: [UniversalInstruction] = []
     
     // MARK: - Public Methods
-    func updateInstructions(_ instructions: [InstructionSupabase]) {
+    func updateInstructions(_ instructions: [UniversalInstruction]) {
         self.instructions = instructions
     }
-   
 }
 
 // MARK: - UITableViewDataSource
@@ -27,7 +78,7 @@ extension InstructionsDataSource: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let instruction = instructions[section]
-        return instruction.imagePath != nil ? 2 : 1
+        return instruction.hasImage ? 2 : 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -37,7 +88,7 @@ extension InstructionsDataSource: UITableViewDataSource {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: InstructionTextCell.id, for: indexPath) as? InstructionTextCell else {
                 return InstructionTextCell()
             }
-            cell.configure(stepNumber: instruction.stepNumber, description: instruction.description ?? "")
+            cell.configure(stepNumber: instruction.stepNumber, description: instruction.description)
             
             DispatchQueue.main.async {
                 tableView.dynamicHeightForTableView()
@@ -48,7 +99,12 @@ extension InstructionsDataSource: UITableViewDataSource {
                 return InstructionImageCell()
             }
 
-            if let imagePath = instruction.imagePath {
+            // Универсальная обработка изображений
+            if let imageData = instruction.imageData, let image = UIImage(data: imageData) {
+                // Офлайн-режим: устанавливаем изображение напрямую
+                cell.stepImageView.image = image
+            } else if let imagePath = instruction.imagePath {
+                // Онлайн-режим: используем существующий метод загрузки
                 cell.configure(with: imagePath)
             }
             
@@ -67,7 +123,7 @@ extension InstructionsDataSource: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-        return false
+        false
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {

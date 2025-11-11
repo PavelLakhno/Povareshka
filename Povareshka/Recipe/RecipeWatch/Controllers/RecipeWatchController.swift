@@ -2,27 +2,31 @@
 //  RecipeWatchController.swift
 //  Povareshka
 //
-//  Created by Pavel Lakhno on 30.03.2025.
+//  Created by user on 02.11.2025.
 //
 
 import UIKit
 
 final class RecipeWatchController: BaseController {
     
-    var recipeId: UUID?
-
-    private let viewModel = RecipeWatchViewModel()
+    // MARK: - Properties
+    enum RecipeSource {
+        case online(UUID)
+        case offline(RecipeModel)
+    }
     
-    // Data Sources вместо прямого хранения данных
+    var recipeSource: RecipeSource?
+    private var viewModel = RecipeWatchViewModel()
+    private let storageManager = StorageManager.shared
+    
+    // Data Sources
     private let ingredientsDataSource = IngredientsDataSource()
     private let instructionsDataSource = InstructionsDataSource()
-    
-    // НОВОЕ: Data Sources для коллекций
     private let tagsDataSource = TagsCollectionViewDataSource()
     private let categoriesDataSource = CategoriesCollectionViewDataSource()
     
+    // UI Components
     private let recipeImageView = RecipeImageWithFavoriteView()
-    
     private let customScrollView = UIScrollView(backgroundColor: .clear)
     override var scrollView: UIScrollView { customScrollView }
     private let stackView = UIStackView(
@@ -30,7 +34,7 @@ final class RecipeWatchController: BaseController {
         alignment: .fill,
         spacing: Constants.spacingBig
     )
-
+    
     private lazy var ingredientsTableView: UITableView = {
         let tableView = createTableView(
             cellConfigs: [
@@ -64,14 +68,14 @@ final class RecipeWatchController: BaseController {
             dataSource: tagsDataSource,
             showsHorizontalScrollIndicator: false,
             showsVerticalScrollIndicator: false,
-            isScrollEnabled: true,
+            isScrollEnabled: true
         )
         return collectionView
     }()
     
     private lazy var categoriesCollectionView: UICollectionView = {
         let collectionView = createCollectionView(
-            type: .verticalFixedSize(Constants.categoryCellSize),
+            type: .verticalFixedSize(Constants.viewSize100),
             cellConfigs: [
                 CollectionViewCellConfig(cellClass: CategoryGridCell.self, identifier: CategoryGridCell.id),
             ],
@@ -87,11 +91,50 @@ final class RecipeWatchController: BaseController {
         centerIn: view
     )
     
+    private let offlineBadge: UILabel = {
+        let label = UILabel()
+        label.text = "OFFLINE"
+        label.font = .systemFont(ofSize: 12, weight: .bold)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.backgroundColor = .systemGray
+        label.layer.cornerRadius = 4
+        label.clipsToBounds = true
+        label.isHidden = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupNavigationBar()
         setupViews()
         setupConstraints()
+        setupDataSources()
         loadRecipeData()
+    }
+    
+    // MARK: - Setup
+    private func setupNavigationBar() {
+        // Настраиваем бейдж оффлайн режима
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: offlineBadge)
+        NSLayoutConstraint.activate([
+            offlineBadge.widthAnchor.constraint(equalToConstant: 80),
+            offlineBadge.heightAnchor.constraint(equalToConstant: 24)
+        ])
+        
+        // Настраиваем кнопки сохранения/удаления только для онлайн рецептов
+        if case .online(let recipeId) = recipeSource {
+            let isSaved = storageManager.isRecipeSaved(recipeId)
+            addNavBarButtons(
+                at: .right,
+                types: !isSaved ? [.title(AppStrings.Buttons.save)] : [.title(AppStrings.Buttons.delete)]
+            )
+        } else {
+            // Для оффлайн рецептов скрываем кнопки
+            addNavBarButtons(at: .right, types: [])
+        }
     }
     
     internal override func setupViews() {
@@ -115,38 +158,51 @@ final class RecipeWatchController: BaseController {
             stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
-
+    
+    private func setupDataSources() {
+        ingredientsDataSource.onAddIngredient = { [weak self] ingredient in
+            self?.addIngredientToShoppingList(ingredient)
+        }
+    }
+    
+    // MARK: - Data Loading
     private func loadRecipeData() {
-        guard let recipeId = recipeId else { return }
+        guard let recipeSource = recipeSource else { return }
+        
         loadingIndicator.startAnimating()
         
         Task {
-            await viewModel.loadRecipe(recipeId: recipeId)
+            switch recipeSource {
+            case .online(let recipeId):
+                await viewModel.loadOnlineRecipe(recipeId: recipeId)
+            case .offline(let recipeModel):
+                await viewModel.loadOfflineRecipe(recipeModel: recipeModel)
+            }
             updateUI()
         }
     }
     
     @MainActor
     private func updateUI() {
-        guard let recipe = viewModel.recipe else { return }
-
-        // Обновляем Data Sources из ViewModel
+        guard viewModel.hasData else { return }
+        
+        // Обновляем Data Sources
         ingredientsDataSource.updateIngredients(viewModel.ingredients)
         instructionsDataSource.updateInstructions(viewModel.instructions)
-        
         tagsDataSource.updateTags(viewModel.tags)
         categoriesDataSource.updateCategories(viewModel.categories)
         
         // Очищаем stackView
         stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
-        // Строим UI на основе ViewModel
-        setupRecipeTitle(recipe.title)
-        setupRecipeImageView(with: recipe)
-        setupMetaStack(with: recipe)
+        // Настраиваем UI в зависимости от типа рецепта
+        setupOfflineBadge()
+        setupRecipeTitle()
+        setupRecipeImageView()
+        setupMetaStack()
 
-        if viewModel.hasDescription, let description = recipe.description {
-            setupDescription(with: description)
+        if viewModel.hasDescription {
+            setupDescription()
         }
 
         if viewModel.hasCategories {
@@ -159,14 +215,29 @@ final class RecipeWatchController: BaseController {
         
         setupIngredientsSection()
         setupInstructionsSection()
-        setupRateButton()
+        
+        if viewModel.isOnline {
+            setupRateButton()
+        }
         
         loadingIndicator.stopAnimating()
     }
     
-
-
-    private func setupRecipeImageView(with recipe: RecipeSupabase) {
+    private func setupOfflineBadge() {
+        offlineBadge.isHidden = viewModel.isOnline
+    }
+    
+    private func setupRecipeTitle() {
+        let titleLabel = UILabel(
+            text: viewModel.title,
+            font: .helveticalBold(withSize: 24),
+            textAlignment: .center,
+            numberOfLines: 0
+        )
+        stackView.addArrangedSubview(titleLabel)
+    }
+    
+    private func setupRecipeImageView() {
         recipeImageView.heightAnchor.constraint(equalToConstant: view.frame.width / 1.5).isActive = true
         stackView.addArrangedSubview(recipeImageView)
         
@@ -176,46 +247,42 @@ final class RecipeWatchController: BaseController {
         )
         loadImageIndicator.startAnimating()
 
-        Task { [unowned self] in
-            do {
-                let image = await viewModel.loadRecipeImage(for: recipe)
-                let isFavorite = try await viewModel.checkIfRecipeIsFavorite(recipeId: recipe.id)
-                let isCreator = await viewModel.checkIfCurrentUserIsCreator(recipe: recipe)
-                
-                DispatchQueue.main.async {
-                    self.recipeImageView.configure(
-                        with: image,
-                        isFavorite: isFavorite,
-                        isCreator: isCreator,
-                        recipeId: recipe.id,
-                        parentViewController: self
-                    )
-                    loadImageIndicator.stopAnimating()
-                }
+        Task { [weak self] in
+            guard let self = self else { return }
+            
+            let image = await viewModel.loadRecipeImage()
+            let isFavorite = await viewModel.checkIfRecipeIsFavorite()
+            let isCreator = await viewModel.checkIfCurrentUserIsCreator()
+            
+            await MainActor.run {
+                self.recipeImageView.configure(
+                    with: image,
+                    isFavorite: isFavorite,
+                    isCreator: isCreator,
+                    recipeId: viewModel.recipeId,
+                    parentViewController: self,
+                    showFavoriteButton: viewModel.isOnline
+                )
+                loadImageIndicator.stopAnimating()
             }
         }
     }
     
-    private func setupRecipeTitle(_ title: String){
-        let titleLabel = UILabel(
-            text: title,
-            font: .helveticalBold(withSize: 24),
-            textAlignment: .center,
-            numberOfLines: 0
+    private func setupMetaStack() {
+        let metaStack = UniversalRecipeMetaStackView()
+        metaStack.configure(
+            with: viewModel.metaData,
+            averageRating: viewModel.averageRating,
+            recipeId: viewModel.recipeId,
+            isOnline: viewModel.isOnline
         )
-        stackView.addArrangedSubview(titleLabel)
-    }
-    
-    private func setupMetaStack(with recipe: RecipeSupabase) {
-        let metaStack = RecipeMetaStackView()
-        metaStack.configure(with: recipe, averageRating: viewModel.averageRating, recipeId: recipe.id)
         metaStack.delegate = self
         stackView.addArrangedSubview(metaStack)
     }
 
-    private func setupDescription(with description: String) {
+    private func setupDescription() {
         let descriptionLabel = UILabel(
-            text: description,
+            text: viewModel.description ?? "",
             font: .helveticalRegular(withSize: 16),
             numberOfLines: 0
         )
@@ -282,7 +349,7 @@ final class RecipeWatchController: BaseController {
     
     private func setupRateButton() {
         let rateButton = UIButton(
-            title: viewModel.userRating != nil ? "Изменить оценку" : "Оценить рецепт",
+            title: viewModel.rateButtonTitle,
             backgroundColor: AppColors.primaryOrange,
             titleColor: .white,
             cornerRadius: Constants.cornerRadiusSmall,
@@ -293,16 +360,75 @@ final class RecipeWatchController: BaseController {
         stackView.addArrangedSubview(rateButton)
     }
     
+    // MARK: - Actions
+    internal override func navBarRightButtonHandler() {
+        guard case .online = recipeSource,
+              let recipeDetails = viewModel.recipeDetails,
+              let imageData = viewModel.imageData else { return }
+        
+        let savingIndicator = UIActivityIndicatorView.createIndicator(
+            style: .medium,
+            centerIn: view
+        )
+        savingIndicator.startAnimating()
+        view.addSubview(savingIndicator)
+        
+        // Обновляем кнопку сразу
+        addNavBarButtons(at: .right, types: [.title(AppStrings.Buttons.delete)])
+        
+        Task {
+            await viewModel.loadInstructionImages()
+            
+            let success = storageManager.saveRecipe(
+                recipeDetails,
+                imageData: imageData,
+                instructionImages: viewModel.instructionImagesData
+            )
+            
+            await MainActor.run {
+                savingIndicator.stopAnimating()
+                savingIndicator.removeFromSuperview()
+                
+                if success {
+                    AlertManager.shared.show(
+                        on: self,
+                        title: AppStrings.Alerts.successTitle,
+                        message: "Рецепт сохранен"
+                    )
+                } else {
+                    AlertManager.shared.show(
+                        on: self,
+                        title: AppStrings.Alerts.errorTitle,
+                        message: "Не удалось сохранить рецепт"
+                    )
+                }
+            }
+        }
+    }
+    
     @objc private func rateButtonTapped() {
+        guard case .online(let recipeId) = recipeSource else { return }
         let rateVC = RecipeRatingController(recipeId: recipeId)
         navigationController?.pushViewController(rateVC, animated: true)
     }
+    
+    private func addIngredientToShoppingList(_ ingredient: Ingredient/*IngredientData*/) {
+        ShoppingListManager.shared.addIngredient(ingredient)
+        AlertManager.shared.show(
+            on: self,
+            title: "Добавлено",
+            message: "\(ingredient.name) добавлен в список покупок"
+        )
+    }
 }
 
+// MARK: - RecipeMetaStackViewDelegate
 extension RecipeWatchController: @preconcurrency RecipeMetaStackViewDelegate {
     func didTapRatingView(recipeId: UUID) {
+        guard viewModel.isOnline else { return }
         let reviewsVC = ReviewsViewController(recipeId: recipeId, averageRating: viewModel.averageRating)
         navigationController?.pushViewController(reviewsVC, animated: true)
     }
 }
+
 

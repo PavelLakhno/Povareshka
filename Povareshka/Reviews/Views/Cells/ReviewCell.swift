@@ -15,7 +15,7 @@ final class ReviewCell: UITableViewCell {
     
     // MARK: - UI Elements
     private let avatarImageView = UIImageView(image: AppImages.Icons.avatar,
-                                              size: Constants.iconCellSizeBig,
+                                              size: Constants.viewSize40,
                                               cornerRadius: Constants.cornerRadiusBig,
                                               contentMode: .scaleAspectFill)
     private let userNameLabel = UILabel(font: .helveticalBold(withSize: 16),

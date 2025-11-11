@@ -18,7 +18,6 @@ struct CollectionViewCellConfig {
     let identifier: String
 }
 
-
 @MainActor
 func createCollectionView(
     type: CollectionViewType,

@@ -10,13 +10,10 @@ import UIKit
 class FilterCategoryCell: UICollectionViewCell {
     static let id = "FilterCategoryCell"
     
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 14)
-        label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    private let titleLabel = UILabel(text: AppStrings.Buttons.add,
+                                     font: .helveticalRegular(withSize: 14),
+                                     textColor: .black,
+                                     textAlignment: .center)
     
     override init(frame: CGRect) {
         super.init(frame: frame)

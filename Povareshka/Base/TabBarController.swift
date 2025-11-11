@@ -9,7 +9,7 @@ import UIKit
 
 enum Tabs: Int, CaseIterable {
     case mainview
-    case favorite
+    case search
     case shop
     case profile
 }
@@ -47,7 +47,7 @@ class TabBarController: UITabBarController {
         favoriteNavigation.tabBarItem = UITabBarItem(
             title: AppStrings.TabBar.search,
             image: AppImages.TabBar.search,
-            tag: Tabs.favorite.rawValue
+            tag: Tabs.search.rawValue
         )
         
         shopNavigation.tabBarItem = UITabBarItem(

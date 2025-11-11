@@ -11,7 +11,7 @@ import Kingfisher
 final class InstructionImageCell: UITableViewCell {
     static let id = "InstructionImageCell"
 
-    private lazy var stepImageView = UIImageView(cornerRadius: Constants.cornerRadiusSmall)
+    lazy var stepImageView = UIImageView(cornerRadius: Constants.cornerRadiusSmall)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -74,3 +74,14 @@ final class InstructionImageCell: UITableViewCell {
         }
     }
 }
+
+//extension InstructionImageCell {
+//    func configure(with instruction: Instruction) {
+//       
+//        if let imageData = instruction.image, let image = UIImage(data: imageData) {
+//            stepImageView.image = image
+//        } else {
+//            stepImageView.image = AppImages.Icons.cameraMain
+//        }
+//    }
+//}

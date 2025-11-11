@@ -16,14 +16,14 @@ final class CategoryCell: UITableViewCell {
     )
     
     private let iconView = UIImageView(
-        size: Constants.iconCellSizeMedium,
+        size: Constants.viewSize30,
         contentMode: .scaleAspectFit,
         tintColor: AppColors.primaryOrange
     )
  
     private let checkmarkView = UIImageView(
         image: AppImages.Icons.okFill,
-        size: Constants.iconCellSizeMedium,
+        size: Constants.viewSize30,
         contentMode: .scaleAspectFit,
         tintColor: AppColors.primaryOrange
     )

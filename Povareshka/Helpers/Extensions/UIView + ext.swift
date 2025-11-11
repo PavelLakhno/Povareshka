@@ -226,10 +226,10 @@ extension UIButton {
         target: Any?,
         action: Selector
     ) {
-        self.init()
+        self.init(type: .system)
         self.layer.cornerRadius = cornerRadius
         self.backgroundColor = backgroundColor
-        self.tintColor = tintColor // Устанавливаем tintColor для кнопки
+        self.tintColor = tintColor 
 
         if let title = title {
             self.setTitle(title, for: .normal)

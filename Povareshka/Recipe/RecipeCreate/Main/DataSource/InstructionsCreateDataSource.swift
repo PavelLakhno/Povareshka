@@ -99,7 +99,7 @@ final class InstructionsCreateDataSource: NSObject, UITableViewDataSource, UITab
         let deleteButton = UIButton(
             image: AppImages.Icons.trash,
             tintColor: AppColors.primaryOrange,
-            size: Constants.iconCellSizeMedium,
+            size: Constants.viewSize30,
             target: self,
             action: #selector(deleteButtonTapped(_:))
         )

@@ -36,6 +36,7 @@ enum AppImages {
         static let cancel = UIImage(systemName: "multiply.circle.fill")
         static let deleteX = UIImage(systemName: "xmark")
         static let deleteFill = UIImage(systemName: "xmark.circle.fill")
+        static let slider = UIImage(systemName: "slider.horizontal.3")
 
         
         static let level = UIImage(systemName: "cellularbars")
@@ -51,6 +52,11 @@ enum AppImages {
         
         static let fork = UIImage(systemName: "fork.knife")
         static let heart = UIImage(systemName: "heart.fill")
+        
+        static let book = UIImage(systemName: "book.closed")
+        static let favorite = UIImage(systemName: "bookmark.fill")
+        static let wifi = UIImage(systemName: "wifi.slash")
+        
         
     }
 }

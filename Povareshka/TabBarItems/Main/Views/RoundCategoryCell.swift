@@ -1,15 +1,14 @@
 //
-//  CategoryGridCell.swift
+//  RoundCategoryCell.swift
 //  Povareshka
 //
-//  Created by user on 26.06.2025.
+//  Created by user on 24.10.2025.
 //
-
 
 import UIKit
 
-final class CategoryGridCell: UICollectionViewCell {
-    static let id = "CategoryGridCell"
+final class RoundCategoryCell: UICollectionViewCell {
+    static let id = "RoundCategoryCell"
     
     private let iconView = UIImageView(
         size: Constants.viewSize40,
@@ -41,6 +40,13 @@ final class CategoryGridCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        // Делаем ячейку круглой
+        layer.cornerRadius = frame.size.width / 2
+        layer.masksToBounds = true
+    }
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         iconView.image = nil
@@ -52,8 +58,7 @@ final class CategoryGridCell: UICollectionViewCell {
         stackView.addArrangedSubview(titleLabel)
         contentView.addSubview(stackView)
         
-        layer.cornerRadius = 12
-        layer.masksToBounds = true
+        backgroundColor = AppColors.gray100
     }
     
     private func setupConstraints() {
@@ -64,9 +69,9 @@ final class CategoryGridCell: UICollectionViewCell {
         ])
     }
     
-    func configure(with category: String, iconName: String, isSelected: Bool) {
-        titleLabel.text = category
-        iconView.image = UIImage(named: iconName)?.withRenderingMode(.alwaysTemplate)
+    func configure(with category: CategorySupabase, isSelected: Bool) {
+        titleLabel.text = category.title
+        iconView.image = UIImage(named: category.iconName)?.withRenderingMode(.alwaysTemplate)
         backgroundColor = isSelected ? AppColors.primaryOrange.withAlphaComponent(0.2) : AppColors.gray100
         layer.borderWidth = isSelected ? 1 : 0
         layer.borderColor = isSelected ? AppColors.primaryOrange.cgColor : UIColor.clear.cgColor

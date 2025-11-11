@@ -12,9 +12,12 @@ protocol RecipeMetaStackViewDelegate: AnyObject {
     func didTapRatingView(recipeId: UUID)
 }
 
-final class RecipeMetaStackView: UIStackView {
+// MARK: - Universal Meta Stack View
+final class UniversalRecipeMetaStackView: UIStackView {
+    
     // MARK: - Properties
     private var recipeId: UUID?
+    private var isOnline: Bool = true
     weak var delegate: RecipeMetaStackViewDelegate?
     
     // MARK: - Init
@@ -29,29 +32,28 @@ final class RecipeMetaStackView: UIStackView {
     }
     
     // MARK: - Public Methods
-    func configure(with recipe: RecipeSupabase, averageRating: Double, recipeId: UUID?) {
+    func configure(with metaData: RecipeMetaData, averageRating: Double, recipeId: UUID?, isOnline: Bool) {
         self.recipeId = recipeId
+        self.isOnline = isOnline
         arrangedSubviews.forEach { $0.removeFromSuperview() }
 
-        if let time = recipe.readyInMinutes {
+        if let time = metaData.readyInMinutes {
             addMetaItem(icon: AppImages.Icons.clockFill, text: "\(time) мин")
         }
 
-        if let servings = recipe.servings {
+        if let servings = metaData.servings {
             addMetaItem(icon: AppImages.Icons.fork, text: "\(servings) чел")
         }
 
-        if let difficulty = recipe.difficulty {
+        if let difficulty = metaData.difficulty {
             addMetaItem(icon: AppImages.Icons.level, text: "\(difficulty)")
         }
 
-        addRatingItem(rating: averageRating)
-    }
-    
-    func updateRating(_ averageRating: Double) {
-        arrangedSubviews
-            .compactMap { $0 as? RatingView }
-            .forEach { $0.configure(with: Int(round(averageRating))) }
+        if isOnline {
+            addRatingItem(rating: averageRating)
+        } else {
+            addOfflineItem()
+        }
     }
     
     // MARK: - Private Methods
@@ -81,17 +83,26 @@ final class RecipeMetaStackView: UIStackView {
         addArrangedSubview(stack)
     }
     
-    private func createIconLabelStack(icon: UIImage?,
-                                      text: String,
-                                      iconColor: UIColor = AppColors.primaryOrange) -> UIStackView {
+    private func addOfflineItem() {
+        let stack = createIconLabelStack(
+            icon: AppImages.Icons.wifi,
+            text: "OFF",
+            iconColor: .systemGray
+        )
+        addArrangedSubview(stack)
+    }
+    
+    private func createIconLabelStack(icon: UIImage?, text: String, iconColor: UIColor = AppColors.primaryOrange) -> UIStackView {
         let stack = UIStackView(axis: .horizontal, alignment: .center, spacing: Constants.spacingSmall)
-        let iconView = UIImageView(image: icon?.withTintColor(iconColor, renderingMode: .alwaysOriginal),
-                                   cornerRadius: 0,
-                                   contentMode: .scaleAspectFit)
-        
+        let iconView = UIImageView(
+            image: icon?.withTintColor(iconColor, renderingMode: .alwaysOriginal),
+            cornerRadius: 0,
+            contentMode: .scaleAspectFit
+        )
         
         let label = UILabel(
-            text: text, font: .helveticalLight(withSize: 14),
+            text: text,
+            font: .helveticalLight(withSize: 14),
             textColor: .black
         )
         
@@ -100,11 +111,9 @@ final class RecipeMetaStackView: UIStackView {
         
         return stack
     }
-}
-
-extension RecipeMetaStackView {
+    
     @objc private func handleRatingTap() {
-        guard let recipeId = recipeId else { return }
+        guard let recipeId = recipeId, isOnline else { return }
         delegate?.didTapRatingView(recipeId: recipeId)
     }
 }

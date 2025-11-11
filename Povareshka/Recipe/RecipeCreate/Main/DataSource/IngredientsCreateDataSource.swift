@@ -24,6 +24,13 @@ final class IngredientsCreateDataSource: NSObject, UITableViewDataSource, UITabl
         onIngredientsChanged?(ingredients)
     }
     
+    // Метод для подготовки к сохранению
+//    func prepareForSaving(recipeId: UUID) -> [IngredientSupabase] {
+//        return ingredients.enumerated().map { index, ingredient in
+//            ingredient.with(recipeId: recipeId, orderIndex: index)
+//        }
+//    }
+    
     // MARK: - UITableViewDataSource
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return ingredients.count

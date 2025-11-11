@@ -21,6 +21,7 @@ enum AppStrings {
         static let done = "Готово"
         static let save = "Сохранить"
         static let cancel = "Отменить"
+        static let apply = "Применить"
         static let back = "Назад"
         static let add = "Добавить"
         static let delete = "Удалить"
@@ -34,6 +35,7 @@ enum AppStrings {
         static let addCategory = "Добавить категории"
         static let passwordForget = "Забыли пароль?"
         static let passwordReset = "Сбросить пароль"
+        static let reset = "Сбросить"
         
         static let rate = "Оценить"
         static let update = "Изменить"
@@ -75,6 +77,7 @@ enum AppStrings {
         static let main = "Основное"
         static let popular = "Популярное"
         static let profile = "Профиль"
+        static let filter = "Фильтр"
 
         static let error = "Ошибка"
         static let success = "Успешно"
@@ -82,12 +85,13 @@ enum AppStrings {
         static let tags = "Тэги"
         static let newRecipe = "Новый рецепт"
         static let step = "Шаг"
+        static let recently = "Недавнее"
         
         static let addTags = "Добавить теги"
         static let selectCategories = "Категории"
         static let feedback = "Отзывы и оценки"
         
-        static let timeCooking = "Время \nприготовления:"
+        static let timeCooking = "Время готовки:"
         static let tableSetting = "Сервировка:"
         static let difficulty = "Сложность"
         
@@ -113,6 +117,9 @@ enum AppStrings {
         static let enterFields = "Заполните все поля"
         static let passwordMismatch = "Пароли не совпадают"
         static let passwordSixSigns = "Пароль должен содержать минимум 6 символов"
+        static let enterText = "Начните поиск рецептов"
+        static let notFoundRecipe = "Рецепты не найдены"
+        static let notCreateRecipe = "Рецептов пока нет"
     }
     
     enum Alerts {
