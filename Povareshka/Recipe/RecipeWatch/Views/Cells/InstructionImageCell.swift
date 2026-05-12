@@ -33,11 +33,14 @@ final class InstructionImageCell: UITableViewCell {
         stepImageView.contentMode = .scaleAspectFill
         stepImageView.clipsToBounds = true
         
+        let bottom = stepImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+        bottom.priority = .defaultHigh
+
         NSLayoutConstraint.activate([
             stepImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             stepImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.paddingSmall),
             stepImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.paddingSmall),
-            stepImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            bottom,
             stepImageView.heightAnchor.constraint(equalTo: stepImageView.widthAnchor, multiplier: 0.6)
         ])
     }
@@ -65,8 +68,6 @@ final class InstructionImageCell: UITableViewCell {
                 }
             } catch {
                 guard !Task.isCancelled else { return }
-                
-                print("❌ Ошибка получения URL: \(error)")
                 DispatchQueue.main.async  {
                     self?.stepImageView.image = AppImages.Icons.cameraMain
                 }
@@ -74,14 +75,3 @@ final class InstructionImageCell: UITableViewCell {
         }
     }
 }
-
-//extension InstructionImageCell {
-//    func configure(with instruction: Instruction) {
-//       
-//        if let imageData = instruction.image, let image = UIImage(data: imageData) {
-//            stepImageView.image = image
-//        } else {
-//            stepImageView.image = AppImages.Icons.cameraMain
-//        }
-//    }
-//}

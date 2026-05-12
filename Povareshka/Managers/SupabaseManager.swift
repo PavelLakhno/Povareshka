@@ -30,8 +30,6 @@ final class SupabaseManager: Sendable {
             supabaseURL: url,
             supabaseKey: Config.supabaseKey
         )
-        
-        print("✅ SupabaseManager initialized with URL: \(Config.supabaseUrl)")
     }
     
     func getCurrentUserId() async throws -> UUID? {

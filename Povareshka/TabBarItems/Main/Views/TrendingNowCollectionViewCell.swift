@@ -37,8 +37,8 @@ final class TrendingNowCollectionViewCell: UICollectionViewCell {
     )
     
     private var ratingImageView = UIImageView(
-        image: AppImages.Icons.starFilled?.withTintColor(.systemYellow,
-                                                         renderingMode: .alwaysOriginal)
+        image: AppImages.Icons.starFilled?.withTintColor(.systemYellow, renderingMode: .alwaysOriginal),
+        backgroundColor: .clear
     )
     
     private var ratingLabel = UILabel(
@@ -82,7 +82,6 @@ final class TrendingNowCollectionViewCell: UICollectionViewCell {
                 let averageRating = try await dataService.fetchAverageRating(recipeId: recipe.id)
                 ratingLabel.text = String(format: "%.1f", averageRating)
             } catch {
-                print("Ошибка загрузки рейтинга: \(error)")
                 ratingLabel.text = "0.0"
             }
         }
@@ -124,7 +123,6 @@ final class TrendingNowCollectionViewCell: UICollectionViewCell {
                 DispatchQueue.main.async {
                     self.mainImageActivityIndicator.stopAnimating()
                     self.photoDish.image = AppImages.Icons.cameraMain
-                    print("❌ Ошибка получения URL основного изображения: \(error)")
                 }
             }
         }
@@ -165,7 +163,6 @@ final class TrendingNowCollectionViewCell: UICollectionViewCell {
                 DispatchQueue.main.async {
                     self.avatarActivityIndicator.stopAnimating()
                     self.creatorImageView.image = AppImages.Icons.avatar
-                    print("❌ Ошибка получения URL аватара: \(error)")
                 }
             }
         }

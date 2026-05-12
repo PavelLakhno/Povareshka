@@ -70,7 +70,6 @@ final class ReviewPhotoCell: UICollectionViewCell {
             } catch {
                 guard !Task.isCancelled else { return }
                 guard self?.currentImagePath == imagePath else { return }
-                print("❌ Ошибка получения URL: \(error)")
                 DispatchQueue.main.async  {
                     self?.imageView.image = AppImages.Icons.cameraMain
                 }

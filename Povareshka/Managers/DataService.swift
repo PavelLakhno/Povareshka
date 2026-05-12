@@ -9,15 +9,39 @@ import UIKit
 import Storage
 import Kingfisher
 
-@MainActor 
+@MainActor
 final class DataService {
     static let shared = DataService()
     private let supabaseManager: SupabaseManager
-    
+
+    // Cached categories — initialised with hardcoded fallback, refreshed from server by loadCategories()
+    private(set) var categories: [CategorySupabase] = CategorySupabase.allCategories()
+    private var categoriesLoaded = false
+
     private init(supabaseManager: SupabaseManager = .shared) {
         self.supabaseManager = supabaseManager
     }
-    
+
+    // MARK: - Categories
+
+    func loadCategories() async {
+        guard !categoriesLoaded else { return }
+        do {
+            let fetched: [CategorySupabase] = try await supabaseManager.client
+                .from("categories")
+                .select()
+                .order("id")
+                .execute()
+                .value
+            if !fetched.isEmpty {
+                categories = fetched
+                categoriesLoaded = true
+            }
+        } catch {
+            // Keep hardcoded fallback on error
+        }
+    }
+
     // MARK: - Auth
     func getCurrentUserId() async throws -> UUID? {
         try await supabaseManager.getCurrentUserId()
@@ -477,8 +501,6 @@ final class DataService {
                 userRating: userRating
             )
         } catch {
-            // Можно добавить более детальную обработку ошибок
-            print("Error fetching recipe details: \(error)")
             throw error
         }
     }
@@ -502,7 +524,6 @@ extension DataService {
                     loadedImages.append(image)
                 }
             } catch {
-                print("❌ Ошибка загрузки изображения отзыва: \(error)")
                 continue
             }
         }
@@ -653,8 +674,6 @@ extension DataService {
                 }
             }
             
-            print("🔍 Поиск '\(query)': найдено \(allRecipes.count) рецептов (по названию: \(titleRecipes.count), по тегам: \(tagRecipes.count))")
-            
             return allRecipes
         }
         
@@ -702,25 +721,15 @@ extension DataService {
         maxCookingTime: Int? = nil
     ) async throws -> [RecipeShortInfo] {
         
-        print("🏷️ Начинаем поиск по тегам: '\(query)'")
-        
-        // Сначала находим теги, которые совпадают с запросом
         let matchingTags: [RecipeTagSupabase] = try await supabaseManager.client
             .from("recipe_tags")
-//            .select("recipe_id")
             .select()
             .ilike("tag", pattern: "%\(query)%")
             .execute()
             .value
-        
-        print("🏷️ Найдено совпадающих тегов: \(matchingTags.count)")
-        
+
         let recipeIds = matchingTags.map { $0.recipeId }
-        
-        guard !recipeIds.isEmpty else {
-            print("🏷️ Нет рецептов с подходящими тегами")
-            return []
-        }
+        guard !recipeIds.isEmpty else { return [] }
         
         // Затем получаем рецепты по найденным ID
         var request = supabaseManager.client
@@ -745,15 +754,10 @@ extension DataService {
             .execute()
             .value
         
-        print("🏷️ Найдено рецептов по тегам: \(recipes.count)")
-        
-        // Фильтрация по категориям
         if !categoryTitles.isEmpty {
-            let filteredRecipes = try await filterRecipesByCategories(recipes, categoryTitles: categoryTitles)
-            print("🏷️ После фильтрации по категориям: \(filteredRecipes.count) рецептов")
-            return filteredRecipes
+            return try await filterRecipesByCategories(recipes, categoryTitles: categoryTitles)
         }
-        
+
         return recipes
     }
         
@@ -793,27 +797,26 @@ extension DataService {
         }
     
     private func filterRecipesByCategories(_ recipes: [RecipeShortInfo], categoryTitles: [String]) async throws -> [RecipeShortInfo] {
-        var filteredRecipes: [RecipeShortInfo] = []
-        
-        print("🔍 Начинаем фильтрацию по категориям: \(categoryTitles)")
-        
-        for recipe in recipes {
-            let categories = try await fetchCategories(recipeId: recipe.id)
-            let recipeCategoryTitles = categories.map { $0.title }
-            
-            print("📋 Рецепт '\(recipe.title)' имеет категории: \(recipeCategoryTitles)")
-            
-            let hasAllCategories = categoryTitles.allSatisfy { categoryTitle in
-                recipeCategoryTitles.contains(categoryTitle)
-            }
-            
-            if hasAllCategories {
-                filteredRecipes.append(recipe)
-                print("✅ Рецепт '\(recipe.title)' подходит под фильтр")
-            }
+        guard !recipes.isEmpty else { return [] }
+
+        let recipeIds = recipes.map { $0.id }
+
+        let allLinks: [RecipeCategorySupabase] = try await supabaseManager.client
+            .from("recipe_categories")
+            .select()
+            .in("recipe_id", values: recipeIds)
+            .execute()
+            .value
+
+        let targetIds = Set(
+            categories.filter { categoryTitles.contains($0.title) }.map { $0.id }
+        )
+
+        let linksByRecipe = Dictionary(grouping: allLinks, by: { $0.recipeId })
+
+        return recipes.filter { recipe in
+            let recipeCategoryIds = Set((linksByRecipe[recipe.id] ?? []).map { $0.categoryId })
+            return targetIds.isSubset(of: recipeCategoryIds)
         }
-        
-        print("🔍 После фильтрации осталось \(filteredRecipes.count) рецептов")
-        return filteredRecipes
     }
 }

@@ -91,15 +91,9 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
         
         switch item.title {
         case "Язык":
-            print("Язык")
-//            let languageVC = LanguageViewController()
-//            navigationController?.pushViewController(languageVC, animated: true)
-//
+            break
         case "Политика конфиденциальности":
-            print("Политика конфиденциальности")
-//            let privacyVC = PrivacyPolicyViewController()
-//            navigationController?.pushViewController(privacyVC, animated: true)
-            
+            break
         case "Очистить кэш":
             showClearCacheAlert()
         default:
@@ -138,9 +132,7 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
                 
                 // Show success message
                 showSuccessAlert()
-            } catch {
-                print("Error clearing cache: \(error)")
-            }
+            } catch {}
         }
     }
     

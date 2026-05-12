@@ -136,7 +136,6 @@ final class RecipeSearchCell: UICollectionViewCell {
                 DispatchQueue.main.async {
                     self.mainImageActivityIndicator.stopAnimating()
                     self.recipeImageView.image = AppImages.Icons.cameraMain
-                    print("❌ Ошибка загрузки изображения рецепта: \(error)")
                 }
             }
         }
@@ -159,8 +158,6 @@ final class RecipeSearchCell: UICollectionViewCell {
                     }
                 }
             } catch {
-                print("❌ Ошибка загрузки количества избранного: \(error)")
-                // В случае ошибки скрываем контейнер
                 if !Task.isCancelled, self.currentRecipeId == recipeId {
                     await MainActor.run {
                         self.favoritesContainerView.isHidden = true

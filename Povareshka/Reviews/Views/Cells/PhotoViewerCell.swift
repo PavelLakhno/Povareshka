@@ -121,8 +121,6 @@ final class PhotoViewerCell: UICollectionViewCell  {
                 }
             } catch {
                 guard !Task.isCancelled else { return }
-                
-                print("❌ Ошибка получения URL: \(error)")
                 DispatchQueue.main.async  {
                     self?.imageView.image = AppImages.Icons.cameraMain
                     self?.activityIndicator.stopAnimating()

@@ -18,7 +18,6 @@ class StorageManager {
                 schemaVersion: 3,
                 migrationBlock: { migration, oldSchemaVersion in
                     if oldSchemaVersion < 3 {
-                        print("Миграция Realm с версии \(oldSchemaVersion) на версию 3")
                         
                         // Миграция для тегов
                         migration.enumerateObjects(ofType: RecipeModel.className()) { oldObject, newObject in
@@ -43,7 +42,6 @@ class StorageManager {
             
             do {
                 self.realm = try Realm(configuration: config)
-                print("Realm database location: \(realm.configuration.fileURL?.path ?? "Unknown")")
             } catch {
                 fatalError("Failed to initialize Realm: \(error)")
             }
@@ -66,7 +64,6 @@ class StorageManager {
             }
             return true
         } catch {
-            print("Error saving recipe to Realm: \(error)")
             return false
         }
     }
@@ -98,7 +95,6 @@ class StorageManager {
             }
             return true
         } catch {
-            print("Error deleting recipe from Realm: \(error)")
             return false
         }
     }
@@ -123,8 +119,6 @@ class StorageManager {
             try realm.write {
                 instruction.imageData = imageData
             }
-        } catch {
-            print("Error saving instruction image: \(error)")
-        }
+        } catch {}
     }
 }

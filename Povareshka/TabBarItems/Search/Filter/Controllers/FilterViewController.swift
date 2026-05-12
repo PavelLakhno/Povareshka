@@ -58,6 +58,7 @@ class FilterViewController: BaseController {
     var selectedCategories: Set<String> = []
     var selectedTime: Float = 30
     weak var delegate: FilterViewControllerDelegate?
+    private var allCategories: [CategorySupabase] = DataService.shared.categories
     
     private let customScrollView = UIScrollView(backgroundColor: AppColors.gray100)
     override var scrollView: UIScrollView { customScrollView }
@@ -66,7 +67,12 @@ class FilterViewController: BaseController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
-        categoriesCollectionView.dynamicHeightForCollectionView()
+        Task {
+            await DataService.shared.loadCategories()
+            allCategories = DataService.shared.categories
+            categoriesCollectionView.reloadData()
+            categoriesCollectionView.dynamicHeightForCollectionView()
+        }
     }
     
     // MARK: - Setup
@@ -167,27 +173,27 @@ class FilterViewController: BaseController {
 // MARK: - UICollectionView Delegate & DataSource
 extension FilterViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return CategorySupabase.allCategories().count
+        return allCategories.count
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FilterCategoryCell.id, for: indexPath) as? FilterCategoryCell else {
             return FilterCategoryCell()
         }
-        let category = CategorySupabase.allCategories()[indexPath.item]
+        let category = allCategories[indexPath.item]
         cell.configure(with: category.title, isSelected: selectedCategories.contains(category.title))
         return cell
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let category = CategorySupabase.allCategories()[indexPath.item]
+        let category = allCategories[indexPath.item]
         let textSize = category.title.size(withAttributes: [.font: UIFont.systemFont(ofSize: 14)])
         let width = min(textSize.width + 32, (collectionView.bounds.width - 16) / 2)
         return CGSize(width: width, height: 40)
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let category = CategorySupabase.allCategories()[indexPath.item]
+        let category = allCategories[indexPath.item]
         let categoryTitle = category.title
         if selectedCategories.contains(categoryTitle) {
             selectedCategories.remove(categoryTitle)

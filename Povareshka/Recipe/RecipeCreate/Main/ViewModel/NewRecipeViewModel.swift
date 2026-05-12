@@ -81,7 +81,6 @@ extension NewRecipeViewModel {
             tags: tagsManager.tags,
             categories: categoriesDataSource.selectedCategories
         )
-        print("saved")
     }
     
     // MARK: - Validation

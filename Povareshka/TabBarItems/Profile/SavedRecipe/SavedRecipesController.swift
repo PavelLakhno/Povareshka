@@ -97,8 +97,8 @@ class SavedRecipesController: BaseController {
                     self.tableView.reloadRows(at: modifications.map({ IndexPath(row: $0, section: 0) }), with: .automatic)
                 })
                 self.updateEmptyState()
-            case .error(let error):
-                print("Error observing saved recipes: \(error)")
+            case .error:
+                break
             }
         }
     }

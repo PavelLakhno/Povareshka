@@ -145,7 +145,6 @@ final class RecipeWatchViewModel: ObservableObject {
             let results = try await dataService.fetchRecipeDetails(recipeId: recipeId)
             self.onlineRecipeDetails = results
         } catch {
-            print("Ошибка загрузки онлайн рецепта: \(error)")
         }
     }
     
@@ -184,9 +183,7 @@ final class RecipeWatchViewModel: ObservableObject {
                            let imageData = image.jpegData(compressionQuality: 0.7) {
                             return (instruction.id, imageData)
                         }
-                    } catch {
-                        print("❌ Ошибка загрузки изображения инструкции: \(error)")
-                    }
+                    } catch {}
                     return (instruction.id, nil)
                 }
             }
@@ -209,7 +206,6 @@ final class RecipeWatchViewModel: ObservableObject {
             }
             return currentUserId == creatorId
         } catch {
-            print("Ошибка получения текущего пользователя: \(error)")
             return false
         }
     }
@@ -220,7 +216,6 @@ final class RecipeWatchViewModel: ObservableObject {
         do {
             return try await dataService.isRecipeFavorite(recipeId: recipeId)
         } catch {
-            print("Ошибка проверки избранного: \(error)")
             return false
         }
     }
@@ -235,7 +230,6 @@ final class RecipeWatchViewModel: ObservableObject {
             self.imageData = image?.jpegData(compressionQuality: 0.8)
             return image
         } catch {
-            print("Ошибка загрузки изображения: \(error)")
             return nil
         }
     }

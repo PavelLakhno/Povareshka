@@ -231,10 +231,7 @@ class EditProfileController: UIViewController, UITextFieldDelegate {
             try await SupabaseManager.shared.client.storage
                 .from("avatars")
                 .remove(paths: [path])
-        } catch {
-            print("Ошибка при удалении старого аватара: \(error)")
-            // Можно продолжить, так как это не критическая ошибка
-        }
+        } catch {}
     }
     
     private func uploadAvatar(data: Data, path: String) async throws {

@@ -195,7 +195,6 @@ final class MainViewController: BaseController {
             } catch {
                 DispatchQueue.main.async {
                     AlertManager.shared.showError(on: self, error: error)
-                    print("Ошибка загрузки рецептов: \(error)")
                     self.isLoading = false
                     self.activityIndicator.stopAnimating()
                 }
@@ -204,9 +203,11 @@ final class MainViewController: BaseController {
     }
     
     private func loadCategories() {
-        // Загружаем категории из локального списка
-        categories = CategorySupabase.allCategories()
-        categoriesCollectionView.reloadData()
+        Task {
+            await DataService.shared.loadCategories()
+            categories = DataService.shared.categories
+            categoriesCollectionView.reloadData()
+        }
     }
 }
 

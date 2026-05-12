@@ -154,7 +154,6 @@ class BaseAuthViewController: UIViewController {
     func handleAuthError(_ error: AppError) {
         DispatchQueue.main.async {
             AlertManager.shared.showError(on: self, error: error)
-            print("Auth error: \(error.userFriendlyMessage)")
         }
     }
 }

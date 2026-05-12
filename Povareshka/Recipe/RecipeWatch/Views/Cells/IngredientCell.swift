@@ -50,12 +50,13 @@ final class IngredientCell: UITableViewCell {
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            addButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Constants.paddingSmall),
+            addButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -Constants.paddingSmall),
+            addButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.paddingMedium),
+
+            titleLabel.centerYAnchor.constraint(equalTo: addButton.centerYAnchor),
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.paddingMedium),
             titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: addButton.leadingAnchor),
-            
-            addButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            addButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.paddingMedium),
         ])
     }
     

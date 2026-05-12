@@ -150,40 +150,28 @@ struct CategorySupabase: Codable, Identifiable, Hashable  {
     }
     
     static func allCategories() -> [CategorySupabase] {
-        return [
-            CategorySupabase(id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!,
-                             title: "Завтраки", iconName: "breakfast"),
-            CategorySupabase(id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!,
-                             title: "Основные блюда", iconName: "mainCourses"),
-            CategorySupabase(id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!,
-                             title: "Супы", iconName: "soups"),
-            CategorySupabase(id: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!,
-                             title: "Салаты", iconName: "salads"),
-            CategorySupabase(id: UUID(uuidString: "00000000-0000-0000-0000-000000000005")!,
-                             title: "Закуски", iconName: "appetizers"),
-            CategorySupabase(id: UUID(uuidString: "00000000-0000-0000-0000-000000000006")!,
-                             title: "Десерты", iconName: "desserts"),
-            CategorySupabase(id: UUID(uuidString: "00000000-0000-0000-0000-000000000007")!,
-                             title: "Выпечка", iconName: "pastries"),
-            CategorySupabase(id: UUID(uuidString: "00000000-0000-0000-0000-000000000008")!,
-                             title: "Напитки", iconName: "drinks"),
-            CategorySupabase(id: UUID(uuidString: "00000000-0000-0000-0000-000000000009")!,
-                             title: "Соусы и маринады", iconName: "saucesAndMarinades"),
-            CategorySupabase(id: UUID(uuidString: "00000000-0000-0000-0000-000000000010")!,
-                             title: "Паста и пицца", iconName: "pastaAndPizza"),
-            CategorySupabase(id: UUID(uuidString: "00000000-0000-0000-0000-000000000011")!,
-                             title: "Мясные блюда", iconName: "meatDishes"),
-            CategorySupabase(id: UUID(uuidString: "00000000-0000-0000-0000-000000000012")!,
-                             title: "Рыба и морепродукты", iconName: "fishAndSeafood"),
-            CategorySupabase(id: UUID(uuidString: "00000000-0000-0000-0000-000000000013")!,
-                             title: "Гарниры", iconName: "sideDishes"),
-            CategorySupabase(id: UUID(uuidString: "00000000-0000-0000-0000-000000000014")!,
-                             title: "Быстрые рецепты", iconName: "quickRecipes"),
-            CategorySupabase(id: UUID(uuidString: "00000000-0000-0000-0000-000000000015")!,
-                             title: "Детские блюда", iconName: "childrenDishes"),
-            CategorySupabase(id: UUID(uuidString: "00000000-0000-0000-0000-000000000016")!,
-                             title: "Праздничные блюда", iconName: "festiveDishes"),
+        let data: [(String, String, String)] = [
+            ("00000000-0000-0000-0000-000000000001", "Завтраки", "breakfast"),
+            ("00000000-0000-0000-0000-000000000002", "Основные блюда", "mainCourses"),
+            ("00000000-0000-0000-0000-000000000003", "Супы", "soups"),
+            ("00000000-0000-0000-0000-000000000004", "Салаты", "salads"),
+            ("00000000-0000-0000-0000-000000000005", "Закуски", "appetizers"),
+            ("00000000-0000-0000-0000-000000000006", "Десерты", "desserts"),
+            ("00000000-0000-0000-0000-000000000007", "Выпечка", "pastries"),
+            ("00000000-0000-0000-0000-000000000008", "Напитки", "drinks"),
+            ("00000000-0000-0000-0000-000000000009", "Соусы и маринады", "saucesAndMarinades"),
+            ("00000000-0000-0000-0000-000000000010", "Паста и пицца", "pastaAndPizza"),
+            ("00000000-0000-0000-0000-000000000011", "Мясные блюда", "meatDishes"),
+            ("00000000-0000-0000-0000-000000000012", "Рыба и морепродукты", "fishAndSeafood"),
+            ("00000000-0000-0000-0000-000000000013", "Гарниры", "sideDishes"),
+            ("00000000-0000-0000-0000-000000000014", "Быстрые рецепты", "quickRecipes"),
+            ("00000000-0000-0000-0000-000000000015", "Детские блюда", "childrenDishes"),
+            ("00000000-0000-0000-0000-000000000016", "Праздничные блюда", "festiveDishes"),
         ]
+        return data.compactMap { idString, title, icon in
+            guard let id = UUID(uuidString: idString) else { return nil }
+            return CategorySupabase(id: id, title: title, iconName: icon)
+        }
     }
 }
 

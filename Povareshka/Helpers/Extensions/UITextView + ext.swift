@@ -21,7 +21,7 @@ extension UITextView: @retroactive UITextViewDelegate {
         }
 
         set {
-            let placeHolderLabel = self.viewWithTag(100) as! UILabel?
+            let placeHolderLabel = self.viewWithTag(100) as? UILabel
             if placeHolderLabel == nil {
                 self.addPlaceholderLabel(placeholderText: newValue ?? "")
             }
@@ -45,7 +45,7 @@ extension UITextView: @retroactive UITextViewDelegate {
         }
 
         set {
-            let button = self.viewWithTag(200) as! UIButton?
+            let button = self.viewWithTag(200) as? UIButton
             if button == nil {
                 self.addClearButton(isHidden: newValue)
             } else {
@@ -95,13 +95,13 @@ extension UITextView: @retroactive UITextViewDelegate {
     }
     
     public func setConstraints() {
-        let placeholderLabel = self.viewWithTag(100) as! UILabel
-        let clearButton = self.viewWithTag(200) as! UIButton
-        
+        guard let placeholderLabel = self.viewWithTag(100) as? UILabel,
+              let clearButton = self.viewWithTag(200) as? UIButton else { return }
+
         NSLayoutConstraint.activate([
             placeholderLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
             placeholderLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15),
-            
+
             clearButton.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
             clearButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -30)
         ])

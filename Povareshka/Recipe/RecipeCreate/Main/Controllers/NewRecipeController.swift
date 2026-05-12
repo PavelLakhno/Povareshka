@@ -388,18 +388,20 @@ extension NewRecipeController {
     }
     
     @objc func addCategoriesTapped() {
-        let allCategories = CategorySupabase.allCategories()
-        let vc = CategoriesSelectionController(
-            allCategories: allCategories,
-            selectedCategories: viewModel.categoriesDataSource.selectedCategories
-        )
-        vc.completion = { [weak self] categories in
-            self?.viewModel.categoriesDataSource.selectedCategories = categories
-            self?.viewModel.categoriesDataSource.updateSelectedCategories(categories)
-            self?.categoriesCollectionView.reloadData()
-            self?.categoriesCollectionView.dynamicHeightForCollectionView()
+        Task {
+            await DataService.shared.loadCategories()
+            let vc = CategoriesSelectionController(
+                allCategories: DataService.shared.categories,
+                selectedCategories: viewModel.categoriesDataSource.selectedCategories
+            )
+            vc.completion = { [weak self] categories in
+                self?.viewModel.categoriesDataSource.selectedCategories = categories
+                self?.viewModel.categoriesDataSource.updateSelectedCategories(categories)
+                self?.categoriesCollectionView.reloadData()
+                self?.categoriesCollectionView.dynamicHeightForCollectionView()
+            }
+            navigationController?.pushViewController(vc, animated: true)
         }
-        navigationController?.pushViewController(vc, animated: true)
     }
 }
 

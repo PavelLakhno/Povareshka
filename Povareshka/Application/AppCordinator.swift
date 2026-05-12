@@ -24,44 +24,29 @@ final class AppCoordinator {
     
     // Обработка URL (Deep Links)
     func handleIncomingURL(_ url: URL) {
-        print("🔗 Handling URL:", url.absoluteString)
-
         Task {
             do {
-                // Сначала пробуем стандартную обработку Supabase
                 try await SupabaseManager.shared.client.auth.session(from: url)
-                // Определяем тип операции
                 if isPasswordResetURL(url) {
-                    await MainActor.run {
-                        print("Password reset link processed")
-                        showResetPasswordScreen()
-                    }
+                    await MainActor.run { showResetPasswordScreen() }
                 } else {
-                    await MainActor.run {
-                        print("Auth link processed")
-                        showMainApp()
-                    }
+                    await MainActor.run { showMainApp() }
                 }
             } catch {
+#if DEBUG
                 print("❌ Error Deep Link:", error)
+#endif
             }
         }
     }
-    
-    
+
     private func checkAuthState() {
         Task {
             do {
-                let session = try await SupabaseManager.shared.client.auth.session
-                await MainActor.run {
-                    print("✅ Authorized user:", session.user.email ?? "No email")
-                    showMainApp()
-                }
+                _ = try await SupabaseManager.shared.client.auth.session
+                await MainActor.run { showMainApp() }
             } catch {
-                await MainActor.run {
-                    print("❌ User is not authorized:", error.localizedDescription)
-                    showAuthScreen()
-                }
+                await MainActor.run { showAuthScreen() }
             }
         }
     }
@@ -71,7 +56,6 @@ final class AppCoordinator {
     }
     
     deinit {
-        print("✅ \(Self.self) деинициализирован")
         NotificationCenter.default.removeObserver(self)
     }
 }

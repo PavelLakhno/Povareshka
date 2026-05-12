@@ -329,7 +329,9 @@ extension UIViewController {
     }
     
     func trackAllocation() {
+#if DEBUG
         let className = String(describing: type(of: self))
         print("🔵 ALLOCATED: \(className) - Total: \(Self.deinitCounter)")
+#endif
     }
 }

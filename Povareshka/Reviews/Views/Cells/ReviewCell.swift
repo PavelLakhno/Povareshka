@@ -134,8 +134,6 @@ final class ReviewCell: UITableViewCell {
                 }
             } catch {
                 guard !Task.isCancelled else { return }
-                
-                print("❌ Ошибка получения URL: \(error)")
                 DispatchQueue.main.async  {
                     self?.avatarImageView.image = AppImages.Icons.avatar
                 }

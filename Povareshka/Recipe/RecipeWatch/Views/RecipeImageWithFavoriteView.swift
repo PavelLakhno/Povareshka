@@ -102,7 +102,6 @@ final class RecipeImageWithFavoriteView: UIView {
             } catch {
                 DispatchQueue.main.async {
                     AlertManager.shared.showError(on: parentVC, error: error)
-                    print("Ошибка изменения статуса избранного: \(error.localizedDescription)")
                 }
             }
         }

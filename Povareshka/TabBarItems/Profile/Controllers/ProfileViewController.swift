@@ -149,9 +149,7 @@ class ProfileViewController: BaseController {
                 DispatchQueue.main.async {
                     self.updateUI(with: session.user.email ?? "Email", profile: profile)
                 }
-            } catch {
-                print("❌ Error loading profile:", error)
-            }
+            } catch {}
         }
     }
     
@@ -223,44 +221,26 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         
         switch menuItem.title {
         case "Мои рецепты":
-            print("Мои рецепты")
-            //            let myRecipesVC = RecipesViewController()
-            //            myRecipesVC.mode = .myRecipes
-            //            navigationController?.pushViewController(myRecipesVC, animated: true)
-            
+            break
         case "Избранное":
-            print("Избранное")
-            //            let favoritesVC = FavoritesViewController()
-            //            navigationController?.pushViewController(favoritesVC, animated: true)
+            break
         case "Сохраненное":
-            print("Сохраненное")
             let savedRecipesVC = SavedRecipesController()
             navigationController?.pushViewController(savedRecipesVC, animated: true)
-            
         case "Список покупок":
             let shoppingListVC = ShoppingListViewController()
             present(shoppingListVC, animated: true)
-            //            navigationController?.pushViewController(shoppingListVC, animated: true)
-            
         case "Настройки":
             let settingsVC = SettingsViewController()
             present(settingsVC, animated: true)
-//            navigationController?.pushViewController(settingsVC, animated: true)
-            
         case "Помощь":
-            print("Помощь")
-//            let helpVC = HelpViewController()
-//            navigationController?.pushViewController(helpVC, animated: true)
-            
+            break
         case "О приложении":
-            print("О приложении")
-//            let aboutVC = AboutViewController()
-//            navigationController?.pushViewController(aboutVC, animated: true)
-            
+            break
         case "Выйти":
             showLogoutAlert()
         default:
-            print("default")
+            break
         }
     }
     
@@ -286,9 +266,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
                 try await SupabaseManager.shared.client.auth.signOut()
                 // Уведомляем координатор о необходимости переключиться на Auth Flow
                 NotificationCenter.default.post(name: .userDidLogout, object: nil)
-            } catch {
-                print("❌ Logout failed:", error)
-            }
+            } catch {}
         }
     }
     

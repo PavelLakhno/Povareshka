@@ -153,13 +153,9 @@ extension BaseController {
         }
     }
     
-    @objc func navBarLeftButtonHandler() {
-        print("NavBar left button tapped")
-    }
-    
-    @objc func navBarRightButtonHandler() {
-        print("NavBar right button tapped")
-    }
+    @objc func navBarLeftButtonHandler() {}
+
+    @objc func navBarRightButtonHandler() {}
 }
 
 // MARK: - Utility Methods

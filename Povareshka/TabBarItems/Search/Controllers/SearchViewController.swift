@@ -83,9 +83,7 @@ final class SearchViewController: BaseController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        // Если есть активные фильтры, но поиск еще не выполнялся - выполняем
         if let filters = currentFilters, (!filters.categories.isEmpty || filters.maxCookingTime > 0), filteredRecipes.isEmpty {
-            print("🔄 Автоматический поиск при появлении view")
             performSearch(query: searchBar.text ?? "", filters: filters)
         }
     }
@@ -148,7 +146,6 @@ final class SearchViewController: BaseController {
                     self.updateEmptyState()
 
                     if let filters = self.currentFilters, (!filters.categories.isEmpty || filters.maxCookingTime > 0) {
-                        print("🔄 Применяем фильтры после загрузки всех рецептов")
                         self.performSearch(query: self.searchBar.text ?? "", filters: filters)
                     }
                 }
@@ -171,8 +168,6 @@ final class SearchViewController: BaseController {
         
         isSearching = !query.isEmpty || (filters != nil && (!filters!.categories.isEmpty || filters!.maxCookingTime > 0))
         
-        print("🔍 Начинаем поиск после задержки: '\(query)'")
-        
         currentSearchTask = Task {
             // Добавляем небольшую проверку на случай быстрой отмены
             try? await Task.sleep(nanoseconds: 50_000_000) // 0.05 секунды
@@ -194,13 +189,11 @@ final class SearchViewController: BaseController {
                         self.collectionView.reloadData()
                         self.hideLoading()
                         self.updateEmptyState()
-                        print("✅ Поиск завершен: \(recipes.count) рецептов для запроса '\(query)'")
                     }
                 }
             } catch {
                 if !Task.isCancelled {
                     DispatchQueue.main.async {
-                        print("❌ Ошибка поиска: \(error)")
                         self.filteredRecipes = []
                         self.collectionView.reloadData()
                         self.hideLoading()
@@ -278,26 +271,20 @@ extension SearchViewController: UISearchBarDelegate {
             currentSearchTask?.cancel()
             updateEmptyState()
             collectionView.reloadData()
-            print("🔄 Поиск очищен")
         } else {
-            // Запускаем новый таймер с задержкой
             searchTimer = Timer.scheduledTimer(withTimeInterval: searchDelay, repeats: false) { [weak self] _ in
                 Task { @MainActor in
                     guard let self = self else { return }
-                    print("🔍 Выполняем поиск после задержки: '\(searchText)'")
                     self.performSearch(query: searchText, filters: self.currentFilters)
                 }
             }
         }
     }
-    
+
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        // При нажатии кнопки поиска - выполняем сразу
         searchBar.resignFirstResponder()
-        searchTimer?.invalidate() // Отменяем таймер если он активен
-        
+        searchTimer?.invalidate()
         if let searchText = searchBar.text, !searchText.isEmpty {
-            print("🔍 Выполняем поиск по кнопке: '\(searchText)'")
             performSearch(query: searchText, filters: currentFilters)
         }
     }
@@ -319,16 +306,8 @@ extension SearchViewController: UISearchBarDelegate {
 extension SearchViewController: @preconcurrency FilterViewControllerDelegate {
     func filterViewController(_ viewController: FilterViewController, didApplyFilters filters: RecipeFilters) {
         currentFilters = filters
-        
-        print("🎛️ Применены фильтры: \(filters.categories), макс. время: \(filters.maxCookingTime)")
-        
-        // Если есть активный поиск - обновляем результаты
-        if let searchText = searchBar.text, !searchText.isEmpty {
-            performSearch(query: searchText, filters: filters)
-        } else {
-            // Если поиска нет, но есть фильтры - показываем все отфильтрованные рецепты
-            performSearch(query: "", filters: filters)
-        }
+        let query = searchBar.text ?? ""
+        performSearch(query: query, filters: filters)
     }
 }
 
@@ -349,88 +328,3 @@ extension SearchViewController {
         updateEmptyState()
     }
 }
-
-
-
-
-
-
-//    private func loadAllRecipes() {
-//        showLoading()
-//        Task {
-//            do {
-//                let recipes = try await DataService.shared.fetchRecipesShortInfo()
-//
-//                DispatchQueue.main.async {
-//                    self.allRecipes = recipes
-//                    self.hideLoading()
-//                    self.collectionView.reloadData()
-//                }
-//            } catch {
-//                DispatchQueue.main.async {
-//                    self.hideLoading()
-//                    AlertManager.shared.show(on: self,
-//                                             title: AppStrings.Alerts.errorTitle,
-//                                             message: "Ошибка загрузки рецептов")
-//                }
-//            }
-//        }
-//    }
-    
-//    func performSearch(query: String, filters: RecipeFilters? = nil) {
-//        showLoading()
-//
-//        // Отменяем предыдущий поиск
-//        currentSearchTask?.cancel()
-//
-//        isSearching = !query.isEmpty || (filters != nil && (!filters!.categories.isEmpty || filters!.maxCookingTime > 0))
-//
-//        print("🔍 Начинаем поиск после задержки: '\(query)'")
-//
-//        currentSearchTask = Task {
-//            // Добавляем небольшую проверку на случай быстрой отмены
-//            try? await Task.sleep(nanoseconds: 50_000_000) // 0.05 секунды
-//            guard !Task.isCancelled else { return }
-//
-//            do {
-//                let recipes: [RecipeShortInfo]
-//
-//                // ЕСЛИ У НАС ЕСТЬ ЛОКАЛЬНЫЕ ДАННЫЕ И МЫ ИЩЕМ БЕЗ ТЕКСТОВОГО ЗАПРОСА - используем локальный поиск
-//                if query.isEmpty && !allRecipes.isEmpty {
-//                    recipes = filterRecipesLocally(filters: filters)
-//                    await MainActor.run {
-//                        self.isSearching = !recipes.isEmpty
-//                    }
-//                } else {
-//                    // Иначе - серверный поиск
-//                    recipes = try await DataService.shared.searchRecipes(
-//                        query: query.isEmpty ? nil : query,
-//                        categoryTitles: filters?.categories ?? [],
-//                        maxCookingTime: filters?.maxCookingTime
-//                    )
-//
-//                    await MainActor.run {
-//                        self.isSearching = true
-//                    }
-//                }
-//
-//                if !Task.isCancelled {
-//                    DispatchQueue.main.async {
-//                        self.filteredRecipes = recipes
-//                        self.collectionView.reloadData()
-//                        self.hideLoading()
-//                        print("✅ Поиск завершен: \(recipes.count) рецептов для запроса '\(query)'")
-//                    }
-//                }
-//            } catch {
-//                if !Task.isCancelled {
-//                    DispatchQueue.main.async {
-//                        print("❌ Ошибка поиска: \(error)")
-//                        self.filteredRecipes = []
-//                        self.collectionView.reloadData()
-//                        self.hideLoading()
-//                    }
-//                }
-//            }
-//        }
-//    }

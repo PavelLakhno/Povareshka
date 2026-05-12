@@ -169,13 +169,11 @@ final class NewPasswordController: UIViewController {
         case is PasswordResetError:
             errorMessage = "Сессия восстановления недействительна. Запросите ссылку снова"
             
-        case let urlError as URLError:
+        case is URLError:
             errorMessage = "Ошибка сети. Проверьте подключение"
-            print("Network error:", urlError)
-            
+
         default:
             errorMessage = "Ошибка при обновлении пароля: \(error.localizedDescription)"
-            print("Unknown error:", error)
         }
         
         await MainActor.run {
