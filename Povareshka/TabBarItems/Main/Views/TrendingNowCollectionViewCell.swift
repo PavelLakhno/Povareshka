@@ -37,7 +37,8 @@ final class TrendingNowCollectionViewCell: UICollectionViewCell {
     )
     
     private var ratingImageView = UIImageView(
-        image: AppImages.Icons.starFilled?.withTintColor(.systemYellow, renderingMode: .alwaysOriginal),
+        image: AppImages.Icons.starFilled?.withTintColor(.systemYellow,
+                                                         renderingMode: .alwaysOriginal),
         backgroundColor: .clear
     )
     
@@ -209,7 +210,8 @@ final class TrendingNowCollectionViewCell: UICollectionViewCell {
             ratingContainerView.leadingAnchor.constraint(equalTo: photoDish.leadingAnchor, constant: Constants.paddingSmall),
             
             ratingImageView.leadingAnchor.constraint(equalTo: ratingContainerView.leadingAnchor, constant: Constants.paddingSmall),
-            ratingImageView.centerYAnchor.constraint(equalTo: ratingContainerView.centerYAnchor),
+            ratingImageView.topAnchor.constraint(equalTo: ratingContainerView.topAnchor, constant: Constants.paddingSmall),
+            ratingImageView.bottomAnchor.constraint(equalTo: ratingContainerView.bottomAnchor, constant: -Constants.paddingSmall),
 
             ratingLabel.leadingAnchor.constraint(equalTo: ratingImageView.trailingAnchor, constant: Constants.paddingSmall),
             ratingLabel.centerYAnchor.constraint(equalTo: ratingImageView.centerYAnchor),
