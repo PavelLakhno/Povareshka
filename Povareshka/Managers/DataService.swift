@@ -820,3 +820,57 @@ extension DataService {
         }
     }
 }
+
+// MARK: - Profile Recipes
+extension DataService {
+    func fetchMyRecipes() async throws -> [RecipeShortInfo] {
+        guard let userId = try await getCurrentUserId() else {
+            throw AuthError.notAuthenticated
+        }
+        return try await supabaseManager.client
+            .from("recipes")
+            .select("""
+                id,
+                title,
+                image_path,
+                user_id,
+                ready_in_minutes,
+                profiles!recipes_user_id_fkey(username, avatar_url)
+            """)
+            .eq("user_id", value: userId)
+            .order("created_at", ascending: false)
+            .execute()
+            .value
+    }
+
+    func fetchFavoriteRecipes() async throws -> [RecipeShortInfo] {
+        guard let userId = try await getCurrentUserId() else {
+            throw AuthError.notAuthenticated
+        }
+
+        let favorites: [FavoriteRecipe] = try await supabaseManager.client
+            .from("recipe_favorite")
+            .select()
+            .eq("user_id", value: userId)
+            .order("created_at", ascending: false)
+            .execute()
+            .value
+
+        let recipeIds = favorites.map { $0.recipeId }
+        guard !recipeIds.isEmpty else { return [] }
+
+        return try await supabaseManager.client
+            .from("recipes")
+            .select("""
+                id,
+                title,
+                image_path,
+                user_id,
+                ready_in_minutes,
+                profiles!recipes_user_id_fkey(username, avatar_url)
+            """)
+            .in("id", values: recipeIds)
+            .execute()
+            .value
+    }
+}

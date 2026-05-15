@@ -221,9 +221,9 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         
         switch menuItem.title {
         case "Мои рецепты":
-            break
+            navigationController?.pushViewController(RecipeListController(source: .myRecipes), animated: true)
         case "Избранное":
-            break
+            navigationController?.pushViewController(RecipeListController(source: .favorites), animated: true)
         case "Сохраненное":
             let savedRecipesVC = SavedRecipesController()
             navigationController?.pushViewController(savedRecipesVC, animated: true)

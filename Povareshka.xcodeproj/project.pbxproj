@@ -118,6 +118,7 @@
 		CEF2183E2E3769EF000F4D6D /* AlertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF2183D2E3769EF000F4D6D /* AlertManager.swift */; };
 		CEFAB3CE2E3B59E600769766 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFAB3CD2E3B59E600769766 /* PhotoCell.swift */; };
 		CEFAB3D42E3B893900769766 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFAB3D32E3B893900769766 /* DataService.swift */; };
+		F16E45E7BC8F4F1C9096AF23 /* FavoritesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473961DE77CB41F9B188122F /* FavoritesController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -133,6 +134,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		473961DE77CB41F9B188122F /* FavoritesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesController.swift; sourceTree = "<group>"; };
 		CE04BFBB2E2501F20009A94A /* AddCategoryGridCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCategoryGridCell.swift; sourceTree = "<group>"; };
 		CE04BFBC2E2501F20009A94A /* CategoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCell.swift; sourceTree = "<group>"; };
 		CE04BFBD2E2501F20009A94A /* CategoryGridCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryGridCell.swift; sourceTree = "<group>"; };
@@ -564,6 +566,7 @@
 			isa = PBXGroup;
 			children = (
 				CEE4D6D72EB3B0FF008512F3 /* SavedRecipe */,
+				D0ED7646D4D2423BA347EF7F /* Favorites */,
 				CEA2901C2D81D6770017D499 /* Settings */,
 				CEA2900F2D81D43E0017D499 /* ShoppingList */,
 				CEA290052D81D2850017D499 /* Controllers */,
@@ -942,6 +945,14 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
+		D0ED7646D4D2423BA347EF7F /* Favorites */ = {
+			isa = PBXGroup;
+			children = (
+				473961DE77CB41F9B188122F /* FavoritesController.swift */,
+			);
+			path = Favorites;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1123,6 +1134,7 @@
 				CEE246212E0996DC00DBA388 /* RecipeRatingController.swift in Sources */,
 				CEE2461F2E094F7E00DBA388 /* RecipeImageWithFavoriteView.swift in Sources */,
 				CE2164F92DD764FC003479E5 /* NewPasswordController.swift in Sources */,
+				F16E45E7BC8F4F1C9096AF23 /* FavoritesController.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */

@@ -12,13 +12,14 @@ class SavedRecipesController: BaseController {
     
     // MARK: - UI Components
     private lazy var tableView: UITableView = {
-        let tableView = UITableView()
-        tableView.register(SavedRecipeCell.self, forCellReuseIdentifier: SavedRecipeCell.id)
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.separatorStyle = .singleLine
-        tableView.backgroundColor = .clear
-        tableView.translatesAutoresizingMaskIntoConstraints = false
+        let tableView = createTableView(
+            cellConfigs: [
+                TableViewCellConfig(cellClass: RecipeListCell.self, identifier: RecipeListCell.id)
+            ],
+            delegate: self,
+            dataSource: self,
+            separatorStyle: .singleLine
+        )
         return tableView
     }()
     
@@ -117,7 +118,7 @@ extension SavedRecipesController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: SavedRecipeCell.id, for: indexPath) as? SavedRecipeCell,
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: RecipeListCell.id, for: indexPath) as? RecipeListCell,
               let recipe = savedRecipes?[indexPath.row] else {
             return UITableViewCell()
         }
