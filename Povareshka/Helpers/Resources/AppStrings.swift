@@ -8,6 +8,11 @@
 import Foundation
 
 enum AppStrings {
+    
+    enum Email {
+        static let supportEmail = "lmr161990@gmail.com"
+    }
+    
     enum TabBar {
         static let mainview = "Главная"
         static let favorite = "Избранное"

@@ -59,7 +59,6 @@ class ProfileViewController: BaseController {
             MenuItem(title: "Мои рецепты", icon: "book"),
             MenuItem(title: "Избранное", icon: "heart"),
             MenuItem(title: "Сохраненное", icon: "arrow.down.to.line.circle"),
-            MenuItem(title: "Список покупок", icon: "cart")
         ],
         [
             MenuItem(title: "Настройки", icon: "gearshape"),
@@ -227,16 +226,13 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         case "Сохраненное":
             let savedRecipesVC = SavedRecipesController()
             navigationController?.pushViewController(savedRecipesVC, animated: true)
-        case "Список покупок":
-            let shoppingListVC = ShoppingListViewController()
-            present(shoppingListVC, animated: true)
         case "Настройки":
             let settingsVC = SettingsViewController()
-            present(settingsVC, animated: true)
+            navigationController?.pushViewController(settingsVC, animated: true)
         case "Помощь":
-            break
+            navigationController?.pushViewController(HelpViewController(), animated: true)
         case "О приложении":
-            break
+            navigationController?.pushViewController(AboutViewController(), animated: true)
         case "Выйти":
             showLogoutAlert()
         default:

@@ -7,8 +7,8 @@
 
 import UIKit
 
-class SettingsViewController: UIViewController {
-    
+class SettingsViewController: BaseController {
+
     // MARK: - UI Components
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .grouped)
@@ -16,7 +16,7 @@ class SettingsViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
     }()
-    
+
     // MARK: - Properties
     private let sections: [SettingsSection] = [
         SettingsSection(title: "Общие", items: [
@@ -30,33 +30,24 @@ class SettingsViewController: UIViewController {
             SettingsItem(title: "Политика конфиденциальности", icon: "lock", type: .navigation(nil))
         ])
     ]
-    
-    // MARK: - Lifecycle
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupUI()
-        setupTableView()
-    }
-    
+
     // MARK: - Setup
-    private func setupUI() {
-        view.backgroundColor = AppColors.gray100
-//        title = "НАСТРОЙКИ"
-        
+    override func setupViews() {
+        super.setupViews()
+        navigationItem.title = "Настройки"
         view.addSubview(tableView)
-        
+        tableView.register(SettingsCell.self, forCellReuseIdentifier: SettingsCell.id)
+        tableView.delegate = self
+        tableView.dataSource = self
+    }
+
+    override func setupConstraints() {
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
-    }
-    
-    private func setupTableView() {
-        tableView.register(SettingsCell.self, forCellReuseIdentifier: SettingsCell.id)
-        tableView.delegate = self
-        tableView.dataSource = self
     }
 }
 

@@ -89,6 +89,8 @@
 		CEA9CD7C2D81D8D4002C11E7 /* AuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA9CD7B2D81D8D4002C11E7 /* AuthViewController.swift */; };
 		CEAC9E892CE64C0500221CCF /* RecipeSupabaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEAC9E882CE64C0500221CCF /* RecipeSupabaseModel.swift */; };
 		CEACB9D52C80700F00FC1C63 /* UIFont + ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEACB9D42C80700F00FC1C63 /* UIFont + ext.swift */; };
+		CEAD597A2FB712E400A5375E /* HelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEAD59782FB712E400A5375E /* HelpViewController.swift */; };
+		CEAD597B2FB712E400A5375E /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEAD59762FB712E400A5375E /* AboutViewController.swift */; };
 		CEAEC8E92EAB9BC2009D96A8 /* RoundCategoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEAEC8E82EAB9BC2009D96A8 /* RoundCategoryCell.swift */; };
 		CEAF6C3B2DAD096D00781FB8 /* PasswordResetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEAF6C3A2DAD096D00781FB8 /* PasswordResetController.swift */; };
 		CEB2AF472E94FB7500863361 /* NewRecipeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB2AF462E94FB7500863361 /* NewRecipeViewModel.swift */; };
@@ -211,6 +213,8 @@
 		CEA9CD7B2D81D8D4002C11E7 /* AuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
 		CEAC9E882CE64C0500221CCF /* RecipeSupabaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeSupabaseModel.swift; sourceTree = "<group>"; };
 		CEACB9D42C80700F00FC1C63 /* UIFont + ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont + ext.swift"; sourceTree = "<group>"; };
+		CEAD59762FB712E400A5375E /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
+		CEAD59782FB712E400A5375E /* HelpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpViewController.swift; sourceTree = "<group>"; };
 		CEAEC8E82EAB9BC2009D96A8 /* RoundCategoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundCategoryCell.swift; sourceTree = "<group>"; };
 		CEAF6C3A2DAD096D00781FB8 /* PasswordResetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordResetController.swift; sourceTree = "<group>"; };
 		CEB2AF462E94FB7500863361 /* NewRecipeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewRecipeViewModel.swift; sourceTree = "<group>"; };
@@ -565,6 +569,8 @@
 		CEA109F12C7E01330095E989 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				CEAD59772FB712E400A5375E /* About */,
+				CEAD59792FB712E400A5375E /* Help */,
 				CEE4D6D72EB3B0FF008512F3 /* SavedRecipe */,
 				D0ED7646D4D2423BA347EF7F /* Favorites */,
 				CEA2901C2D81D6770017D499 /* Settings */,
@@ -809,6 +815,22 @@
 				CEAEC8E82EAB9BC2009D96A8 /* RoundCategoryCell.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		CEAD59772FB712E400A5375E /* About */ = {
+			isa = PBXGroup;
+			children = (
+				CEAD59762FB712E400A5375E /* AboutViewController.swift */,
+			);
+			path = About;
+			sourceTree = "<group>";
+		};
+		CEAD59792FB712E400A5375E /* Help */ = {
+			isa = PBXGroup;
+			children = (
+				CEAD59782FB712E400A5375E /* HelpViewController.swift */,
+			);
+			path = Help;
 			sourceTree = "<group>";
 		};
 		CEB2AF422E94FAF200863361 /* Main */ = {
@@ -1129,6 +1151,8 @@
 				CE96A8042E844852007C6F40 /* SupabaseConfig.swift in Sources */,
 				CE9BBFBB2EB7D75D00375516 /* RecipeWatchController.swift in Sources */,
 				CE9BAB2C2C7C7EF000CD6C24 /* SceneDelegate.swift in Sources */,
+				CEAD597A2FB712E400A5375E /* HelpViewController.swift in Sources */,
+				CEAD597B2FB712E400A5375E /* AboutViewController.swift in Sources */,
 				CE93918F2D830CF2006E61A3 /* RecipeSearchCell.swift in Sources */,
 				CE9489F02E50A66B00CDB6F0 /* TableViewFactory.swift in Sources */,
 				CEE246212E0996DC00DBA388 /* RecipeRatingController.swift in Sources */,
