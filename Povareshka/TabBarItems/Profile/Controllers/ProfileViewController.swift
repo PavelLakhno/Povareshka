@@ -40,7 +40,7 @@ class ProfileViewController: BaseController {
         return label
     }()
     
-    private lazy var editProfileButton = UIButton(title: "Редактировать профиль",
+    private lazy var editProfileButton = UIButton(title: AppStrings.Profile.editProfile,
                                                   titleColor: AppColors.primaryOrange,
                                                   target: self,
                                                   action: #selector(editProfileTapped))
@@ -56,17 +56,17 @@ class ProfileViewController: BaseController {
     // MARK: - Properties
     private let menuItems: [[MenuItem]] = [
         [
-            MenuItem(title: "Мои рецепты", icon: "book"),
-            MenuItem(title: "Избранное", icon: "heart"),
-            MenuItem(title: "Сохраненное", icon: "arrow.down.to.line.circle"),
+            MenuItem(title: AppStrings.Profile.myRecipes, icon: AppImages.Icons.book),
+            MenuItem(title: AppStrings.Profile.favorites, icon: AppImages.Icons.heartOutline),
+            MenuItem(title: AppStrings.Profile.saved, icon: AppImages.Icons.saved)
         ],
         [
-            MenuItem(title: "Настройки", icon: "gearshape"),
-            MenuItem(title: "Помощь", icon: "questionmark.circle"),
-            MenuItem(title: "О приложении", icon: "info.circle")
+            MenuItem(title: AppStrings.Profile.settings, icon: AppImages.Icons.gear),
+            MenuItem(title: AppStrings.Profile.help, icon: AppImages.Icons.helpCircle),
+            MenuItem(title: AppStrings.Profile.about, icon: AppImages.Icons.info)
         ],
         [
-            MenuItem(title: "Выйти", icon: "rectangle.portrait.and.arrow.right", isDestructive: true)
+            MenuItem(title: AppStrings.Profile.logout, icon: AppImages.Icons.signOut, isDestructive: true)
         ]
     ]
     
@@ -155,7 +155,7 @@ class ProfileViewController: BaseController {
   
     private func updateUI(with email: String, profile: UserProfile) {
         emailLabel.text = email
-        nameLabel.text = profile.username ?? "Пользователь"
+        nameLabel.text = profile.username ?? AppStrings.Profile.user
         
         if let avatarURL = profile.avatarURL {
             Task {
@@ -171,13 +171,6 @@ class ProfileViewController: BaseController {
         }
     }
     
-    private func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-            completion?()
-        })
-        present(alert, animated: true)
-    }
 }
 
 // MARK: - UITableView Delegate & DataSource
@@ -219,40 +212,30 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         let menuItem = menuItems[indexPath.section][indexPath.row]
         
         switch menuItem.title {
-        case "Мои рецепты":
+        case AppStrings.Profile.myRecipes:
             navigationController?.pushViewController(RecipeListController(source: .myRecipes), animated: true)
-        case "Избранное":
+        case AppStrings.Profile.favorites:
             navigationController?.pushViewController(RecipeListController(source: .favorites), animated: true)
-        case "Сохраненное":
-            let savedRecipesVC = SavedRecipesController()
-            navigationController?.pushViewController(savedRecipesVC, animated: true)
-        case "Настройки":
-            let settingsVC = SettingsViewController()
-            navigationController?.pushViewController(settingsVC, animated: true)
-        case "Помощь":
+        case AppStrings.Profile.saved:
+            navigationController?.pushViewController(SavedRecipesController(), animated: true)
+        case AppStrings.Profile.settings:
+            navigationController?.pushViewController(SettingsViewController(), animated: true)
+        case AppStrings.Profile.help:
             navigationController?.pushViewController(HelpViewController(), animated: true)
-        case "О приложении":
+        case AppStrings.Profile.about:
             navigationController?.pushViewController(AboutViewController(), animated: true)
-        case "Выйти":
-            showLogoutAlert()
+        case AppStrings.Profile.logout:
+            AlertManager.shared.showConfirmation(
+                on: self,
+                title: AppStrings.Alerts.logoutTitle,
+                message: AppStrings.Alerts.logoutMessage,
+                confirmTitle: AppStrings.Buttons.logout,
+                confirmStyle: .destructive,
+                confirmHandler: { [weak self] in self?.logout() }
+            )
         default:
             break
         }
-    }
-    
-    private func showLogoutAlert() {
-        let alert = UIAlertController(
-            title: "Выйти",
-            message: "Вы уверены, что хотите выйти из аккаунта?",
-            preferredStyle: .alert
-        )
-        
-        alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Выйти", style: .destructive) { [weak self] _ in
-            self?.logout()
-        })
-        
-        present(alert, animated: true)
     }
     
     private func logout() {

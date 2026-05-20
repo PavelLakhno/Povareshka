@@ -82,7 +82,7 @@ class MenuItemCell: UITableViewCell {
     
     func configure(with menuItem: MenuItem) {
         titleLabel.text = menuItem.title
-        iconImageView.image = UIImage(systemName: menuItem.icon)
+        iconImageView.image = menuItem.icon
         
         if menuItem.isDestructive {
             titleLabel.textColor = .systemRed

@@ -161,29 +161,20 @@ final class NewPasswordController: UIViewController {
 
     private func handlePasswordUpdateError(_ error: Error) async {
         let errorMessage: String
-        
+
         switch error {
         case let authError as AuthError where authError.localizedDescription.contains("different from the old"):
-            errorMessage = "Новый пароль должен отличаться от старого"
-            
+            errorMessage = AppStrings.Messages.passwordChangedDifferent
         case is PasswordResetError:
-            errorMessage = "Сессия восстановления недействительна. Запросите ссылку снова"
-            
+            errorMessage = AppStrings.Messages.invalidRecoverySession
         case is URLError:
-            errorMessage = "Ошибка сети. Проверьте подключение"
-
+            errorMessage = AppStrings.Messages.networkError
         default:
-            errorMessage = "Ошибка при обновлении пароля: \(error.localizedDescription)"
+            errorMessage = "\(AppStrings.Messages.passwordUpdateError): \(error.localizedDescription)"
         }
-        
+
         await MainActor.run {
-            let alert = UIAlertController(
-                title: "Ошибка",
-                message: errorMessage,
-                preferredStyle: .alert
-            )
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            self.present(alert, animated: true)
+            AlertManager.shared.show(on: self, title: AppStrings.Alerts.errorTitle, message: errorMessage)
         }
     }
 

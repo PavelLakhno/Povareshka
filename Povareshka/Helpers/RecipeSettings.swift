@@ -12,13 +12,13 @@ enum RecipeSettings {
         static func createServesArray() -> [String] {
             return Array(1...20).map { "\($0)" }
         }
-
+        
         static func createCookTimeArray() -> [String] {
             return (Array(1..<20) + stride(from: 20, through: 180, by: 5)).map { "\($0)" }
         }
         
         static func createDifficultyArray() -> [String] {
-            return Array(1...5).map { "\($0)" } 
+            return Array(1...5).map { "\($0)" }
         }
     }
     

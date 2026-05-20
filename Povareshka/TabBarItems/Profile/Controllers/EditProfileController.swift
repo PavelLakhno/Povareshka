@@ -41,7 +41,7 @@ class EditProfileController: UIViewController, UITextFieldDelegate {
     
     private func setupUI() {
         view.backgroundColor = .systemBackground
-        title = "Редактировать профиль"
+        title = AppStrings.Titles.editProfile
         
         // Настройка аватара
 //        avatarImageView.configureProfileImage()
@@ -51,9 +51,9 @@ class EditProfileController: UIViewController, UITextFieldDelegate {
         )
         
         // Настройка текстовых полей
-        usernameTextField.configure(placeholder: "Имя", delegate: self, autocapitalization: .none)
-        ageTextField.configure(placeholder: "Возраст", delegate: self)
-        websiteTextField.configure(placeholder: "Сайт", keyboardType: .URL, delegate: self, autocapitalization: .none)
+        usernameTextField.configure(placeholder: AppStrings.Placeholders.name, delegate: self, autocapitalization: .none)
+        ageTextField.configure(placeholder: AppStrings.Placeholders.age, delegate: self)
+        websiteTextField.configure(placeholder: AppStrings.Placeholders.website, keyboardType: .URL, delegate: self, autocapitalization: .none)
        
         setupConstraints()
     }
@@ -87,21 +87,25 @@ class EditProfileController: UIViewController, UITextFieldDelegate {
     
     // MARK: - Actions
     @objc private func changeAvatarTapped() {
-        let alert = UIAlertController(title: "Выберите изображение", message: nil, preferredStyle: .actionSheet)
-        
-        alert.addAction(UIAlertAction(title: "Галерея", style: .default) { _ in
-            self.openImagePicker(sourceType: .photoLibrary)
-        })
-        
+        var actions = [UIAlertAction(
+            title: AppStrings.Buttons.gallery,
+            style: .default,
+            handler: { [weak self] _ in self?.openImagePicker(sourceType: .photoLibrary) }
+        )]
+
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            alert.addAction(UIAlertAction(title: "Камера", style: .default) { _ in
-                self.openImagePicker(sourceType: .camera)
-            })
+            actions.append(UIAlertAction(
+                title: AppStrings.Buttons.camera,
+                style: .default,
+                handler: { [weak self] _ in self?.openImagePicker(sourceType: .camera) }
+            ))
         }
-        
-        alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
-        
-        present(alert, animated: true)
+
+        AlertManager.shared.showActionSheet(
+            on: self,
+            title: AppStrings.Titles.selectImage,
+            actions: actions
+        )
     }
     
     @objc private func updateProfileTapped() {
@@ -274,13 +278,7 @@ class EditProfileController: UIViewController, UITextFieldDelegate {
     
     private func showError(_ error: Error) {
         DispatchQueue.main.async {
-            let alert = UIAlertController(
-                title: "Ошибка",
-                message: error.localizedDescription,
-                preferredStyle: .alert
-            )
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            self.present(alert, animated: true)
+            AlertManager.shared.showError(on: self, error: error)
         }
     }
 }

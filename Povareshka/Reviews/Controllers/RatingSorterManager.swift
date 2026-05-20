@@ -39,10 +39,10 @@ struct RatingsSorter {
         currentOption: ReviewsViewController.SortOption,
         completion: @escaping (ReviewsViewController.SortOption) -> Void
     ) -> UIAlertController {
-        let alert = UIAlertController(title: "Сортировка отзывов", message: nil, preferredStyle: .actionSheet)
-        
+        let alert = UIAlertController(title: AppStrings.Titles.sortReviews, message: nil, preferredStyle: .actionSheet)
+
         let options: [ReviewsViewController.SortOption] = [.dateDesc, .dateAsc, .ratingDesc, .ratingAsc, .withPhotos, .withComments]
-        
+
         options.forEach { option in
             let action = UIAlertAction(title: title(for: option), style: .default) { _ in
                 completion(option)
@@ -50,8 +50,8 @@ struct RatingsSorter {
             action.setValue(option == currentOption, forKey: "checked")
             alert.addAction(action)
         }
-        
-        alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
+
+        alert.addAction(UIAlertAction(title: AppStrings.Buttons.cancel, style: .cancel))
         return alert
     }
 }

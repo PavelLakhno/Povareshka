@@ -90,7 +90,7 @@ final class PasswordResetController: UIViewController {
                     AlertManager.shared.show(
                         on: self,
                         title: AppStrings.Titles.success,
-                        message: "Password reset link sent to \(email)"
+                        message: "\(AppStrings.Messages.letter) \(email)"
                     )
                 }
             } catch {
@@ -103,14 +103,5 @@ final class PasswordResetController: UIViewController {
     
     @objc private func backTapped() {
         onBackTapped?()
-    }
-    
-    private func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-            self.onBackTapped?()
-            completion?()
-        })
-        present(alert, animated: true)
     }
 }

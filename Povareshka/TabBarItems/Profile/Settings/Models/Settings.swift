@@ -5,6 +5,8 @@
 //  Created by Pavel Lakhno on 12.03.2025.
 //
 
+import UIKit
+
 struct SettingsSection {
     let title: String
     let items: [SettingsItem]
@@ -12,7 +14,7 @@ struct SettingsSection {
 
 struct SettingsItem {
     let title: String
-    let icon: String
+    let icon: UIImage?
     let type: SettingsItemType
 }
 

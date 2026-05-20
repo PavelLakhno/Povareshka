@@ -41,33 +41,41 @@ enum AppStrings {
         static let passwordForget = "Забыли пароль?"
         static let passwordReset = "Сбросить пароль"
         static let reset = "Сбросить"
-        
+        static let send = "Отправить"
+        static let clear = "Очистить"
+        static let logout = "Выйти"
+        static let gallery = "Галерея"
+        static let camera = "Камера"
+        static let remove = "Убрать"
+
         static let rate = "Оценить"
         static let update = "Изменить"
-        
-        
+
         static let watchPhotos = "Просмотреть все"
     }
     
     enum Placeholders {
         static let login = "Логин (email)"
         static let name = "Имя"
+        static let age = "Возраст"
+        static let website = "Сайт"
         static let email = "Email"
         static let number = "Тел. +7(123)456-78-90"
         static let password = "Введите пароль"
         static let passwordReg = "Пароль (мин. 6 знаков)"
         static let passwordNew = "Новый пароль"
         static let passwordRepeat = "Повторите пароль"
-        
+
         static let enterTitle = "Введите название"
         static let enterDescription = "Введите описание"
         static let enterCount = "Введите количество"
         static let enterEmail = "Введите email"
-        
+        static let enterMessage = "Введите ваше сообщение..."
+
         static let enterIngredientName = "Название"
         static let enterAmount = "Количество"
         static let enterMeasure = "Мера изм."
-        
+
         static let enterTag = "Введите тег"
         static let enterCategory = "Введите категорию"
         static let enterText = "Введите текст"
@@ -83,6 +91,15 @@ enum AppStrings {
         static let popular = "Популярное"
         static let profile = "Профиль"
         static let filter = "Фильтр"
+        static let help = "Помощь"
+        static let settings = "Настройки"
+        static let editProfile = "Редактировать профиль"
+        static let savedRecipes = "Сохраненные рецепты"
+        static let selectImage = "Выберите изображение"
+        static let mailNotConfigured = "Почта не настроена"
+        static let sent = "Отправлено"
+        static let logout = "Выйти"
+        static let cacheCleared = "Готово"
 
         static let error = "Ошибка"
         static let success = "Успешно"
@@ -91,21 +108,22 @@ enum AppStrings {
         static let newRecipe = "Новый рецепт"
         static let step = "Шаг"
         static let recently = "Недавнее"
-        
+
         static let addTags = "Добавить теги"
         static let selectCategories = "Категории"
         static let feedback = "Отзывы и оценки"
-        
+
+        static let sortReviews = "Сортировка отзывов"
         static let timeCooking = "Время готовки:"
         static let tableSetting = "Сервировка:"
         static let difficulty = "Сложность"
-        
+
         static let opinionUsers = "Мнение пользователей"
         static let rateRecipe = "Ваша оценка"
         static let rating = "Оценить рецепт"
         static let commentOptional = "Комментарий (необязательно)"
         static let photosOptional = "Фото (необязательно)"
-        
+
         static let anonymous = "Аноним"
     }
     
@@ -125,6 +143,16 @@ enum AppStrings {
         static let enterText = "Начните поиск рецептов"
         static let notFoundRecipe = "Рецепты не найдены"
         static let notCreateRecipe = "Рецептов пока нет"
+        static let cacheCleared = "Кэш успешно очищен"
+        static let helpSent = "Ваше обращение успешно отправлено. Мы ответим вам в ближайшее время."
+        static let helpEmptyField = "Пожалуйста, опишите ваш вопрос или проблему"
+        static let mailNotConfiguredBody = "Настройте почтовый клиент на устройстве или напишите нам напрямую:"
+        static let couldNotRemoveFromFavorites = "Не удалось убрать из избранного"
+        static let couldNotDeleteRecipe = "Не удалось удалить рецепт"
+        static let passwordChangedDifferent = "Новый пароль должен отличаться от старого"
+        static let invalidRecoverySession = "Сессия восстановления недействительна. Запросите ссылку снова"
+        static let networkError = "Ошибка сети. Проверьте подключение"
+        static let passwordUpdateError = "Ошибка при обновлении пароля"
     }
     
     enum Alerts {
@@ -138,8 +166,12 @@ enum AppStrings {
         static let emptyCategory = "Не добавлено ни одной категории"
         static let emptyIngredient = "Не добавлено ни одного ингридиента"
         static let emptyStep = "Нет инструкций"
-        
-        
+        static let clearCacheTitle = "Очистить кэш"
+        static let clearCacheMessage = "Вы уверены, что хотите очистить кэш приложения?"
+        static let deleteRecipeTitle = "Удалить рецепт?"
+        static let logoutTitle = "Выйти из аккаунта"
+        static let logoutMessage = "Вы уверены, что хотите выйти из аккаунта?"
+
         static let successTitle = "Успех"
         static let enterDescription = "Введите описание шага"
         static let minimumStepsError = "Должен остаться хотя бы один шаг"
@@ -147,19 +179,43 @@ enum AppStrings {
         static let enterIngredientName = "Введите название"
         static let enterValidAmount = "Введите корректное количество"
         static let enterMeasure = "Выберите меру измерения"
-        
+
         static let enterTag = "Введите тег"
         static let tagExists = "Тег уже существует"
         static let tagTooLong = "Тег слишком длинный (максимум 20 символов)"
         static let maxTags = "Количество тегов привышено (максимум 10)"
-        
+
         static let maxCategories = "Выбрано максимальное кол-во"
         static let addCategoryTitle = "Не задано"
         static let enterCategory = "Не задано"
-
     }
 
     
+    enum Profile {
+        static let myRecipes = "Мои рецепты"
+        static let favorites = "Избранное"
+        static let saved = "Сохраненное"
+        static let settings = "Настройки"
+        static let help = "Помощь"
+        static let about = "О приложении"
+        static let logout = "Выйти"
+        static let user = "Пользователь"
+        static let editProfile = "Редактировать профиль"
+    }
+
+    enum Settings {
+        static let general = "Общие"
+        static let language = "Язык"
+        static let languageValue = "Русский"
+        static let notifications = "Уведомления"
+        static let darkTheme = "Темная тема"
+        static let application = "Приложение"
+        static let version = "Версия"
+        static let versionValue = "1.0.0"
+        static let clearCache = "Очистить кэш"
+        static let privacyPolicy = "Политика конфиденциальности"
+    }
+
     enum Gender {
         static let man = "Муж"
         static let woman = "Жен"

@@ -5,10 +5,10 @@
 //  Created by Pavel Lakhno on 12.03.2025.
 //
 
-import Foundation
+import UIKit
 
 struct MenuItem {
     let title: String
-    let icon: String
+    let icon: UIImage?
     var isDestructive: Bool = false
-} 
+}

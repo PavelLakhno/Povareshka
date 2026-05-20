@@ -148,22 +148,14 @@ class ShoppingListViewController: BaseController {
     }
     
     @objc private func clearButtonTapped() {
-        let alert = UIAlertController(
+        AlertManager.shared.showConfirmation(
+            on: self,
             title: AppStrings.Titles.deleteList,
             message: AppStrings.Messages.delete,
-            preferredStyle: .alert
+            confirmTitle: AppStrings.Buttons.delete,
+            confirmStyle: .destructive,
+            confirmHandler: { ShoppingListManager.shared.clearList() }
         )
-        
-        let clearAction = UIAlertAction(title: AppStrings.Buttons.delete, style: .destructive) { _ in
-            ShoppingListManager.shared.clearList()
-        }
-        
-        let cancelAction = UIAlertAction(title: AppStrings.Buttons.cancel, style: .cancel)
-        
-        alert.addAction(clearAction)
-        alert.addAction(cancelAction)
-        
-        present(alert, animated: true)
     }
 }
 

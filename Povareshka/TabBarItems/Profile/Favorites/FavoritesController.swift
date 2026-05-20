@@ -30,10 +30,10 @@ enum RecipeListSource {
         }
     }
 
-    var emptyIcon: String {
+    var emptyIcon: UIImage? {
         switch self {
-        case .favorites: return "heart"
-        case .myRecipes: return "book"
+        case .favorites: return AppImages.Icons.heartOutline
+        case .myRecipes: return AppImages.Icons.book
         }
     }
 }
@@ -58,7 +58,7 @@ final class RecipeListController: BaseController {
     private lazy var emptyStateView = EmptyStateView(
         title: source.emptyTitle,
         message: source.emptyMessage,
-        iconName: source.emptyIcon
+        icon: source.emptyIcon
     )
 
     private let loadingIndicator = UIActivityIndicatorView.createIndicator(style: .medium)
@@ -189,7 +189,7 @@ extension RecipeListController: UITableViewDelegate, UITableViewDataSource {
     ) -> UISwipeActionsConfiguration? {
         guard source == .favorites else { return nil }
 
-        let removeAction = UIContextualAction(style: .destructive, title: "Убрать") { [weak self] _, _, completion in
+        let removeAction = UIContextualAction(style: .destructive, title: AppStrings.Buttons.remove) { [weak self] _, _, completion in
             self?.removeFromFavorites(at: indexPath)
             completion(true)
         }
@@ -206,13 +206,11 @@ extension RecipeListController: UITableViewDelegate, UITableViewDataSource {
                 tableView.deleteRows(at: [indexPath], with: .automatic)
                 if recipes.isEmpty { updateEmptyState() }
             } catch {
-                let alert = UIAlertController(
-                    title: "Ошибка",
-                    message: "Не удалось убрать из избранного",
-                    preferredStyle: .alert
+                AlertManager.shared.show(
+                    on: self,
+                    title: AppStrings.Alerts.errorTitle,
+                    message: AppStrings.Messages.couldNotRemoveFromFavorites
                 )
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
-                present(alert, animated: true)
             }
         }
     }

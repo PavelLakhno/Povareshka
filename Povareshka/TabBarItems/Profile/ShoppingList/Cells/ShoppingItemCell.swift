@@ -11,8 +11,8 @@ class ShoppingItemCell: UITableViewCell {
     
     private let checkboxButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setImage(UIImage(systemName: "square"), for: .normal)
-        button.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
+        button.setImage(AppImages.Icons.checkbox, for: .normal)
+        button.setImage(AppImages.Icons.checkboxFill, for: .selected)
         button.tintColor = AppColors.primaryOrange
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -35,7 +35,7 @@ class ShoppingItemCell: UITableViewCell {
     
     private let editButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "pencil"), for: .normal)
+        button.setImage(AppImages.Icons.edit, for: .normal)
         button.tintColor = AppColors.primaryOrange
         button.translatesAutoresizingMaskIntoConstraints = false
         return button

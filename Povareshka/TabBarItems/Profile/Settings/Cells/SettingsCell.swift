@@ -100,7 +100,7 @@ class SettingsCell: UITableViewCell {
     
     func configure(with item: SettingsItem) {
         titleLabel.text = item.title
-        iconImageView.image = UIImage(systemName: item.icon)
+        iconImageView.image = item.icon
         
         switch item.type {
         case .navigation(let value):

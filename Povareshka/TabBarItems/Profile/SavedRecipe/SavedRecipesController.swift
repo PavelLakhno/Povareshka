@@ -26,7 +26,7 @@ class SavedRecipesController: BaseController {
     private let emptyStateView = EmptyStateView(
         title: "Нет сохраненных рецептов",
         message: "Сохраняйте понравившиеся рецепты, чтобы они были доступны офлайн",
-        iconName: "arrow.down.to.line.circle"
+        icon: AppImages.Icons.saved
     )
     
     // MARK: - Properties
@@ -55,7 +55,7 @@ class SavedRecipesController: BaseController {
     // MARK: - Setup
     internal override func setupViews() {
         view.backgroundColor = .systemBackground
-        title = "Сохраненные рецепты"
+        title = AppStrings.Titles.savedRecipes
         
         view.addSubview(tableView)
         view.addSubview(emptyStateView)
@@ -139,34 +139,36 @@ extension SavedRecipesController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let deleteAction = UIContextualAction(style: .destructive, title: "Удалить") { [weak self] _, _, completion in
+        let deleteAction = UIContextualAction(style: .destructive, title: AppStrings.Buttons.delete) { [weak self] _, _, completion in
             self?.deleteRecipe(at: indexPath)
             completion(true)
         }
         deleteAction.backgroundColor = .systemRed
-        
         return UISwipeActionsConfiguration(actions: [deleteAction])
     }
-    
+
     // MARK: - Actions
     private func deleteRecipe(at indexPath: IndexPath) {
         guard let recipe = savedRecipes?[indexPath.row] else { return }
-        
-        let alert = UIAlertController(
-            title: "Удалить рецепт?",
+
+        AlertManager.shared.showConfirmation(
+            on: self,
+            title: AppStrings.Alerts.deleteRecipeTitle,
             message: "Рецепт \"\(recipe.title)\" будет удален с устройства",
-            preferredStyle: .alert
-        )
-        
-        alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
-            let success = self?.storageManager.deleteRecipe(recipe.id) ?? false
-            if !success {
-                self?.showError(message: "Не удалось удалить рецепт")
+            confirmTitle: AppStrings.Buttons.delete,
+            confirmStyle: .destructive,
+            confirmHandler: { [weak self] in
+                guard let self else { return }
+                let success = storageManager.deleteRecipe(recipe.id)
+                if !success {
+                    AlertManager.shared.show(
+                        on: self,
+                        title: AppStrings.Alerts.errorTitle,
+                        message: AppStrings.Messages.couldNotDeleteRecipe
+                    )
+                }
             }
-        })
-        
-        present(alert, animated: true)
+        )
     }
     
     private func openRecipeWatchController(with recipe: RecipeModel) {
@@ -238,11 +240,6 @@ extension SavedRecipesController: UITableViewDelegate, UITableViewDataSource {
         )
     }
     
-    private func showError(message: String) {
-        let alert = UIAlertController(title: "Ошибка", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
-    }
 }
 
 

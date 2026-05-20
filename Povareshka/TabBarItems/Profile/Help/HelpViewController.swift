@@ -55,12 +55,12 @@ final class HelpViewController: BaseController {
     )
 
     private lazy var messageTextView = UITextView.configureTextView(
-        placeholder: "Введите ваше сообщение...",
+        placeholder: AppStrings.Placeholders.enterMessage,
         delegate: self
     )
 
     private lazy var sendButton = UIButton(
-        title: "Отправить",
+        title: AppStrings.Buttons.send,
         backgroundColor: AppColors.primaryOrange,
         titleColor: .white,
         font: .systemFont(ofSize: 16, weight: .semibold),
@@ -75,7 +75,7 @@ final class HelpViewController: BaseController {
     // MARK: - Setup
     override func setupViews() {
         super.setupViews()
-        navigationItem.title = "Помощь"
+        navigationItem.title = AppStrings.Titles.help
 
         view.addSubview(mainScrollView)
         mainScrollView.addSubview(contentStack)
@@ -116,7 +116,9 @@ final class HelpViewController: BaseController {
         let message = messageTextView.text ?? ""
 
         guard !message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            showInputAlert(title: "Ошибка", message: "Пожалуйста, опишите ваш вопрос или проблему")
+            AlertManager.shared.show(on: self,
+                                     title: AppStrings.Alerts.errorTitle,
+                                     message: AppStrings.Messages.helpEmptyField)
             return
         }
 
@@ -133,17 +135,12 @@ final class HelpViewController: BaseController {
             composer.setMessageBody(message, isHTML: false)
             present(composer, animated: true)
         } else {
-            showInputAlert(
-                title: "Почта не настроена",
-                message: "Настройте почтовый клиент на устройстве или напишите нам напрямую: \(AppStrings.Email.supportEmail)"
+            AlertManager.shared.show(
+                on: self,
+                title: AppStrings.Titles.mailNotConfigured,
+                message: "\(AppStrings.Messages.mailNotConfiguredBody) \(AppStrings.Email.supportEmail)"
             )
         }
-    }
-
-    private func showInputAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
     }
 }
 
@@ -166,7 +163,7 @@ extension HelpViewController: UITextViewDelegate {
     }
 
     func textViewDidChange(_ textView: UITextView) {
-        textView.placeholder = textView.hasText ? nil : "Введите ваше сообщение..."
+        textView.placeholder = textView.hasText ? nil : AppStrings.Placeholders.enterMessage
         textView.clearButtonStatus = !textView.hasText
         textView.dynamicTextViewHeight(minHeight: 160)
     }
@@ -180,13 +177,14 @@ extension HelpViewController: @preconcurrency MFMailComposeViewControllerDelegat
         controller.dismiss(animated: true)
         if result == .sent {
             messageTextView.text = ""
-            messageTextView.placeholder = "Введите ваше сообщение..."
+            messageTextView.placeholder = AppStrings.Placeholders.enterMessage
             messageTextView.textColor = .lightGray
             messageTextView.clearButtonStatus = true
             segmentedControl.selectedSegmentIndex = 0
-            showInputAlert(
-                title: "Отправлено",
-                message: "Ваше обращение успешно отправлено. Мы ответим вам в ближайшее время."
+            AlertManager.shared.showSuccess(
+                on: self,
+                title: AppStrings.Titles.sent,
+                message: AppStrings.Messages.helpSent
             )
         }
     }

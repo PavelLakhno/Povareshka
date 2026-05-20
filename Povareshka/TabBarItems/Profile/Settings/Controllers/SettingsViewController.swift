@@ -19,22 +19,22 @@ class SettingsViewController: BaseController {
 
     // MARK: - Properties
     private let sections: [SettingsSection] = [
-        SettingsSection(title: "Общие", items: [
-            SettingsItem(title: "Язык", icon: "globe", type: .navigation("Русский")),
-            SettingsItem(title: "Уведомления", icon: "bell", type: .toggle(true)),
-            SettingsItem(title: "Темная тема", icon: "moon", type: .toggle(false))
+        SettingsSection(title: AppStrings.Settings.general, items: [
+            SettingsItem(title: AppStrings.Settings.language, icon: AppImages.Icons.globe, type: .navigation(AppStrings.Settings.languageValue)),
+            SettingsItem(title: AppStrings.Settings.notifications, icon: AppImages.Icons.bell, type: .toggle(true)),
+            SettingsItem(title: AppStrings.Settings.darkTheme, icon: AppImages.Icons.moon, type: .toggle(false))
         ]),
-        SettingsSection(title: "Приложение", items: [
-            SettingsItem(title: "Версия", icon: "info.circle", type: .info("1.0.0")),
-            SettingsItem(title: "Очистить кэш", icon: "trash", type: .action),
-            SettingsItem(title: "Политика конфиденциальности", icon: "lock", type: .navigation(nil))
+        SettingsSection(title: AppStrings.Settings.application, items: [
+            SettingsItem(title: AppStrings.Settings.version, icon: AppImages.Icons.info, type: .info(AppStrings.Settings.versionValue)),
+            SettingsItem(title: AppStrings.Settings.clearCache, icon: AppImages.Icons.trash, type: .action),
+            SettingsItem(title: AppStrings.Settings.privacyPolicy, icon: AppImages.Icons.lock, type: .navigation(nil))
         ])
     ]
 
     // MARK: - Setup
     override func setupViews() {
         super.setupViews()
-        navigationItem.title = "Настройки"
+        navigationItem.title = AppStrings.Titles.settings
         view.addSubview(tableView)
         tableView.register(SettingsCell.self, forCellReuseIdentifier: SettingsCell.id)
         tableView.delegate = self
@@ -81,37 +81,31 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
         let item = sections[indexPath.section].items[indexPath.row]
         
         switch item.title {
-        case "Язык":
+        case AppStrings.Settings.language:
             break
-        case "Политика конфиденциальности":
+        case AppStrings.Settings.privacyPolicy:
             break
-        case "Очистить кэш":
+        case AppStrings.Settings.clearCache:
             showClearCacheAlert()
         default:
             break
         }
     }
-    
+
     private func showClearCacheAlert() {
-        let alert = UIAlertController(
-            title: "Очистить кэш",
-            message: "Вы уверены, что хотите очистить кэш приложения?",
-            preferredStyle: .alert
+        AlertManager.shared.showConfirmation(
+            on: self,
+            title: AppStrings.Alerts.clearCacheTitle,
+            message: AppStrings.Alerts.clearCacheMessage,
+            confirmTitle: AppStrings.Buttons.clear,
+            confirmStyle: .destructive,
+            confirmHandler: { [weak self] in self?.clearCache() }
         )
-        
-        alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Очистить", style: .destructive) { [weak self] _ in
-            self?.clearCache()
-        })
-        
-        present(alert, animated: true)
     }
-    
+
     private func clearCache() {
-        // Clear image cache
         URLCache.shared.removeAllCachedResponses()
-        
-        // Clear temp files
+
         let fileManager = FileManager.default
         if let tempFolderPath = NSTemporaryDirectory() as String? {
             do {
@@ -120,21 +114,13 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
                     let tempFilePath = (tempFolderPath as NSString).appendingPathComponent(file)
                     try fileManager.removeItem(atPath: tempFilePath)
                 }
-                
-                // Show success message
-                showSuccessAlert()
+                AlertManager.shared.showSuccess(
+                    on: self,
+                    title: AppStrings.Titles.cacheCleared,
+                    message: AppStrings.Messages.cacheCleared
+                )
             } catch {}
         }
-    }
-    
-    private func showSuccessAlert() {
-        let alert = UIAlertController(
-            title: "Готово",
-            message: "Кэш успешно очищен",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
     }
 }
 
@@ -145,11 +131,9 @@ extension SettingsViewController: @preconcurrency SettingsCellDelegate {
         let item = sections[indexPath.section].items[indexPath.row]
         
         switch item.title {
-        case "Уведомления":
-            // Handle notifications toggle
+        case AppStrings.Settings.notifications:
             break
-        case "Темная тема":
-            // Handle dark mode toggle
+        case AppStrings.Settings.darkTheme:
             break
         default:
             break

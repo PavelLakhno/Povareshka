@@ -101,6 +101,20 @@ final class AlertManager {
         )
     }
     
+    func showActionSheet(
+        on viewController: UIViewController,
+        title: String,
+        message: String? = nil,
+        actions: [UIAlertAction]
+    ) {
+        let sheet = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
+        actions.forEach { sheet.addAction($0) }
+        if !actions.contains(where: { $0.style == .cancel }) {
+            sheet.addAction(UIAlertAction(title: AppStrings.Buttons.cancel, style: .cancel))
+        }
+        viewController.present(sheet, animated: true)
+    }
+
     // MARK: - Convenience Methods
     func showDeleteConfirmation(
         on viewController: UIViewController,

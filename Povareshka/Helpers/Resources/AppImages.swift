@@ -38,25 +38,43 @@ enum AppImages {
         static let deleteFill = UIImage(systemName: "xmark.circle.fill")
         static let slider = UIImage(systemName: "slider.horizontal.3")
 
-        
         static let level = UIImage(systemName: "cellularbars")
         static let clockFill = UIImage(systemName: "clock.fill")
         static let clockEmpty = UIImage(systemName: "clock")
         static let persons = UIImage(systemName: "person.2.fill")
-        
+
         static let starEmpty = UIImage(systemName: "star")
         static let starFilled = UIImage(systemName: "star.fill")
-        
+
         static let table = UIImage(systemName: "list.bullet")
         static let collection = UIImage(systemName: "square.grid.2x2")
-        
+
         static let fork = UIImage(systemName: "fork.knife")
         static let heart = UIImage(systemName: "heart.fill")
-        
+        static let heartOutline = UIImage(systemName: "heart")
+
         static let book = UIImage(systemName: "book.closed")
         static let favorite = UIImage(systemName: "bookmark.fill")
         static let wifi = UIImage(systemName: "wifi.slash")
-        
-        
+
+        // Profile menu
+        static let saved = UIImage(systemName: "arrow.down.to.line.circle")
+        static let gear = UIImage(systemName: "gearshape")
+        static let helpCircle = UIImage(systemName: "questionmark.circle")
+        static let info = UIImage(systemName: "info.circle")
+        static let signOut = UIImage(systemName: "rectangle.portrait.and.arrow.right")
+
+        // Settings
+        static let globe = UIImage(systemName: "globe")
+        static let bell = UIImage(systemName: "bell")
+        static let moon = UIImage(systemName: "moon")
+        static let lock = UIImage(systemName: "lock")
+
+        // About features
+        static let personBadgePlus = UIImage(systemName: "person.badge.plus")
+
+        // Shopping cell
+        static let checkbox = UIImage(systemName: "square")
+        static let checkboxFill = UIImage(systemName: "checkmark.square.fill")
     }
 }

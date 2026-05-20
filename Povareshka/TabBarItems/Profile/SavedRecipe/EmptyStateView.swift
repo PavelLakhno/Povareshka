@@ -48,10 +48,10 @@ class EmptyStateView: UIView {
     }()
     
     // MARK: - Init
-    init(title: String, message: String, iconName: String) {
+    init(title: String, message: String, icon: UIImage?) {
         super.init(frame: .zero)
         setupViews()
-        configure(title: title, message: message, iconName: iconName)
+        configure(title: title, message: message, icon: icon)
         translatesAutoresizingMaskIntoConstraints = false
     }
     
@@ -78,9 +78,9 @@ class EmptyStateView: UIView {
         ])
     }
     
-    private func configure(title: String, message: String, iconName: String) {
+    private func configure(title: String, message: String, icon: UIImage?) {
         titleLabel.text = title
         messageLabel.text = message
-        iconImageView.image = UIImage(systemName: iconName)
+        iconImageView.image = icon
     }
 }

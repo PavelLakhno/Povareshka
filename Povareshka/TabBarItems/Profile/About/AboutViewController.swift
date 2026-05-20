@@ -92,12 +92,12 @@ final class AboutViewController: BaseController {
     }
 
     private func makeFeaturesCard() -> UIView {
-        let features: [(String, String)] = [
-            ("fork.knife",        "Тысячи рецептов на любой вкус"),
-            ("heart.fill",        "Избранное и сохранённые рецепты"),
-            ("cart.fill",         "Список покупок из ингредиентов"),
-            ("star.fill",         "Оценки и отзывы пользователей"),
-            ("person.badge.plus", "Создавайте собственные рецепты")
+        let features: [(UIImage?, String)] = [
+            (AppImages.Icons.fork,           "Тысячи рецептов на любой вкус"),
+            (AppImages.Icons.heart,          "Избранное и сохранённые рецепты"),
+            (AppImages.TabBar.shop,          "Список покупок из ингредиентов"),
+            (AppImages.Icons.starFilled,     "Оценки и отзывы пользователей"),
+            (AppImages.Icons.personBadgePlus,"Создавайте собственные рецепты")
         ]
 
         let stack = UIStackView(axis: .vertical, alignment: .fill, spacing: 14)
@@ -139,9 +139,9 @@ final class AboutViewController: BaseController {
         return card
     }
 
-    private func makeFeatureRow(icon: String, text: String) -> UIView {
+    private func makeFeatureRow(icon: UIImage?, text: String) -> UIView {
         let imageView = UIImageView(
-            image: UIImage(systemName: icon),
+            image: icon,
             size: Constants.viewSize20,
             contentMode: .scaleAspectFit,
             tintColor: AppColors.primaryOrange,
