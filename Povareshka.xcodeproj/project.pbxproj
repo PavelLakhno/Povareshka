@@ -37,6 +37,7 @@
 		CE88BB992E4E304F009B58A4 /* RatingSorterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE88BB982E4E304F009B58A4 /* RatingSorterManager.swift */; };
 		CE8A82A92E829A3600AE6F95 /* RecipeWatchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8A82A82E829A3600AE6F95 /* RecipeWatchViewModel.swift */; };
 		CE8F04CF2E05444700978883 /* TagsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8F04CE2E05444700978883 /* TagsManager.swift */; };
+		105EE39AB1CA481094B51D80 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44A88BC382A46A896525F5B /* ThemeManager.swift */; };
 		CE9322F02E8FB8B300B6D4F6 /* SettingsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9322EF2E8FB8B300B6D4F6 /* SettingsDataSource.swift */; };
 		CE938D782D9AE78E00CF8683 /* ShoppingListManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE938D772D9AE78E00CF8683 /* ShoppingListManager.swift */; };
 		CE93918F2D830CF2006E61A3 /* RecipeSearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE93918E2D830CF2006E61A3 /* RecipeSearchCell.swift */; };
@@ -241,6 +242,7 @@
 		CEE4D6DE2EB3B1E0008512F3 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		CEE919232DECA717001C03D7 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
 		CEF2183D2E3769EF000F4D6D /* AlertManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertManager.swift; sourceTree = "<group>"; };
+		F44A88BC382A46A896525F5B /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		CEFAB3CD2E3B59E600769766 /* PhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
 		CEFAB3D32E3B893900769766 /* DataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -908,6 +910,7 @@
 				CE938D772D9AE78E00CF8683 /* ShoppingListManager.swift */,
 				CE8F04CE2E05444700978883 /* TagsManager.swift */,
 				CEF2183D2E3769EF000F4D6D /* AlertManager.swift */,
+				F44A88BC382A46A896525F5B /* ThemeManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -1072,6 +1075,7 @@
 				CEE4D6D92EB3B132008512F3 /* SavedRecipesController.swift in Sources */,
 				CE04BFC02E2501F20009A94A /* TagCollectionViewCell.swift in Sources */,
 				CEF2183E2E3769EF000F4D6D /* AlertManager.swift in Sources */,
+				105EE39AB1CA481094B51D80 /* ThemeManager.swift in Sources */,
 				CE04BFC12E2501F20009A94A /* CategoryGridCell.swift in Sources */,
 				CE96A7FB2E843B9C007C6F40 /* AppColors.swift in Sources */,
 				CE04BFC22E2501F20009A94A /* CategoryCell.swift in Sources */,

@@ -17,7 +17,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Настройка окна
         window = UIWindow(windowScene: windowScene)
         window?.makeKeyAndVisible()
-        
+        ThemeManager.shared.applyTheme(to: window)
+
         // Создаем координатор
         guard let window = window else { return }
         appCoordinator = AppCoordinator(window: window)

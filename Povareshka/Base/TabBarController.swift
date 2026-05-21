@@ -23,8 +23,8 @@ class TabBarController: UITabBarController {
     
     private func configureAppearance() {
         tabBar.tintColor = AppColors.primaryOrange
-        tabBar.backgroundColor = .white
-        tabBar.layer.borderColor = AppColors.gray100.cgColor
+        tabBar.backgroundColor = .systemBackground
+        tabBar.layer.borderColor = AppColors.gray200.cgColor
         tabBar.layer.borderWidth = 1
         tabBar.layer.masksToBounds = true
         
@@ -68,5 +68,11 @@ class TabBarController: UITabBarController {
             shopNavigation,
             profileNavigation
         ], animated: false)
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+//        super.traitCollectionDidChange(previousTraitCollection)
+        guard traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) else { return }
+        tabBar.layer.borderColor = AppColors.gray200.cgColor
     }
 }

@@ -20,7 +20,6 @@ final class CategoryGridCell: UICollectionViewCell {
     
     private let titleLabel = UILabel(
         font: .helveticalRegular(withSize: 12),
-        textColor: .black,
         textAlignment: .center,
         numberOfLines: 2
     )

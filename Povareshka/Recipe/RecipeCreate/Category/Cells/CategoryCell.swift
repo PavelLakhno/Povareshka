@@ -11,8 +11,7 @@ final class CategoryCell: UITableViewCell {
     static let id = "CategoryCell"
 
     private let titleLabel = UILabel(
-        font: .helveticalRegular(withSize: 17),
-        textColor: .black
+        font: .helveticalRegular(withSize: 17)
     )
     
     private let iconView = UIImageView(
@@ -45,7 +44,7 @@ final class CategoryCell: UITableViewCell {
     }
     
     private func setupViews() {
-        backgroundColor = .white
+        backgroundColor = .systemBackground
         stackView.addArrangedSubview(iconView)
         stackView.addArrangedSubview(titleLabel)
         stackView.addArrangedSubview(checkmarkView)

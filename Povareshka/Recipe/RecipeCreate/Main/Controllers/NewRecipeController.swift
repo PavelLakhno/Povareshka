@@ -62,7 +62,7 @@ final class NewRecipeController: BaseController {
     }()
     
     private let imageBubbleView = UIView(
-        backgroundColor: .white,
+        backgroundColor: .systemBackground,
         cornerRadius: Constants.cornerRadiusSmall
     )
     private lazy var recipeImage = UIImageView(
@@ -310,7 +310,7 @@ final class NewRecipeController: BaseController {
     // MARK: - Setup Methods
     internal override func setupViews() {
         super.setupViews()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         scrollView.contentInsetAdjustmentBehavior = .never
         addSubviews()
         setupTags()
@@ -448,10 +448,10 @@ extension NewRecipeController {
         recipeImage.layer.borderColor = AppColors.primaryOrange.cgColor
         recipeNameTextField.layer.borderColor = AppColors.primaryOrange.cgColor
         recipeDescriptionTextView.layer.borderColor = AppColors.primaryOrange.cgColor
-        categoryTitleLabel.textColor = .black
-        ingredientsTitleLabel.textColor = .black
-        stepsTitleLabel.textColor = .black
-        tagsTitleLabel.textColor = .black
+        categoryTitleLabel.textColor = .label
+        ingredientsTitleLabel.textColor = .label
+        stepsTitleLabel.textColor = .label
+        tagsTitleLabel.textColor = .label
     }
     
     private func showValidationError(messages: [String]) {
@@ -514,7 +514,7 @@ extension NewRecipeController: UITextFieldDelegate {
 extension NewRecipeController: UITextViewDelegate {
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
         if textView == recipeDescriptionTextView && textView.textColor == UIColor.lightGray {
-            textView.textColor = UIColor.black
+            textView.textColor = .label
         }
         return true
     }

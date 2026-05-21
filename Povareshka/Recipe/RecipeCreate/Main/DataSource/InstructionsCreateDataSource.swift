@@ -92,8 +92,7 @@ final class InstructionsCreateDataSource: NSObject, UITableViewDataSource, UITab
         
         let titleLabel = UILabel(
             text: "\(AppStrings.Titles.step) \(section + 1)",
-            font: .helveticalBold(withSize: 16),
-            textColor: .black
+            font: .helveticalBold(withSize: 16)
         )
         
         let deleteButton = UIButton(

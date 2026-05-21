@@ -77,7 +77,7 @@ class FilterViewController: BaseController {
     
     // MARK: - Setup
     override func setupViews() {
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)

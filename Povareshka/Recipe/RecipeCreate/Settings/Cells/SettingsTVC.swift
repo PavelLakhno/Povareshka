@@ -20,7 +20,7 @@ class SettingTableViewCell: UITableViewCell {
     
     private let iconBubleView = UIView(
         size: Constants.viewSize40,
-        backgroundColor: .white,
+        backgroundColor: .systemBackground,
         cornerRadius: Constants.cornerRadiusSmall
     )
     
@@ -33,7 +33,6 @@ class SettingTableViewCell: UITableViewCell {
 
     private let titleLabel = UILabel(
         font: .helveticalRegular(withSize: 16),
-        textColor: .black,
         textAlignment: .left, numberOfLines: 2
     )
     

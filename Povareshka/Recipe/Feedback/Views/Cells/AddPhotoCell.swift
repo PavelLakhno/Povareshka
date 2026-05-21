@@ -17,7 +17,6 @@ final class AddPhotoCell: UICollectionViewCell {
                                        backgroundColor: .clear)
     private let titleLabel = UILabel(text: AppStrings.Buttons.add,
                                      font: .helveticalRegular(withSize: 12),
-                                     textColor: .black,
                                      textAlignment: .center)
     private let stackView = UIStackView(axis: .vertical,
                                         alignment: .center,

@@ -33,20 +33,17 @@ final class RecipeRatingController: BaseController {
     private let photosContainer = UIView(backgroundColor: .systemBackground)
     
     private let starsTitleLabel = UILabel(text: AppStrings.Titles.rating,
-                                          font: .helveticalBold(withSize: 18),
-                                          textColor: .black)
+                                          font: .helveticalBold(withSize: 18))
     private let starsView = RatingView()
-    
+
     private let commentTitleLabel = UILabel(text: AppStrings.Titles.commentOptional,
-                                            font: .helveticalBold(withSize: 18),
-                                            textColor: .black)
+                                            font: .helveticalBold(withSize: 18))
     private lazy var commentTextView = UITextView.configureTextView(
         placeholder: AppStrings.Placeholders.enterText, delegate: self
     )
     
     private let photosTitleLabel = UILabel(text: AppStrings.Titles.photosOptional,
-                                           font: .helveticalBold(withSize: 18),
-                                           textColor: .black)
+                                           font: .helveticalBold(withSize: 18))
     private lazy var photosCollectionView: UICollectionView = {
         let collectionView = createCollectionView(
             type: .horizontalFixedSize(Constants.viewSize100),
@@ -297,14 +294,14 @@ extension RecipeRatingController: UIImagePickerControllerDelegate, UINavigationC
 extension RecipeRatingController: UITextViewDelegate {
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
         if textView.textColor == UIColor.lightGray {
-            textView.textColor = UIColor.black
+            textView.textColor = .label
         }
         return true
     }
-    
+
     func textViewDidBeginEditing(_ textView: UITextView) {
         textView.clearButtonStatus = !textView.hasText
-        textView.textColor = UIColor.black
+        textView.textColor = .label
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {

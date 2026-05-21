@@ -12,7 +12,6 @@ class FilterCategoryCell: UICollectionViewCell {
     
     private let titleLabel = UILabel(text: AppStrings.Buttons.add,
                                      font: .helveticalRegular(withSize: 14),
-                                     textColor: .black,
                                      textAlignment: .center)
     
     override init(frame: CGRect) {
@@ -43,7 +42,7 @@ class FilterCategoryCell: UICollectionViewCell {
             titleLabel.textColor = AppColors.primaryOrange
         } else {
             backgroundColor = AppColors.gray100
-            titleLabel.textColor = .black
+            titleLabel.textColor = .label
         }
     }
 }

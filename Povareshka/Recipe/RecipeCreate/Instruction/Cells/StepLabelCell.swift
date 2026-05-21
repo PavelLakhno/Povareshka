@@ -11,8 +11,7 @@ final class StepLabelCell: UITableViewCell {
     static let id = "StepLabelCell"
     
     private let stepLabel = UILabel(
-        font: .helveticalRegular(withSize: 16),
-        textColor: .black
+        font: .helveticalRegular(withSize: 16)
     )
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -26,7 +25,7 @@ final class StepLabelCell: UITableViewCell {
     }
     
     private func setupViews() {
-        backgroundColor = .white
+        backgroundColor = .systemBackground
         layer.cornerRadius = Constants.cornerRadiusSmall
         contentView.addSubview(stepLabel)
     }

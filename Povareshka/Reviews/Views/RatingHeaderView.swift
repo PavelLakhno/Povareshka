@@ -9,7 +9,6 @@ import UIKit
 
 final class RatingHeaderView: UIView {
     private let ratingLabel = UILabel(font: .helveticalBold(withSize: 30),
-                                      textColor: .black,
                                       textAlignment: .left)
     private let titleLabel = UILabel(text: AppStrings.Titles.opinionUsers,
                                      font: .helveticalRegular(withSize: 14),

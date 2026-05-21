@@ -10,8 +10,8 @@ import UIKit
 class InstructionTextCell: UITableViewCell {
     static let id = "InstructionTextCell"
     
-    private let stepLabel = UILabel(font: .helveticalBold(withSize: 18), textColor: .black)
-    private let descriptionLabel = UILabel(font: .helveticalRegular(withSize: 16), textColor: .black, numberOfLines: 0)
+    private let stepLabel = UILabel(font: .helveticalBold(withSize: 18))
+    private let descriptionLabel = UILabel(font: .helveticalRegular(withSize: 16), numberOfLines: 0)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

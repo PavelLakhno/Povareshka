@@ -102,8 +102,7 @@ final class UniversalRecipeMetaStackView: UIStackView {
         
         let label = UILabel(
             text: text,
-            font: .helveticalLight(withSize: 14),
-            textColor: .black
+            font: .helveticalLight(withSize: 14)
         )
         
         stack.addArrangedSubview(iconView)

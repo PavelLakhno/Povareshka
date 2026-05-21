@@ -12,7 +12,7 @@ class MenuItemCell: UITableViewCell {
     
     private let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -28,7 +28,7 @@ class MenuItemCell: UITableViewCell {
     private let iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.tintColor = .black
+        imageView.tintColor = .label
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
@@ -88,8 +88,8 @@ class MenuItemCell: UITableViewCell {
             titleLabel.textColor = .systemRed
             iconImageView.tintColor = .systemRed
         } else {
-            titleLabel.textColor = .black
-            iconImageView.tintColor = .black
+            titleLabel.textColor = .label
+            iconImageView.tintColor = .label
         }
     }
 }

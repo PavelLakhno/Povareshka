@@ -34,7 +34,7 @@ class NewIngredientViewController: BaseController, UIPickerViewDelegate, UIPicke
     private let toolbar: UIToolbar = {
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
-        toolbar.backgroundColor = .white
+        toolbar.backgroundColor = .systemBackground
         return toolbar
     }()
 

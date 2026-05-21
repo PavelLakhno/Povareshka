@@ -40,7 +40,7 @@ class BaseController: UIViewController {
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = .systemBackground
         appearance.titleTextAttributes = [
-            .foregroundColor: UIColor.black,
+            .foregroundColor: UIColor.label,
             .font: UIFont.helveticalRegular(withSize: 16)
         ]
         

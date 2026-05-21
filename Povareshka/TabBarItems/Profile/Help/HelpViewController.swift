@@ -148,7 +148,7 @@ final class HelpViewController: BaseController {
 extension HelpViewController: UITextViewDelegate {
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
         if textView.textColor == .lightGray {
-            textView.textColor = .black
+            textView.textColor = .label
         }
         return true
     }

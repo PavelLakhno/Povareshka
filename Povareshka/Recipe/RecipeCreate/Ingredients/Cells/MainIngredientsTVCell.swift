@@ -17,13 +17,11 @@ final class MainIngredientsTableViewCell: UITableViewCell {
     )
     
     private let ingredientName = UILabel(font: .helveticalRegular(withSize: 16),
-                                         backgroundColor: .white,
-                                         textColor: .black,
+                                         backgroundColor: .systemBackground,
                                          textAlignment: .center,
                                          layer: true)
     private let weightName = UILabel(font: .helveticalRegular(withSize: 16),
-                                     backgroundColor: .white,
-                                     textColor: .black,
+                                     backgroundColor: .systemBackground,
                                      textAlignment: .center,
                                      layer: true)
 

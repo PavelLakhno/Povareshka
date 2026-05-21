@@ -21,7 +21,6 @@ final class AddCategoryGridCell: UICollectionViewCell {
     private let titleLabel = UILabel(
         text: AppStrings.Buttons.add,
         font: .helveticalRegular(withSize: 12),
-        textColor: .black,
         textAlignment: .center
     )
     

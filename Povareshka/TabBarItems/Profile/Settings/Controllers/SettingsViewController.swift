@@ -18,11 +18,11 @@ class SettingsViewController: BaseController {
     }()
 
     // MARK: - Properties
-    private let sections: [SettingsSection] = [
+    private lazy var sections: [SettingsSection] = [
         SettingsSection(title: AppStrings.Settings.general, items: [
             SettingsItem(title: AppStrings.Settings.language, icon: AppImages.Icons.globe, type: .navigation(AppStrings.Settings.languageValue)),
             SettingsItem(title: AppStrings.Settings.notifications, icon: AppImages.Icons.bell, type: .toggle(true)),
-            SettingsItem(title: AppStrings.Settings.darkTheme, icon: AppImages.Icons.moon, type: .toggle(false))
+            SettingsItem(title: AppStrings.Settings.darkTheme, icon: AppImages.Icons.moon, type: .toggle(ThemeManager.shared.isDarkTheme))
         ]),
         SettingsSection(title: AppStrings.Settings.application, items: [
             SettingsItem(title: AppStrings.Settings.version, icon: AppImages.Icons.info, type: .info(AppStrings.Settings.versionValue)),
@@ -134,7 +134,7 @@ extension SettingsViewController: @preconcurrency SettingsCellDelegate {
         case AppStrings.Settings.notifications:
             break
         case AppStrings.Settings.darkTheme:
-            break
+            ThemeManager.shared.setTheme(isDark: value, window: view.window)
         default:
             break
         }

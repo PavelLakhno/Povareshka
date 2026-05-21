@@ -19,14 +19,11 @@ final class ReviewCell: UITableViewCell {
                                               cornerRadius: Constants.cornerRadiusBig,
                                               contentMode: .scaleAspectFill)
     private let userNameLabel = UILabel(font: .helveticalBold(withSize: 16),
-                                       textColor: .black,
                                        textAlignment: .left)
     private let ratingView = RatingView()
     private let dateLabel = UILabel(font: .helveticalRegular(withSize: 12),
-                                    textColor: .black,
                                    textAlignment: .left)
     private let commentLabel = UILabel(font: .helveticalRegular(withSize: 14),
-                                      textColor: .black,
                                       textAlignment: .left,
                                       numberOfLines: 0)
     

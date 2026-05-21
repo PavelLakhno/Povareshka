@@ -54,7 +54,7 @@ final class PhotoViewerController: BaseController {
     
     internal override func setupViews() {
         super.setupViews()
-        view.backgroundColor = .white
+        view.backgroundColor = .black
         view.addSubview(collectionView)
         view.addSubview(closeButton)
         

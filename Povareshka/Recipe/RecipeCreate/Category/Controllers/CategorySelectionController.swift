@@ -25,7 +25,7 @@ final class CategoriesSelectionController: BaseController {
             ],
             delegate: self,
             dataSource: self,
-            backgroundColor: .white, 
+            backgroundColor: .systemBackground,
         )
         return collectionView
     }()

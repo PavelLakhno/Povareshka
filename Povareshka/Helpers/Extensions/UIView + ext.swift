@@ -64,7 +64,7 @@ extension UIImageView {
                      borderWidth: CGFloat = 0,
                      tintColor: UIColor = AppColors.primaryOrange,
                      borderColor: UIColor = AppColors.primaryOrange,
-                     backgroundColor: UIColor = .white) {
+                     backgroundColor: UIColor = .systemBackground) {
         self.init()
         self.backgroundColor = backgroundColor
         self.contentMode = contentMode
@@ -107,7 +107,7 @@ extension UIImage {
 }
 
 extension UILabel {
-    convenience init(text: String = "", font: UIFont? = .helveticalBold(withSize: 20),backgroundColor: UIColor = .clear, textColor: UIColor = .black, textAlignment: NSTextAlignment = .left, numberOfLines: Int = 0, height: CGFloat? = nil, layer: Bool? = nil) {
+    convenience init(text: String = "", font: UIFont? = .helveticalBold(withSize: 20),backgroundColor: UIColor = .clear, textColor: UIColor = .label, textAlignment: NSTextAlignment = .left, numberOfLines: Int = 0, height: CGFloat? = nil, layer: Bool? = nil) {
         self.init()
         self.text = text
         self.font = font
@@ -266,7 +266,7 @@ extension UITextField {
                                    isSecureTextEntry: Bool = false,
                                    borderColor: UIColor = AppColors.primaryOrange,
                                    cornerRadius: CGFloat = Constants.cornerRadiusSmall,
-                                   backgroundColor: UIColor = .white,
+                                   backgroundColor: UIColor = .systemBackground,
                                    fontSize: CGFloat = 16) -> UITextField {
         let textField = UITextField()
         textField.layer.cornerRadius = cornerRadius

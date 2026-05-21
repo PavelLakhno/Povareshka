@@ -292,8 +292,7 @@ final class RecipeWatchController: BaseController {
     private func setupCategoriesSection() {
         let titleLabel = UILabel(
             text: AppStrings.Titles.categories,
-            font: .helveticalBold(withSize: 18),
-            textColor: .black
+            font: .helveticalBold(withSize: 18)
         )
         stackView.addArrangedSubview(titleLabel)
         
@@ -308,8 +307,7 @@ final class RecipeWatchController: BaseController {
     private func setupTagsSection() {
         let titleLabel = UILabel(
             text: AppStrings.Titles.tags,
-            font: .helveticalBold(withSize: 18),
-            textColor: .black
+            font: .helveticalBold(withSize: 18)
         )
         stackView.addArrangedSubview(titleLabel)
         
@@ -322,7 +320,6 @@ final class RecipeWatchController: BaseController {
         let titleLabel = UILabel(
             text: AppStrings.Titles.ingredient,
             font: .helveticalBold(withSize: 20),
-            textColor: .black,
             textAlignment: .center
         )
         stackView.addArrangedSubview(titleLabel)
@@ -337,7 +334,6 @@ final class RecipeWatchController: BaseController {
         let titleLabel = UILabel(
             text: AppStrings.Titles.cookingStages,
             font: .helveticalBold(withSize: 20),
-            textColor: .black,
             textAlignment: .center
         )
         stackView.addArrangedSubview(titleLabel)

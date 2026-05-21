@@ -12,7 +12,6 @@ final class IngredientCell: UITableViewCell {
     
     // MARK: - UI Elements
     private let titleLabel = UILabel(font: .helveticalRegular(withSize: 16),
-                                     textColor: .black,
                                      textAlignment: .left)
     
     private lazy var addButton = UIButton(image: AppImages.Icons.addFill,

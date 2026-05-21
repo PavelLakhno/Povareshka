@@ -37,7 +37,7 @@ final class MainViewController: BaseController {
                                                    identifier: TrendingNowCollectionViewCell.id)],
             delegate: self,
             dataSource: self,
-            backgroundColor: .white
+            backgroundColor: AppColors.collectionViewBackground
         )
         collectionView.tag = 0
         return collectionView
@@ -57,7 +57,7 @@ final class MainViewController: BaseController {
                                                    identifier: RoundCategoryCell.id)],
             delegate: self,
             dataSource: self,
-            backgroundColor: .white
+            backgroundColor: AppColors.collectionViewBackground
         )
         collectionView.tag = 1
         return collectionView
@@ -77,7 +77,7 @@ final class MainViewController: BaseController {
             ],
             delegate: self,
             dataSource: self,
-            backgroundColor: .white,
+            backgroundColor: AppColors.collectionViewBackground,
             minimumInteritemSpacing: 16,
             minimumLineSpacing: 16
         )

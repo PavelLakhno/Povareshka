@@ -20,7 +20,7 @@ class NewStepController: BaseController {
     
     private let contentView = UIView(backgroundColor: AppColors.gray100)
     
-    private let imageBubbleView = UIView(backgroundColor: .white, cornerRadius: Constants.cornerRadiusSmall)
+    private let imageBubbleView = UIView(backgroundColor: .systemBackground, cornerRadius: Constants.cornerRadiusSmall)
     private let stepImageView = UIImageView(
         cornerRadius: Constants.cornerRadiusSmall,
         contentMode: .scaleAspectFit,
@@ -41,7 +41,7 @@ class NewStepController: BaseController {
     private lazy var removePhotoIconButton: UIButton = {
         let button = UIButton(
             image: AppImages.Icons.trash,
-            backgroundColor: .white.withAlphaComponent(0.6),
+            backgroundColor: .systemBackground.withAlphaComponent(0.6),
             tintColor: .red,
             cornerRadius: Constants.cornerRadiusMedium,
             size: Constants.viewSize30,
@@ -57,7 +57,6 @@ class NewStepController: BaseController {
         delegate: self
     )
 
-//    var saveStepCallback: ((InstructionSupabase) -> Void)?
     var saveStepCallback: ((Instruction) -> Void)?
     
     // MARK: - Init
@@ -97,7 +96,7 @@ class NewStepController: BaseController {
     
     internal override func setupViews() {
         super.setupViews()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
@@ -154,7 +153,7 @@ class NewStepController: BaseController {
     private func configureWithData() {
         if let description = stepDescription, !description.isEmpty {
             descriptionTextView.text = description
-            descriptionTextView.textColor = .black
+            descriptionTextView.textColor = .label
             descriptionTextView.placeholder = nil
             DispatchQueue.main.async {
                 self.descriptionTextView.dynamicTextViewHeight(minHeight: 150)
@@ -182,6 +181,17 @@ class NewStepController: BaseController {
     }
 }
 
+// MARK: - Trait Changes
+extension NewStepController {
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+//        super.traitCollectionDidChange(previousTraitCollection)
+        guard traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) else { return }
+        if stepImage == nil {
+            stepImageView.layer.borderColor = UIColor.label.cgColor
+        }
+    }
+}
+
 // MARK: - Actions
 extension NewStepController {
    
@@ -197,7 +207,7 @@ extension NewStepController {
         stepImage = nil
         stepImageView.image = AppImages.Icons.cameraMain
         stepImageView.contentMode = .scaleAspectFit
-        stepImageView.layer.borderColor = UIColor.black.cgColor
+        stepImageView.layer.borderColor = UIColor.label.cgColor
         updateUI()
     }
     
@@ -226,7 +236,7 @@ extension NewStepController: UITextViewDelegate {
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
         if textView.textColor == .lightGray {
             textView.text = nil
-            textView.textColor = .black
+            textView.textColor = .label
         }
         return true
     }
